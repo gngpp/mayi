@@ -19,7 +19,6 @@
 - 数据库连接池：Druid、hikari
 - 服务注册与发现: Nacos
 - 客户端负载均衡：Ribbon
-- 熔断组件：Sentinel
 - 服务监控：Spring Boot Actuator、Spring boot Admin
 - 网关组件：Spring Cloud Gateway
 - 运行容器：Undertow
