@@ -24,10 +24,10 @@
 - 网关组件：Spring Cloud Gateway
 - 运行容器：Undertow
 
-## 鸣谢
+## 贡献
 
-- 感谢 JetBrains 提供的免费开源 License：
+目前只有`我`自己在维护这个项目。希望能有更多人加入 :)
 
-<p>
-<img src="https://images.gitee.com/uploads/images/2020/0406/220236_f5275c90_5531506.png" alt="图片引用自lets-mica" style="float:left;">
-</p>
+感谢[Jetbrains](https://www.jetbrains.com/?from=mayi)制作的IDE，以及免费的开源许可证。
+
+![](https://raw.githubusercontent.com/wkgcass/vproxy/master/doc/jetbrains.png)
