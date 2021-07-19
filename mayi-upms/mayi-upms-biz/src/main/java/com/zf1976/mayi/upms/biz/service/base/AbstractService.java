@@ -259,7 +259,7 @@ public abstract class AbstractService<D extends BaseMapper<E>, E> extends Servic
     }
 
     /**
-     * 链式查询 设置查询参数 / 暂时支持这么多 between 只支持时间类型
+     * 链式查询 设置查询参数 / 暂时支持这么多, between 只支持时间类型
      *
      * @param query 查询参数
      * @return this
@@ -325,7 +325,7 @@ public abstract class AbstractService<D extends BaseMapper<E>, E> extends Servic
                 case BETWEEN:
                     @SuppressWarnings("unchecked")
                     List<Date> list = (List<Date>) fieldVal;
-                    assert list.size() == 2;
+                    Assert.isTrue(list.size() == 2, "Must be a time range");
                     supplierWrapper.between(fieldName, list.get(0), list.get(1));
                     break;
                 default:
