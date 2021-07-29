@@ -15,7 +15,6 @@ dependencies {
     implementation project(':mayi-common:mayi-common-encrypt')
     implementation project(':mayi-common:mayi-common-security')
     implementation project(':mayi-common:mayi-common-component')
-    implementation project(':mayi-common:mayi-common-mybatis')
     implementation project(':mayi-common:mayi-common-datasource')
     implementation project(':mayi-visual:mayi-visual-monitor')
     implementation('cn.hutool:hutool-poi:5.4.5')

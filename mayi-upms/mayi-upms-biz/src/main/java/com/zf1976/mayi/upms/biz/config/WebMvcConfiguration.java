@@ -3,7 +3,7 @@ package com.zf1976.mayi.upms.biz.config;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.power.common.util.FileUtil;
 import com.zf1976.mayi.common.core.config.ThreadPoolProperties;
-import com.zf1976.mayi.common.mybatis.handle.MetaDataHandler;
+import com.zf1976.mayi.common.datasource.config.handle.MetaDataHandler;
 import com.zf1976.mayi.upms.biz.property.FileProperties;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

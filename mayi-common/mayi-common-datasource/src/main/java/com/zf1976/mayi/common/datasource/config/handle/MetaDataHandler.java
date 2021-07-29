@@ -1,4 +1,4 @@
-package com.zf1976.mayi.common.mybatis.handle;
+package com.zf1976.mayi.common.datasource.config.handle;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;

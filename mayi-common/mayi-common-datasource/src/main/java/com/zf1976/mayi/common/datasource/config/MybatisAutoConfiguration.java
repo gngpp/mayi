@@ -1,4 +1,4 @@
-package com.zf1976.mayi.common.mybatis;
+package com.zf1976.mayi.common.datasource.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.pagination.optimize.JsqlParserCountOptimize;
-import com.zf1976.mayi.common.mybatis.resolver.SqlFilterArgumentResolver;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.statement.delete.Delete;
 import org.slf4j.Logger;

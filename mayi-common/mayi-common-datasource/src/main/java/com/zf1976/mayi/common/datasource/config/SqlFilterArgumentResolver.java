@@ -1,4 +1,4 @@
-package com.zf1976.mayi.common.mybatis.resolver;
+package com.zf1976.mayi.common.datasource.config;
 
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
