@@ -1,8 +1,8 @@
 package com.zf1976.mayi.common.log.aspect;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.power.common.util.StringUtil;
 import com.zf1976.mayi.common.core.util.ExceptionUtils;
+import com.zf1976.mayi.common.core.util.StringUtil;
 import com.zf1976.mayi.common.log.annotation.Log;
 import com.zf1976.mayi.common.log.aspect.base.BaseLogAspect;
 import com.zf1976.mayi.common.log.dao.SysLogDao;
@@ -10,7 +10,10 @@ import com.zf1976.mayi.common.log.pojo.SysLog;
 import com.zf1976.mayi.common.log.pojo.enums.LogType;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

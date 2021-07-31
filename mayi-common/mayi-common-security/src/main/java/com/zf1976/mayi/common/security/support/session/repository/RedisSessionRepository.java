@@ -1,7 +1,7 @@
 package com.zf1976.mayi.common.security.support.session.repository;
 
-import com.power.common.util.StringUtil;
 import com.zf1976.mayi.common.core.util.RequestUtil;
+import com.zf1976.mayi.common.core.util.StringUtil;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.common.security.support.session.Session;
 import com.zf1976.mayi.common.security.support.session.exception.SessionException;

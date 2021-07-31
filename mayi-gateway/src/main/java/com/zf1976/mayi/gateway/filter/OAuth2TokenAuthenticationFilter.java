@@ -1,8 +1,8 @@
 package com.zf1976.mayi.gateway.filter;
 
 import com.nimbusds.jose.JWSObject;
-import com.power.common.model.CommonResult;
 import com.zf1976.mayi.common.core.constants.AuthConstants;
+import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.common.core.util.JSONUtil;
 import net.minidev.json.JSONArray;
 import org.slf4j.Logger;
@@ -163,8 +163,7 @@ public class OAuth2TokenAuthenticationFilter implements WebFilter {
         response.getHeaders().set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         response.getHeaders().set("Access-Control-Allow-Origin", "*");
         response.getHeaders().set("Cache-Control", "no-cache");
-        CommonResult fail = CommonResult.fail(String.valueOf(HttpStatus.UNAUTHORIZED.value()),
-                HttpStatus.UNAUTHORIZED.getReasonPhrase());
+        var fail = DataResult.fail(HttpStatus.UNAUTHORIZED.getReasonPhrase());
         String body = JSONUtil.toJsonString(fail);
         DataBuffer buffer = response.bufferFactory()
                                     .wrap(body.getBytes(StandardCharsets.UTF_8));

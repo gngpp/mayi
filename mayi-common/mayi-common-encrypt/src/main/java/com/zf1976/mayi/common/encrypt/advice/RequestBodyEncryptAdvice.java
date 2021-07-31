@@ -1,7 +1,7 @@
 package com.zf1976.mayi.common.encrypt.advice;
 
-import com.power.common.util.Base64Util;
-import com.power.common.util.StringUtil;
+import com.zf1976.mayi.common.core.util.Base64Util;
+import com.zf1976.mayi.common.core.util.StringUtil;
 import com.zf1976.mayi.common.encrypt.EncryptUtil;
 import com.zf1976.mayi.common.encrypt.property.SecretProperties;
 import org.slf4j.Logger;

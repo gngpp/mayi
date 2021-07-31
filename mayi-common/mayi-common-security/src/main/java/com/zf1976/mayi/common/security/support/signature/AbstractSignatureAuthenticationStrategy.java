@@ -1,16 +1,19 @@
 package com.zf1976.mayi.common.security.support.signature;
 
-import com.power.common.util.StringUtil;
-import com.zf1976.mayi.common.security.support.signature.datasource.ClientDataSourceProvider;
 import com.zf1976.mayi.common.core.util.CaffeineCacheUtil;
+import com.zf1976.mayi.common.core.util.StringUtil;
 import com.zf1976.mayi.common.encrypt.EncryptUtil;
+import com.zf1976.mayi.common.security.support.signature.datasource.ClientDataSourceProvider;
 import com.zf1976.mayi.common.security.support.signature.exception.SignatureException;
 import org.springframework.util.Assert;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author mac

@@ -1,7 +1,7 @@
 package com.zf1976.mayi.common.component.validate.repository.impl;
 
-import com.power.common.util.StringUtil;
 import com.zf1976.mayi.common.component.validate.repository.CaptchaRepository;
+import com.zf1976.mayi.common.core.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;

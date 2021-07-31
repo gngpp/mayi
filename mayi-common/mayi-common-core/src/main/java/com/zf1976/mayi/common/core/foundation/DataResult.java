@@ -1,7 +1,7 @@
 package com.zf1976.mayi.common.core.foundation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.power.common.util.DateTimeUtil;
+import com.zf1976.mayi.common.core.util.DateTimeUtil;
 import com.zf1976.mayi.common.core.util.RequestUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;

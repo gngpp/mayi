@@ -1,15 +1,15 @@
 package com.zf1976.mayi.common.security.support.signature.impl;
 
 import com.google.common.base.Splitter;
-import com.power.common.util.Base64Util;
-import com.power.common.util.StringUtil;
+import com.zf1976.mayi.common.core.util.Base64Util;
+import com.zf1976.mayi.common.core.util.CaffeineCacheUtil;
+import com.zf1976.mayi.common.core.util.StringUtil;
+import com.zf1976.mayi.common.encrypt.EncryptUtil;
 import com.zf1976.mayi.common.security.support.signature.AbstractSignatureAuthenticationStrategy;
-import com.zf1976.mayi.common.security.support.signature.enums.SignaturePattern;
+import com.zf1976.mayi.common.security.support.signature.SignatureState;
 import com.zf1976.mayi.common.security.support.signature.StandardSignature;
 import com.zf1976.mayi.common.security.support.signature.datasource.ClientDataSourceProvider;
-import com.zf1976.mayi.common.core.util.CaffeineCacheUtil;
-import com.zf1976.mayi.common.encrypt.EncryptUtil;
-import com.zf1976.mayi.common.security.support.signature.SignatureState;
+import com.zf1976.mayi.common.security.support.signature.enums.SignaturePattern;
 import com.zf1976.mayi.common.security.support.signature.exception.SignatureException;
 
 import javax.servlet.http.HttpServletRequest;

@@ -10,9 +10,9 @@ import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
-import com.power.common.util.StringUtil;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessException;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
+import com.zf1976.mayi.common.core.util.StringUtil;
 import com.zf1976.mayi.upms.biz.pojo.query.AbstractQueryParam;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.pojo.query.annotation.Param;
@@ -172,11 +172,11 @@ public abstract class AbstractService<D extends BaseMapper<E>, E> extends Servic
      * @return list of Entity
      */
     public List<E> selectList() {
-        // 列表查询
+        // List query
         List<E> list = Optional.ofNullable(this.wrapperThreadLocal.get())
                                .orElseGet(() -> ChainWrappers.queryChain(super.baseMapper))
                                .list();
-        // 清除本地变量
+        // Clear local variables
         this.removeThreadLocalVariable();
         return list;
     }
@@ -188,7 +188,7 @@ public abstract class AbstractService<D extends BaseMapper<E>, E> extends Servic
      * @return page
      */
     public IPage<E> selectPage(Query<? extends AbstractQueryParam> query, QueryChainWrapper<E> queryChainWrapper) {
-        // 清除本地变量
+        //Clear local variables
         this.removeThreadLocalVariable();
         Page<E> configPage = this.getPage(query);
         return queryChainWrapper.page(configPage);
@@ -203,7 +203,7 @@ public abstract class AbstractService<D extends BaseMapper<E>, E> extends Servic
     public IPage<E> selectPage(Query<? extends AbstractQueryParam> query,
                                LambdaQueryChainWrapper<E> lambdaQueryChainWrapper) {
         Page<E> configPage = this.getPage(query);
-        // 清除本地变量
+        // Clear local variables
         this.removeThreadLocalVariable();
         return lambdaQueryChainWrapper.page(configPage);
     }
@@ -253,7 +253,7 @@ public abstract class AbstractService<D extends BaseMapper<E>, E> extends Servic
      * @return this
      */
     public AbstractService<D, E> chainQuery(Query<? extends AbstractQueryParam> query) {
-        // 设置本地查询变量
+        // Set local query variables
         this.queryThreadLocal.set(query);
         return this.chainQuery(query, () -> null);
     }

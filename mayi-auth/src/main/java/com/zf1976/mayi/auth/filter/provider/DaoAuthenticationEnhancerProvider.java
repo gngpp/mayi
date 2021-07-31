@@ -58,7 +58,7 @@ public class DaoAuthenticationEnhancerProvider extends AbstractUserDetailsAuthen
             try {
                 presentedPassword = EncryptUtil.decryptForRsaByPrivateKey(encryptPassword);
             } catch (Exception ignored) {
-                presentedPassword = encryptPassword;
+                throw new BadCredentialsException("Bad credentials");
             }
             if (!this.passwordEncoder.matches(presentedPassword, rawPassword)) {
                 this.logger.debug("Authentication failed: password does not match stored value");

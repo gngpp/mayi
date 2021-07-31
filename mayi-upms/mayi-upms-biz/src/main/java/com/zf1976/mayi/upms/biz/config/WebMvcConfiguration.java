@@ -1,8 +1,8 @@
 package com.zf1976.mayi.upms.biz.config;
 
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
-import com.power.common.util.FileUtil;
 import com.zf1976.mayi.common.core.config.ThreadPoolProperties;
+import com.zf1976.mayi.common.core.constants.MayiStandards;
 import com.zf1976.mayi.common.datasource.config.handle.MetaDataHandler;
 import com.zf1976.mayi.upms.biz.property.FileProperties;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,6 +18,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -98,25 +100,27 @@ public class WebMvcConfiguration implements WebMvcConfigurer, InitializingBean {
         final String filePath = resolveSystemPath(real.getFilePath());
         registry.addResourceHandler("/static/**", relative.getAvatarUrl(), relative.getFileUrl())
                 .addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX + "/static/", avatarPath, filePath);
-
     }
 
     /**
      * 获取完整文件路径
      *
-     * @param realPath 配置路径
+     * @param childPath 配置路径
      * @return /
      */
-    private String resolveSystemPath(String realPath) {
-        final String homePath = System.getProperty("user.home");
-        final File file = new File(homePath + this.fileProperties.getWorkFilePath(), realPath);
-        FileUtil.mkdirs(file.getAbsolutePath());
+    private String resolveSystemPath(String childPath) {
+        final File file = new File(MayiStandards.HOME_PATH + this.fileProperties.getWorkFilePath(), childPath);
+        try {
+            Files.createDirectories(file.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return ResourceUtils.FILE_URL_PREFIX + file.getAbsolutePath() + AntPathMatcher.DEFAULT_PATH_SEPARATOR;
     }
 
     @Override
     public void afterPropertiesSet() {
-        final String homePath = System.getProperty("user.home");
+        final String homePath = MayiStandards.HOME_PATH;
         final FileProperties.Real real = this.fileProperties.getReal();
         FileProperties.setAvatarRealPath(homePath + this.fileProperties.getWorkFilePath() + real.getAvatarPath());
         FileProperties.setFileRealPath(homePath + this.fileProperties.getWorkFilePath() + real.getFilePath());

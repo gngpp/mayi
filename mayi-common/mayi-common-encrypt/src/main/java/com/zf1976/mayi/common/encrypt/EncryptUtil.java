@@ -1,7 +1,7 @@
 package com.zf1976.mayi.common.encrypt;
 
-import com.power.common.util.AESUtil;
-import com.power.common.util.StringUtil;
+import com.zf1976.mayi.common.core.util.AESUtil;
+import com.zf1976.mayi.common.core.util.StringUtil;
 import com.zf1976.mayi.common.encrypt.property.AesProperties;
 import com.zf1976.mayi.common.encrypt.property.RsaProperties;
 

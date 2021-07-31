@@ -2,12 +2,12 @@ package com.zf1976.mayi.common.log.aspect.base;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.power.common.util.StringUtil;
-import com.zf1976.mayi.common.security.support.session.Session;
-import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
 import com.zf1976.mayi.common.core.util.RequestUtil;
+import com.zf1976.mayi.common.core.util.StringUtil;
 import com.zf1976.mayi.common.log.pojo.SysLog;
 import com.zf1976.mayi.common.log.pojo.enums.LogType;
+import com.zf1976.mayi.common.security.support.session.Session;
+import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.util.CollectionUtils;

@@ -1,6 +1,6 @@
 package com.zf1976.mayi.upms.biz.security.backup.service;
 
-import com.power.common.util.PrettyMemoryUtil;
+import com.zf1976.mayi.common.core.util.PrettyMemoryUtil;
 import com.zf1976.mayi.upms.biz.security.backup.MySQLBackupStrategy;
 import com.zf1976.mayi.upms.biz.security.backup.SQLBackupStrategy;
 import com.zf1976.mayi.upms.biz.security.backup.exception.SQLBackupException;
@@ -199,7 +199,7 @@ public class MySQLBackupService {
 
     private File[] getChildFileAndFilter(File dateFileDirectory) {
         return dateFileDirectory.listFiles(pathname -> {
-            // 按数字序号过滤目录文件名
+            // Filter directory file names by number
             for (int i = 0; i < this.pageCount; i++) {
                 if (String.valueOf(i).equals(pathname.getName())) {
                     return true;
@@ -220,9 +220,9 @@ public class MySQLBackupService {
     }
 
     private void createBackupFileByDefault() {
-        // 从0序号划分目录并创建文件
+        // Divide directories and create files from 0 number
         var childFileDirectory = this.getBackupChildFileDirectory(0);
-        // 创建备份
+        // Create a backup
         this.createBackupFile(childFileDirectory);
     }
 

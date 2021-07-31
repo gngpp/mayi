@@ -1,6 +1,7 @@
 package com.zf1976.mayi.upms.biz.security.backup;
 
 import com.zf1976.mayi.upms.biz.security.backup.exception.SQLBackupException;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -208,11 +209,13 @@ public class MySQLBackupStrategy implements SQLBackupStrategy {
             log.warn("Invalid backup file command:" + mysqlDump);
             return false;
         }
-        try (bufferedReader; BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(backupFile), DEFAULT_BUFFER_SIZE)) {
-            byte[] data = new byte[16 * 1024];
+        try (bufferedReader; BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(backupFile), DEFAULT_BUFFER_SIZE);
+             var zipOutputStream = new BZip2CompressorOutputStream(outputStream)
+        ) {
+            byte[] data = new byte[DEFAULT_BUFFER_SIZE];
             int len;
             while ((len = bufferedReader.read(data)) != -1) {
-                outputStream.write(data, 0, len);
+                zipOutputStream.write(data, 0, len);
             }
             return true;
         } catch (IOException ignored) {

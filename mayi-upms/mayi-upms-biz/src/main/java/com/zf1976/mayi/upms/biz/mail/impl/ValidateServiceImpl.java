@@ -1,10 +1,10 @@
 package com.zf1976.mayi.upms.biz.mail.impl;
 
-import com.power.common.util.RandomUtil;
-import com.power.common.util.ValidateUtil;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessException;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
+import com.zf1976.mayi.common.core.util.RandomUtil;
 import com.zf1976.mayi.common.core.util.RedisUtil;
+import com.zf1976.mayi.common.core.util.ValidateUtil;
 import com.zf1976.mayi.upms.biz.mail.MailSenderProvider;
 import com.zf1976.mayi.upms.biz.mail.ValidateEmailService;
 import com.zf1976.mayi.upms.biz.mail.ValidateMobileService;

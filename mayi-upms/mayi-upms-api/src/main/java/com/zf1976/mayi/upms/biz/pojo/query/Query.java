@@ -2,7 +2,7 @@ package com.zf1976.mayi.upms.biz.pojo.query;
 
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.power.common.util.StringUtil;
+import com.zf1976.mayi.common.core.util.StringUtil;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
