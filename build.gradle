@@ -32,10 +32,6 @@ allprojects {
     }
 }
 
-ext {
-
-}
-
 // 子项目设置
 subprojects {
      repositories {
@@ -49,8 +45,6 @@ subprojects {
          implementation "com.google.guava:guava:${guavaVersion}"
          implementation "org.mapstruct:mapstruct:${mapstructVersion}"
          annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
      }
 
 }

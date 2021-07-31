@@ -1,7 +1,6 @@
 package com.zf1976.mayi.upms.biz.security.backup;
 
 import com.zf1976.mayi.upms.biz.security.backup.exception.SQLBackupException;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -21,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * 策略备份工具
@@ -210,12 +210,12 @@ public class MySQLBackupStrategy implements SQLBackupStrategy {
             return false;
         }
         try (bufferedReader; BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(backupFile), DEFAULT_BUFFER_SIZE);
-             var zipOutputStream = new BZip2CompressorOutputStream(outputStream)
+             var gzipOutputStream = new GZIPOutputStream(outputStream);
         ) {
             byte[] data = new byte[DEFAULT_BUFFER_SIZE];
             int len;
             while ((len = bufferedReader.read(data)) != -1) {
-                zipOutputStream.write(data, 0, len);
+                gzipOutputStream.write(data, 0, len);
             }
             return true;
         } catch (IOException ignored) {

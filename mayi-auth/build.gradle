@@ -44,8 +44,6 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-configuration-processor')
     implementation('org.springframework.boot:spring-boot-starter-jdbc')
     implementation('org.springframework.boot:spring-boot-starter-data-redis')
-    implementation('org.springframework.security:spring-security-test')
-    implementation('org.springframework.boot:spring-boot-test')
     runtimeOnly("mysql:mysql-connector-java:${mysqlConnectorVersion}")
 
 }
