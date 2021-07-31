@@ -1,5 +1,8 @@
 package com.zf1976.mayi.upms.biz.security.backup;
 
+import com.zf1976.mayi.common.core.compressors.gzip.GzipCompressorOutputStream;
+import com.zf1976.mayi.common.core.constants.MayiStandards;
+import com.zf1976.mayi.common.core.util.IOUtil;
 import com.zf1976.mayi.upms.biz.security.backup.exception.SQLBackupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +11,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import javax.sql.DataSource;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -20,7 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * 策略备份工具
@@ -30,9 +33,13 @@ import java.util.zip.GZIPOutputStream;
  */
 public class MySQLBackupStrategy implements SQLBackupStrategy {
 
-    private final Logger log = LoggerFactory.getLogger("[SQL-BACKUP]");
+    private final static String DELIMITER = "-";
     private final static String INDEX_END = ";";
+    private final static String FILENAME_SUFFIX = ".sql";
     private final static String BLANK = "";
+    private final static String COMPRESS_SUFFIX = ".gz";
+    private final Logger log = LoggerFactory.getLogger("[MySQLBackupStrategy]");
+    private final File tempDir;
     private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
     private final static int DEFAULT_BUFFER_SIZE = 16384;
     private final String mysqlDump;
@@ -47,6 +54,16 @@ public class MySQLBackupStrategy implements SQLBackupStrategy {
         this.dataSource = dataSource;
         this.mysqlRecover = "mysql --defaults-extra-file=/etc/my.cnf " + this.getDatabase() + " < ";
         this.mysqlDump = "mysqldump --defaults-extra-file=/etc/my.cnf " + this.getDatabase();
+        try {
+            this.tempDir = Files.createDirectories(Paths.get(MayiStandards.TEMP_PATH))
+                                .toFile();
+            if (!this.tempDir.exists() || !this.tempDir.isDirectory()) {
+                throw new RuntimeException("Failed to create temporary directory file");
+            }
+            log.info("Initialize the project temporary directory");
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e.getCause());
+        }
     }
 
     /**
@@ -115,14 +132,15 @@ public class MySQLBackupStrategy implements SQLBackupStrategy {
         }
         if (fileDirectory.isDirectory() || fileDirectory.exists()) {
             try {
-                // 生成策略备份文件
-                File backupFile = generationStrategyFile(fileDirectory);
-                if (!backupFile.exists() || backupFile.isDirectory()) {
-                    log.warn("Invalid backup file path：{}", fileDirectory.getAbsolutePath());
+                // Generate a temporary policy backup file
+                File backupTempFile = this.generationStrategyTempFile();
+                backupTempFile.deleteOnExit();
+                if (!backupTempFile.exists() || backupTempFile.isDirectory()) {
+                    log.warn("Invalid temporary policy backup file path：{}", backupTempFile.getAbsolutePath());
                     return false;
                 }
-                // 执行备份文件命令
-                if (executeStrategyCommand(backupFile)) {
+                // Execute backup file command
+                if (executeStrategyCommand(backupTempFile, fileDirectory)) {
                     log.info("The {} Database backup is successful", getDatabase());
                 }
                 return true;
@@ -181,16 +199,17 @@ public class MySQLBackupStrategy implements SQLBackupStrategy {
     /**
      * 执行备份文件命令
      *
-     * @param backupFile 备份文件对象
+     * @param tempFile  临时备份文件
+     * @param backupDir 备份目录
      * @return {@link boolean}
      * @date 2021-05-14 18:14:46
      */
-    private boolean executeStrategyCommand(File backupFile) throws IOException, InterruptedException {
+    private boolean executeStrategyCommand(File tempFile, File backupDir) throws IOException, InterruptedException {
         Process exec = Runtime.getRuntime()
                               .exec(mysqlDump);
-        final BufferedInputStream bufferedInputStream = new BufferedInputStream(exec.getInputStream(), DEFAULT_BUFFER_SIZE);
-        if (!this.writeBackupFile(bufferedInputStream, backupFile)) {
-            log.warn("Failed to write backup file, file:{}", backupFile.getName());
+        final BufferedInputStream bis = new BufferedInputStream(exec.getInputStream(), DEFAULT_BUFFER_SIZE);
+        if (!this.writeBackupFile(bis, tempFile, backupDir)) {
+            log.warn("Failed to write backup file, file:{}", tempFile.getName());
             return false;
         }
         return exec.waitFor() == 0;
@@ -199,23 +218,29 @@ public class MySQLBackupStrategy implements SQLBackupStrategy {
     /**
      * 写入备份文件
      *
-     * @param bufferedReader 缓冲流
-     * @param backupFile     备份文件
+     * @param bin       缓冲流
+     * @param tempFile  临时备份文件
+     * @param backupDir 备份目录
      * @return boolean
      * @date 2021-03-21 14:17:22
      */
-    private boolean writeBackupFile(BufferedInputStream bufferedReader, File backupFile) {
-        if (bufferedReader == null) {
+    private boolean writeBackupFile(BufferedInputStream bin, File tempFile, File backupDir) {
+        if (bin == null) {
             log.warn("Invalid backup file command:" + mysqlDump);
             return false;
         }
-        try (bufferedReader; BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(backupFile), DEFAULT_BUFFER_SIZE);
-             var gzipOutputStream = new GZIPOutputStream(outputStream);
-        ) {
-            byte[] data = new byte[DEFAULT_BUFFER_SIZE];
-            int len;
-            while ((len = bufferedReader.read(data)) != -1) {
-                gzipOutputStream.write(data, 0, len);
+        try (bin; BufferedOutputStream bou = new BufferedOutputStream(new FileOutputStream(tempFile), DEFAULT_BUFFER_SIZE)) {
+            // write backup data to temp file
+            IOUtil.copy(bin, bou, DEFAULT_BUFFER_SIZE);
+            // temp backup filename
+            final var tempFileName = tempFile.getName();
+            final var realFilename = tempFileName.substring(0, tempFileName.lastIndexOf(DELIMITER)) + FILENAME_SUFFIX + COMPRESS_SUFFIX;
+            final var realPath = Paths.get(backupDir.getAbsolutePath(), realFilename);
+            // compress backup file
+            try (final var tempIn = Files.newInputStream(tempFile.toPath());
+                 final var gzipOut = new GzipCompressorOutputStream(Files.newOutputStream(realPath))
+            ) {
+                IOUtil.copy(tempIn, gzipOut, DEFAULT_BUFFER_SIZE);
             }
             return true;
         } catch (IOException ignored) {
@@ -251,18 +276,33 @@ public class MySQLBackupStrategy implements SQLBackupStrategy {
     }
 
     /**
-     * 根据策略生成备份文件
+     * 根据策略生成临时备份文件
      *
      * @param directory 文件目录
      * @return file
      */
-    private File generationStrategyFile(File directory) throws IOException {
+    private File generationStrategyTempFile(File directory) throws IOException {
         File file = Paths.get(directory.getAbsolutePath(), this.generatorFilename())
                          .toFile();
         if (!file.createNewFile()) {
             throw new SQLBackupException("Failed to create file：" + file.getName());
         }
         return file;
+    }
+
+    /**
+     * 生成策略备份文件名
+     *
+     * @return 文件名
+     */
+    private File generationStrategyTempFile() {
+        try {
+            final var filename = this.generatorFilename();
+            return File.createTempFile(filename + DELIMITER, FILENAME_SUFFIX, this.tempDir);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e.getCause());
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     /**
@@ -330,7 +370,7 @@ public class MySQLBackupStrategy implements SQLBackupStrategy {
         final var now = LocalDateTime.now();
         // 加上时间戳保证生成文件唯一性，失败前提是执行一次时间极短
         return this.database + "-backup_" + now.format(DATE_FORMAT) + "_" + now.toInstant(ZoneOffset.of("+8"))
-                                                                               .toEpochMilli() + ".sql";
+                                                                               .toEpochMilli();
     }
 
 }
