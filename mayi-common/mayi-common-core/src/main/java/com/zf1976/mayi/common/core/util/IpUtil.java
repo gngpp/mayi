@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  */
 public class IpUtil {
 
-    private static final Pattern INNER_IP_PATTERN = Pattern.compile("^(127\\.0\\.0\\.1)|(localhost)|(10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})|(172\\.((1[6-9])|(2\\d)|(3[01]))\\.\\d{1,3}\\.\\d{1,3})|(192\\.168\\.\\d{1,3}\\.\\d{1,3})$");
+    private static final Pattern INNER_IP_PATTERN = Pattern.compile("^(127\\.0\\.0\\.1)|(0\\:0\\:0\\:0\\:0\\:0\\:0\\:1)|(localhost)|(10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})|(172\\.((1[6-9])|(2\\d)|(3[01]))\\.\\d{1,3}\\.\\d{1,3})|(192\\.168\\.\\d{1,3}\\.\\d{1,3})$");
 
     /**
      * 判断是否为内网ip
@@ -24,8 +24,7 @@ public class IpUtil {
      * @return {@link boolean}
      */
     public static boolean isInnerIp(String ip) {
-        return INNER_IP_PATTERN.matcher(ip)
-                               .find();
+        return INNER_IP_PATTERN.matcher(ip).find();
     }
 
     /**
