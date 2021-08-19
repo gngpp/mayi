@@ -1,10 +1,10 @@
 package com.zf1976.mayi.common.security.support.signature.impl;
 
+import com.zf1976.mayi.common.core.util.GuavaCacheUtil;
 import com.zf1976.mayi.common.security.support.signature.AbstractSignatureAuthenticationStrategy;
-import com.zf1976.mayi.common.security.support.signature.enums.SignaturePattern;
 import com.zf1976.mayi.common.security.support.signature.StandardSignature;
 import com.zf1976.mayi.common.security.support.signature.datasource.ClientDataSourceProvider;
-import com.zf1976.mayi.common.core.util.CaffeineCacheUtil;
+import com.zf1976.mayi.common.security.support.signature.enums.SignaturePattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,7 +39,7 @@ public class OpenSignatureAuthenticationStrategy extends AbstractSignatureAuthen
         // 校验签名是否相同
         super.validateSignature(rawSignature, generateSignature);
         // 签名校验成功，缓存签名防止重放
-        CaffeineCacheUtil.setFixedOneMinutes(nonceStr, rawSignature);
+        GuavaCacheUtil.setFixedOneMinutes(nonceStr, rawSignature);
     }
 
     @Override

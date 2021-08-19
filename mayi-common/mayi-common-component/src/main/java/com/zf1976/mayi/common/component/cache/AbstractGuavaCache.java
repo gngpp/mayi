@@ -2,7 +2,7 @@ package com.zf1976.mayi.common.component.cache;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.zf1976.mayi.common.component.property.CaffeineProperties;
+import com.zf1976.mayi.common.component.property.GuavaCacheProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -14,15 +14,15 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author WINDOWS
  */
-public abstract class AbstractCaffeineCache<K, V> implements ICache<K, V> {
+public abstract class AbstractGuavaCache<K, V> implements ICache<K, V> {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(AbstractCaffeineCache.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(AbstractGuavaCache.class);
     protected static final byte MAP_INITIAL_CAPACITY = 16;
     protected Map<String, Cache<K, V>> cacheSpace;
     protected Cache<K, V> kvCache;
-    protected final CaffeineProperties properties;
+    protected final GuavaCacheProperties properties;
 
-    public AbstractCaffeineCache(CaffeineProperties properties) {
+    public AbstractGuavaCache(GuavaCacheProperties properties) {
         this.properties = properties;
     }
 
@@ -60,7 +60,7 @@ public abstract class AbstractCaffeineCache<K, V> implements ICache<K, V> {
     protected Cache<K, V> getObject() {
         // 继承子类没有给予初始化 则提供默认初始化
         if (kvCache == null) {
-            synchronized (AbstractCaffeineCache.class) {
+            synchronized (AbstractGuavaCache.class) {
                 if (kvCache == null) {
                     initialCache();
                 }

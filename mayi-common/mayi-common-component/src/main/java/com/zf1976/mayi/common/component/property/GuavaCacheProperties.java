@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties(prefix = "cache")
-public class CaffeineProperties {
+public class GuavaCacheProperties {
     /**
      * 并发级别
      */
@@ -34,7 +34,7 @@ public class CaffeineProperties {
         return keyPrefix;
     }
 
-    public CaffeineProperties setKeyPrefix(String keyPrefix) {
+    public GuavaCacheProperties setKeyPrefix(String keyPrefix) {
         this.keyPrefix = keyPrefix;
         return this;
     }
@@ -43,7 +43,7 @@ public class CaffeineProperties {
         return concurrencyLevel;
     }
 
-    public CaffeineProperties setConcurrencyLevel(Integer concurrencyLevel) {
+    public GuavaCacheProperties setConcurrencyLevel(Integer concurrencyLevel) {
         this.concurrencyLevel = concurrencyLevel;
         return this;
     }
@@ -52,7 +52,7 @@ public class CaffeineProperties {
         return initialCapacity;
     }
 
-    public CaffeineProperties setInitialCapacity(Integer initialCapacity) {
+    public GuavaCacheProperties setInitialCapacity(Integer initialCapacity) {
         this.initialCapacity = initialCapacity;
         return this;
     }
@@ -61,7 +61,7 @@ public class CaffeineProperties {
         return maximumSize;
     }
 
-    public CaffeineProperties setMaximumSize(Integer maximumSize) {
+    public GuavaCacheProperties setMaximumSize(Integer maximumSize) {
         this.maximumSize = maximumSize;
         return this;
     }
@@ -70,7 +70,7 @@ public class CaffeineProperties {
         return expireAlterWrite;
     }
 
-    public CaffeineProperties setExpireAlterWrite(Long expireAlterWrite) {
+    public GuavaCacheProperties setExpireAlterWrite(Long expireAlterWrite) {
         this.expireAlterWrite = expireAlterWrite;
         return this;
     }

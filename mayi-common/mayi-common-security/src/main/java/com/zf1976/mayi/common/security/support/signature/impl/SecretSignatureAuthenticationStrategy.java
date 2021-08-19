@@ -2,7 +2,7 @@ package com.zf1976.mayi.common.security.support.signature.impl;
 
 import com.google.common.base.Splitter;
 import com.zf1976.mayi.common.core.util.Base64Util;
-import com.zf1976.mayi.common.core.util.CaffeineCacheUtil;
+import com.zf1976.mayi.common.core.util.GuavaCacheUtil;
 import com.zf1976.mayi.common.core.util.StringUtil;
 import com.zf1976.mayi.common.encrypt.EncryptUtil;
 import com.zf1976.mayi.common.security.support.signature.AbstractSignatureAuthenticationStrategy;
@@ -54,7 +54,7 @@ public class SecretSignatureAuthenticationStrategy extends AbstractSignatureAuth
         // 校验签名是否相同
         super.validateSignature(rawSignature, generateSignature);
         // 签名校验成功，缓存签名防止重放
-        CaffeineCacheUtil.setFixedOneMinutes(nonceStr, rawSignature);
+        GuavaCacheUtil.setFixedOneMinutes(nonceStr, rawSignature);
     }
 
     @Override

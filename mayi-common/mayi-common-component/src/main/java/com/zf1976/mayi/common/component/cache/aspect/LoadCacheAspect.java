@@ -7,9 +7,9 @@ import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
 import com.zf1976.mayi.common.component.cache.aspect.handler.SpringElExpressionHandler;
 import com.zf1976.mayi.common.component.cache.enums.CacheImplement;
-import com.zf1976.mayi.common.component.cache.impl.CaffeineCacheProvider;
+import com.zf1976.mayi.common.component.cache.impl.GuavaCacheProvider;
 import com.zf1976.mayi.common.component.cache.impl.RedisCacheProvider;
-import com.zf1976.mayi.common.component.property.CaffeineProperties;
+import com.zf1976.mayi.common.component.property.GuavaCacheProperties;
 import com.zf1976.mayi.common.core.util.StringUtil;
 import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -43,8 +43,8 @@ public class LoadCacheAspect {
     private final SpringElExpressionHandler handler = new SpringElExpressionHandler();
     private Map<CacheImplement, ICache<Object, Object>> cacheProviderMap;
 
-    public LoadCacheAspect(RedisTemplate<Object, Object> template, CaffeineProperties properties) {
-        this.addProvider(CacheImplement.CAFFEINE, new CaffeineCacheProvider<>(properties));
+    public LoadCacheAspect(RedisTemplate<Object, Object> template, GuavaCacheProperties properties) {
+        this.addProvider(CacheImplement.CAFFEINE, new GuavaCacheProvider<>(properties));
         this.addProvider(CacheImplement.REDIS, new RedisCacheProvider<>(properties, template));
         this.checkStatus();
     }

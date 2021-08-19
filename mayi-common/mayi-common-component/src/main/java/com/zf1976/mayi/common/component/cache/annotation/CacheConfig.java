@@ -6,7 +6,7 @@ import java.lang.annotation.*;
  * 缓存配置类，设置当前代理类缓存命名空间
  *
  * @author mac
- * @date 2021/5/14
+ * 2021/5/14
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

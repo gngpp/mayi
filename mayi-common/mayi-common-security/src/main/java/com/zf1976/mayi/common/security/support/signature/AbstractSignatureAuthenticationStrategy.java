@@ -1,6 +1,6 @@
 package com.zf1976.mayi.common.security.support.signature;
 
-import com.zf1976.mayi.common.core.util.CaffeineCacheUtil;
+import com.zf1976.mayi.common.core.util.GuavaCacheUtil;
 import com.zf1976.mayi.common.core.util.StringUtil;
 import com.zf1976.mayi.common.encrypt.EncryptUtil;
 import com.zf1976.mayi.common.security.support.signature.datasource.ClientDataSourceProvider;
@@ -175,7 +175,7 @@ public abstract class AbstractSignatureAuthenticationStrategy implements Signatu
      * @param nonceStr 随机字符串
      */
     protected void validatePreventReplyAttack(String nonceStr) {
-        Object rawSignature = CaffeineCacheUtil.getFixedOneMinutes(nonceStr);
+        Object rawSignature = GuavaCacheUtil.getFixedOneMinutes(nonceStr);
         if (rawSignature != null) {
             throw new SignatureException(SignatureState.ERROR_REPLY_ATTACK);
         }

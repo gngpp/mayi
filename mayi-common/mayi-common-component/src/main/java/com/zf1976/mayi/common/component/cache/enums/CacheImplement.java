@@ -1,12 +1,9 @@
 package com.zf1976.mayi.common.component.cache.enums;
 
 /**
- * mac
+ * @author mac
  * 2021/3/14
- *
- * @author
- * mac
- * */
+ */
 public enum CacheImplement {
     /**
      * redis缓存实现

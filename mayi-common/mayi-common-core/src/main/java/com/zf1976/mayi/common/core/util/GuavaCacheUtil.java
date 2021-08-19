@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  * @author WINDOWS
  */
 @SuppressWarnings("unchecked")
-public class CaffeineCacheUtil {
+public class GuavaCacheUtil {
 
     /**
      * 本地缓存最大数量

@@ -2,8 +2,8 @@ package com.zf1976.mayi.common.component.cache.impl;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.zf1976.mayi.common.component.cache.AbstractCaffeineCache;
-import com.zf1976.mayi.common.component.property.CaffeineProperties;
+import com.zf1976.mayi.common.component.cache.AbstractGuavaCache;
+import com.zf1976.mayi.common.component.property.GuavaCacheProperties;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -18,17 +18,17 @@ import java.util.function.Supplier;
 /**
  * @author WINDOWS
  */
-public class CaffeineCacheProvider<K, V> extends AbstractCaffeineCache<K, V> {
+public class GuavaCacheProvider<K, V> extends AbstractGuavaCache<K, V> {
 
-    public CaffeineCacheProvider(CaffeineProperties properties) {
+    public GuavaCacheProvider(GuavaCacheProperties properties) {
         super(properties);
         this.initialCache();
         this.checkStatus();
     }
 
     private void checkStatus() {
-        Assert.notNull(super.kvCache, "caffeine cache uninitialized");
-        Assert.notNull(super.cacheSpace, "caffeine cache space uninitialized");
+        Assert.notNull(super.kvCache, "guava cache uninitialized");
+        Assert.notNull(super.cacheSpace, "guava cache space uninitialized");
     }
 
     @Override

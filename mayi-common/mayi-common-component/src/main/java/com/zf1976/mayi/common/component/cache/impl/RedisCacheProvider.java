@@ -1,7 +1,7 @@
 package com.zf1976.mayi.common.component.cache.impl;
 
 import com.zf1976.mayi.common.component.cache.ICache;
-import com.zf1976.mayi.common.component.property.CaffeineProperties;
+import com.zf1976.mayi.common.component.property.GuavaCacheProperties;
 import com.zf1976.mayi.common.core.util.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,15 +16,15 @@ import java.util.function.Supplier;
  * 如果命名空间缓存保持活跃状态，那么剩余时间将被更新
  *
  * @author mac
- * @date 2021/3/14
+ * 2021/3/14
  **/
 public class RedisCacheProvider<K, V> implements ICache<K, V> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final CaffeineProperties properties;
+    private final GuavaCacheProperties properties;
     private final RedisTemplate<Object, Object> redisTemplate;
 
-    public RedisCacheProvider(CaffeineProperties properties, RedisTemplate<Object, Object> redisTemplate) {
+    public RedisCacheProvider(GuavaCacheProperties properties, RedisTemplate<Object, Object> redisTemplate) {
         this.properties = properties;
         this.redisTemplate = redisTemplate;
     }
