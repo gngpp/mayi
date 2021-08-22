@@ -8,6 +8,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Repository;
 
+import static com.zf1976.mayi.common.core.util.DisableWarningUtil.disableWarning;
+
 /**
  * @author mac
  * @date 2021/1/14
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Repository;
 public class SystemApplication {
 
     public static void main(String[] args) {
+        disableWarning();
         SpringApplication.run(SystemApplication.class, args);
     }
 

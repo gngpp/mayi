@@ -1,7 +1,6 @@
 
 dependencies {
     implementation("javax.servlet:javax.servlet-api:3.1.0")
-    implementation "com.google.guava:guava:${guavaVersion}"
     implementation("org.springframework.boot:spring-boot-starter-json:${springbootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-data-redis:${springbootVersion}")
     implementation("org.springframework.boot:spring-boot-configuration-processor:${springbootVersion}")

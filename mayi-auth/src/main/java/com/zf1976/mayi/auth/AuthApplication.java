@@ -6,9 +6,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
-import sun.misc.Unsafe;
 
-import java.lang.reflect.Field;
+import static com.zf1976.mayi.common.core.util.DisableWarningUtil.disableWarning;
 
 /**
  * @author mac
@@ -26,19 +25,4 @@ public class AuthApplication {
         SpringApplication.run(AuthApplication.class, args);
     }
 
-    /**
-     * 关闭runtime warnings
-     */
-    public static void disableWarning() {
-        try {
-            Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
-            theUnsafe.setAccessible(true);
-            Unsafe unsafe = (Unsafe) theUnsafe.get(null);
-            Class<?> cls = Class.forName("jdk.internal.module.IllegalAccessLogger");
-            Field logger = cls.getDeclaredField("logger");
-            unsafe.putObjectVolatile(cls, unsafe.staticFieldOffset(logger), null);
-        } catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 }
