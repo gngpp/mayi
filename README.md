@@ -1,5 +1,5 @@
 <p align="center">
-	<a target="_blank" href="https://github.com/zf1976/mayi/blob/main/LICENSE">
+	<a target="_blank" href="https://github.com/zf1976/mayi/blob/dev-cloud/LICENSE">
 		<img src="https://img.shields.io/badge/license-MIT-blue.svg" ></img>
 	</a>
 	<a target="_blank" href="https://github.com/1976/mayi">
