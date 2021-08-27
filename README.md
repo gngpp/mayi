@@ -1,6 +1,6 @@
 <p align="center">
-	<a target="_blank" href="https://github.com/zf1976/mayi/blob/dev-cloud/LICENSE">
-		<img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg" ></img>
+	<a target="_blank" href="https://github.com/zf1976/mayi/blob/main/LICENSE">
+		<img src="https://img.shields.io/badge/license-MIT-blue.svg" ></img>
 	</a>
 	<a target="_blank" href="https://github.com/1976/mayi">
 		<img src="https://img.shields.io/badge/version-2.3.0-brightgreen.svg" ></img>
