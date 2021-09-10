@@ -4,10 +4,6 @@ configurations.all() {
         // 遇到版本冲突时直接构建失败
         configuration.resolutionStrategy.failOnVersionConflict()
     })
-        resolutionStrategy{
-            // 修改 gradle不自动处理版本冲突
-            failOnVersionConflict()
-        }
 }
 
 // 所有项目设置
