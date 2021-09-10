@@ -16,7 +16,6 @@ allprojects {
         options.encoding = "UTF-8"
     }
     apply plugin: 'java'
-    apply plugin: 'maven'
     apply from: this.rootProject.file('gradle.properties')
     group = 'com.zf1976'
     version = '0.0.1-SNAPSHOT'
@@ -37,7 +36,7 @@ subprojects {
      repositories {
          mavenLocal()
          maven {
-             url = "http://maven.aliyun.com/nexus/content/groups/public/"
+             url = "https://maven.aliyun.com/nexus/content/groups/public/"
          }
          mavenCentral()
      }
