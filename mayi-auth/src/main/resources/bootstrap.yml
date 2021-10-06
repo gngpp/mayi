@@ -49,6 +49,7 @@ spring:
   servlet:
     multipart:
       enabled: true
+
 #admin监控
   boot:
     admin:
@@ -128,6 +129,11 @@ api-encrypt:
 auth:
   enable-signature: true
   model: false
+
+feign:
+  httpclient:
+    max-connections: 2000
+    connection-timeout: 5000
 
 ---
 #nacos配置

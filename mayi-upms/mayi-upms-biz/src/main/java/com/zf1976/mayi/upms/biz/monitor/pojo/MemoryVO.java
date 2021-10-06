@@ -1,11 +1,11 @@
-package com.zf1976.mayi.monitor.pojo;
+package com.zf1976.mayi.upms.biz.monitor.pojo;
 
 
 /**
  * @author mac
  * @date 2021/1/1
  **/
-public class DiskVO {
+public class MemoryVO {
 
     /**
      * 总的
@@ -61,7 +61,7 @@ public class DiskVO {
 
     @Override
     public String toString() {
-        return "DiskVO{" +
+        return "MemoryVO{" +
                 "total='" + total + '\'' +
                 ", available='" + available + '\'' +
                 ", used='" + used + '\'' +

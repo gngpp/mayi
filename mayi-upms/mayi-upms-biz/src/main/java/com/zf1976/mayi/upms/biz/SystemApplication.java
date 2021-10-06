@@ -7,6 +7,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 import static com.zf1976.mayi.common.core.util.DisableWarningUtil.disableWarning;
 
@@ -18,6 +19,7 @@ import static com.zf1976.mayi.common.core.util.DisableWarningUtil.disableWarning
 @MapperScan(value = "com.zf1976", annotationClass = Repository.class)
 @EnableDiscoveryClient
 @EnableAsync
+@EnableWebSocket
 @EnableFeignClients(basePackages = "com.zf1976")
 public class SystemApplication {
 

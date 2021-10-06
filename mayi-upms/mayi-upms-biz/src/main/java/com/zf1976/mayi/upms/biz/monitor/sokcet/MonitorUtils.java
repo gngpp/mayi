@@ -1,7 +1,7 @@
-package com.zf1976.mayi.monitor.sokcet;
+package com.zf1976.mayi.upms.biz.monitor.sokcet;
 
 import com.zf1976.mayi.common.core.util.IpUtil;
-import com.zf1976.mayi.monitor.pojo.*;
+import com.zf1976.mayi.upms.biz.monitor.pojo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import oshi.SystemInfo;

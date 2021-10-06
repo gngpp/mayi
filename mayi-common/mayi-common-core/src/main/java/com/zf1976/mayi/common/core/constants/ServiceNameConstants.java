@@ -7,7 +7,7 @@ package com.zf1976.mayi.common.core.constants;
 public interface ServiceNameConstants {
 
     /**
-     * 认证服务的SERVICEID
+     * 认证服务的SERVICED
      */
     String AUTH_SERVICE = "mayi-auth";
 

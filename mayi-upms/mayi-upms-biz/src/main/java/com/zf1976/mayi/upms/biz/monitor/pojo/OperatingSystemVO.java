@@ -1,4 +1,4 @@
-package com.zf1976.mayi.monitor.pojo;
+package com.zf1976.mayi.upms.biz.monitor.pojo;
 
 
 /**

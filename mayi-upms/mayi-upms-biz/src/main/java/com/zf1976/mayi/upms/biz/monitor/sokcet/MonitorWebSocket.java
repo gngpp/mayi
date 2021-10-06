@@ -1,9 +1,9 @@
-package com.zf1976.mayi.monitor.sokcet;
+package com.zf1976.mayi.upms.biz.monitor.sokcet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.zf1976.mayi.monitor.pojo.SystemInfoVo;
+import com.zf1976.mayi.upms.biz.monitor.pojo.SystemInfoVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,10 @@ import org.springframework.stereotype.Component;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author mac
