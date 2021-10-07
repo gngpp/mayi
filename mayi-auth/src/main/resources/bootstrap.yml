@@ -132,7 +132,6 @@ auth:
 
 feign:
   httpclient:
-    max-connections: 2000
     connection-timeout: 5000
 
 ---

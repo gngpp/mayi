@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -216,25 +217,29 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
     public Void updateRole(RoleDTO dto) {
         // 范围消息
         DataPermissionEnum permissionEnum = Optional.ofNullable(dto.getDataScope())
-                                                    .orElseThrow(() -> new RoleException(RoleState.ROLE_OPT_ERROR));
+                .orElseThrow(() -> new RoleException(RoleState.ROLE_OPT_ERROR));
         // 查询角色是否存在
         SysRole sysRole = super.lambdaQuery()
-                               .eq(SysRole::getId, dto.getId())
-                               .oneOpt()
-                               .orElseThrow(() -> new RoleException(RoleState.ROLE_NOT_FOUND));
-        // 校验角色是否已存在
-        super.lambdaQuery()
-             .eq(SysRole::getName, dto.getName())
-             .oneOpt()
-             .ifPresent(var -> {
-                 throw new RoleException(RoleState.ROLE_EXISTING, var.getName());
-             });
+                .eq(SysRole::getId, dto.getId())
+                .oneOpt()
+                .orElseThrow(() -> new RoleException(RoleState.ROLE_NOT_FOUND));
+        // 校验角色名是否存在
+        if (!ObjectUtils.nullSafeEquals(dto.getName(), sysRole.getName())) {
+            // 校验角色名是否已存在
+            super.lambdaQuery()
+                    .eq(SysRole::getName, dto.getName())
+                    .oneOpt()
+                    .ifPresent(var -> {
+                        throw new RoleException(RoleState.ROLE_EXISTING, var.getName());
+                    });
+        }
+
         switch (permissionEnum) {
             case ALL:
                 Set<Long> dataPermission = this.sysDepartmentDao.selectList(Wrappers.emptyWrapper())
-                                                                .stream()
-                                                                .map(SysDepartment::getId)
-                                                                .collect(Collectors.toSet());
+                        .stream()
+                        .map(SysDepartment::getId)
+                        .collect(Collectors.toSet());
                 dto.setDepartmentIds(dataPermission);
                 break;
             case LEVEL:
