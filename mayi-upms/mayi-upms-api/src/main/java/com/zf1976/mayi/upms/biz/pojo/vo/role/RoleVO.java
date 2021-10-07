@@ -23,6 +23,11 @@ public class RoleVO {
     private List<Long> departmentIds;
 
     /**
+     * 角色权限
+     */
+    private Set<String> permissions;
+
+    /**
      * 角色所有菜单id
      */
     private Set<Long> menuIds;
@@ -59,6 +64,15 @@ public class RoleVO {
 
     public Long getId() {
         return id;
+    }
+
+    public Set<String> getPermissions() {
+        return permissions;
+    }
+
+    public RoleVO setPermissions(Set<String> permissions) {
+        this.permissions = permissions;
+        return this;
     }
 
     public void setId(Long id) {
@@ -134,6 +148,7 @@ public class RoleVO {
         return "RoleVO{" +
                 "id=" + id +
                 ", departmentIds=" + departmentIds +
+                ", permissions=" + permissions +
                 ", menuIds=" + menuIds +
                 ", name='" + name + '\'' +
                 ", level=" + level +

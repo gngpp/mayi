@@ -24,13 +24,17 @@ import com.zf1976.mayi.upms.biz.convert.SysUserConvert;
 import com.zf1976.mayi.upms.biz.dao.*;
 import com.zf1976.mayi.upms.biz.feign.RemoteAuthClient;
 import com.zf1976.mayi.upms.biz.mail.ValidateEmailService;
+import com.zf1976.mayi.upms.biz.pojo.Permission;
 import com.zf1976.mayi.upms.biz.pojo.Role;
 import com.zf1976.mayi.upms.biz.pojo.User;
 import com.zf1976.mayi.upms.biz.pojo.dto.user.UpdateEmailDTO;
 import com.zf1976.mayi.upms.biz.pojo.dto.user.UpdateInfoDTO;
 import com.zf1976.mayi.upms.biz.pojo.dto.user.UpdatePasswordDTO;
 import com.zf1976.mayi.upms.biz.pojo.dto.user.UserDTO;
-import com.zf1976.mayi.upms.biz.pojo.po.*;
+import com.zf1976.mayi.upms.biz.pojo.po.SysDepartment;
+import com.zf1976.mayi.upms.biz.pojo.po.SysPosition;
+import com.zf1976.mayi.upms.biz.pojo.po.SysRole;
+import com.zf1976.mayi.upms.biz.pojo.po.SysUser;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.pojo.query.UserQueryParam;
 import com.zf1976.mayi.upms.biz.pojo.vo.user.UserVO;
@@ -67,9 +71,9 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     private final SysPositionDao positionDao;
     private final SysDepartmentDao departmentDao;
     private final SysRoleDao roleDao;
+    private final SysPermissionDao permissionDao;
     private final SysUserConvert userConvert;
     private final RemoteAuthClient securityClient;
-    private final SysMenuDao menuDao;
     private final SecurityProperties securityProperties;
     private final MD5Encoder md5Encoder = new MD5Encoder();
 
@@ -78,12 +82,12 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                           SysDepartmentDao sysDepartmentDao,
                           SysRoleDao sysRoleDao,
                           RemoteAuthClient securityClient,
-                          SysMenuDao menuDao, SecurityProperties securityProperties) {
+                          SysPermissionDao permissionDao, SecurityProperties securityProperties) {
         this.positionDao = sysPositionDao;
         this.securityClient = securityClient;
         this.departmentDao = sysDepartmentDao;
         this.roleDao = sysRoleDao;
-        this.menuDao = menuDao;
+        this.permissionDao = permissionDao;
         this.securityProperties = securityProperties;
         this.userConvert = SysUserConvert.INSTANCE;
     }
@@ -107,7 +111,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         // 用户部门
         sysUser.setDepartment(department);
         // 查询用户角色
-        List<SysRole> roleList = this.roleDao.selectBatchByUserId(sysUser.getId())
+        List<SysRole> roleList = this.roleDao.selectListByUserId(sysUser.getId())
                                              .stream().filter(SysRole::getEnabled)
                                              .collect(Collectors.toList());
         sysUser.setRoleList(roleList);
@@ -120,7 +124,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
 
         User user = this.userConvert.convert(sysUser);
         // 权限值
-        Set<String> grantedAuthorities = this.grantedAuthorities(user.getUsername(), user.getId());
+        Set<String> grantedAuthorities = this.grantedAuthorities(user.getUsername());
         // 数据权限
         Set<Long> grantedDataPermission = this.grantedDataPermission(user.getUsername(), user.getDepartment().getId(), user.getRoleList());
         user.setDataPermissions(grantedDataPermission);
@@ -205,10 +209,9 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      * 获取用户权限
      *
      * @param username 用户名
-     * @param userId   用户id
      * @return 返回用户权限信息
      */
-    private Set<String> grantedAuthorities(String username, long userId) {
+    private Set<String> grantedAuthorities(String username) {
         Set<String> authorities = new HashSet<>();
         String markerAdmin = securityProperties.getOwner();
         if (username.equals(markerAdmin)) {
@@ -216,12 +219,13 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
             authorities.add(SecurityConstants.ROLE + markerAdmin);
             return authorities;
         } else {
-            List<SysRole> roles = roleDao.selectBatchByUserId(userId);
+            List<SysRole> roles = roleDao.selectListByUsername(username);
             authorities = roles.stream()
-                               .flatMap(role -> menuDao.selectListByRoleId(role.getId())
-                                                       .stream())
-                               .map(SysMenu::getPermission)
-                               .filter(s -> !StringUtils.isEmpty(s))
+                               .flatMap(role -> permissionDao.selectPermissionsByRoleId(role.getId())
+                                                             .stream()
+                                                             .map(Permission::getValue)
+                                                             .filter(p -> !StringUtils.isEmpty(p))
+                                       )
                                .collect(Collectors.toSet());
         }
         if (CollectionUtils.isEmpty(authorities)) {
@@ -313,7 +317,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @return role id
          */
         public Set<Long> selectUserRoleIds (Long id){
-            return this.roleDao.selectBatchByUserId(id)
+            return this.roleDao.selectListByUserId(id)
                                .stream()
                                .map(SysRole::getId)
                                .collect(Collectors.toSet());

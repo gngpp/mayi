@@ -73,7 +73,7 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
             // 用户id
             final long sessionId = SessionManagement.getSessionId();
             // 获取用户所有角色id
-            final Set<Long> roleIds = sysRoleDao.selectBatchByUserId(sessionId)
+            final Set<Long> roleIds = sysRoleDao.selectListByUserId(sessionId)
                                                 .stream()
                                                 .map(SysRole::getId)
                                                 .collect(Collectors.toSet());

@@ -1,8 +1,8 @@
 package com.zf1976.mayi.upms.biz.pojo.dto.role;
 
-import com.zf1976.mayi.upms.biz.pojo.enums.DataPermissionEnum;
 import com.zf1976.mayi.common.core.validate.ValidationInsertGroup;
 import com.zf1976.mayi.common.core.validate.ValidationUpdateGroup;
+import com.zf1976.mayi.upms.biz.pojo.enums.DataPermissionEnum;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -55,13 +55,13 @@ public class RoleDTO {
     /**
      * department id collection
      */
-    @NotNull(groups = ValidationUpdateGroup.class)
+    @NotNull(groups = ValidationUpdateGroup.class, message = "部门不能为NULL")
     private Set<Long> departmentIds;
 
     /**
      * menu id collection
      */
-    @NotNull(groups = ValidationUpdateGroup.class)
+    @NotNull(groups = ValidationUpdateGroup.class, message = "菜单不能为NULL")
     private Set<Long> menuIds;
 
     public Long getId() {

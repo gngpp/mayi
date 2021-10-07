@@ -68,14 +68,9 @@ public class User implements Serializable {
     private String email;
 
     /**
-     * 头像地址
+     * 头像名
      */
     private String avatarName;
-
-    /**
-     * 头像真实路径
-     */
-    private String avatarPath;
 
     /**
      * 密码
@@ -188,14 +183,6 @@ public class User implements Serializable {
         this.avatarName = avatarName;
     }
 
-    public String getAvatarPath() {
-        return avatarPath;
-    }
-
-    public void setAvatarPath(String avatarPath) {
-        this.avatarPath = avatarPath;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -235,7 +222,6 @@ public class User implements Serializable {
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
                 ", avatarName='" + avatarName + '\'' +
-                ", avatarPath='" + avatarPath + '\'' +
                 ", password='" + password + '\'' +
                 ", enabled=" + enabled +
                 ", createTime=" + createTime +

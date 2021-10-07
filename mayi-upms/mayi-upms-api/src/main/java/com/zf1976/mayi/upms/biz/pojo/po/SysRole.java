@@ -25,6 +25,9 @@ public class SysRole extends Model<SysRole> {
     @TableField(exist = false)
     private Set<Long> menuIds;
 
+    @TableField(exist = false)
+    private Set<String> permissions;
+
     /**
      * 名称
      */
@@ -98,6 +101,15 @@ public class SysRole extends Model<SysRole> {
 
     public Set<Long> getMenuIds() {
         return menuIds;
+    }
+
+    public Set<String> getPermissions() {
+        return permissions;
+    }
+
+    public SysRole setPermissions(Set<String> permissions) {
+        this.permissions = permissions;
+        return this;
     }
 
     public void setMenuIds(Set<Long> menuIds) {
@@ -190,6 +202,7 @@ public class SysRole extends Model<SysRole> {
                 "id=" + id +
                 ", departmentIds=" + departmentIds +
                 ", menuIds=" + menuIds +
+                ", permissions=" + permissions +
                 ", name='" + name + '\'' +
                 ", level=" + level +
                 ", description='" + description + '\'' +

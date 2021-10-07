@@ -12,7 +12,9 @@ import com.zf1976.mayi.common.security.support.session.manager.SessionManagement
 import com.zf1976.mayi.upms.biz.convert.SysRoleConvert;
 import com.zf1976.mayi.upms.biz.dao.SysDepartmentDao;
 import com.zf1976.mayi.upms.biz.dao.SysMenuDao;
+import com.zf1976.mayi.upms.biz.dao.SysPermissionDao;
 import com.zf1976.mayi.upms.biz.dao.SysRoleDao;
+import com.zf1976.mayi.upms.biz.pojo.Permission;
 import com.zf1976.mayi.upms.biz.pojo.dto.role.RoleDTO;
 import com.zf1976.mayi.upms.biz.pojo.enums.DataPermissionEnum;
 import com.zf1976.mayi.upms.biz.pojo.po.SysDepartment;
@@ -31,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -44,17 +47,19 @@ import java.util.stream.Collectors;
  * @since 2020-08-31 11:45:58
  */
 @Service
-@CacheConfig(namespace = Namespace.ROLE, dependsOn = Namespace.USER)
+@CacheConfig(namespace = Namespace.ROLE, dependsOn = {Namespace.USER, Namespace.PERMISSION})
 public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
 
     private final Logger log = LoggerFactory.getLogger("[SysRoleService]");
     private final SysDepartmentDao sysDepartmentDao;
     private final SysMenuDao sysMenuDao;
+    private final SysPermissionDao permissionDao;
     private final SysRoleConvert convert;
 
-    public SysRoleService(SysDepartmentDao sysDepartmentDao, SysMenuDao sysMenuDao) {
+    public SysRoleService(SysDepartmentDao sysDepartmentDao, SysPermissionDao permissionDao, SysMenuDao sysMenuDao) {
         this.sysDepartmentDao = sysDepartmentDao;
         this.sysMenuDao = sysMenuDao;
+        this.permissionDao = permissionDao;
         this.convert = SysRoleConvert.INSTANCE;
     }
 
@@ -86,6 +91,12 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
         return super.mapPageToTarget(sourcePage, sysRole -> {
             sysRole.setDepartmentIds(this.selectRoleDepartmentIds(sysRole.getId()));
             sysRole.setMenuIds(this.selectRoleMenuIds(sysRole.getId()));
+            final var permissions = this.permissionDao.selectPermissionsByRoleId(sysRole.getId())
+                                                      .stream()
+                                                      .map(Permission::getValue)
+                                                      .filter(p -> !StringUtils.isEmpty(p))
+                                                      .collect(Collectors.toSet());
+            sysRole.setPermissions(permissions);
             return this.convert.toVo(sysRole);
         });
     }

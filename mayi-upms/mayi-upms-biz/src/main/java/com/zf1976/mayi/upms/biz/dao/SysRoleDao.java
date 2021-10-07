@@ -24,7 +24,7 @@ public interface SysRoleDao extends BaseMapper<SysRole> {
      * @param userId 用户ID
      * @return roles
      */
-    List<SysRole> selectBatchByUserId(@Param("userId") long userId);
+    List<SysRole> selectListByUserId(@Param("userId") long userId);
 
     /**
      * 获取用户角色

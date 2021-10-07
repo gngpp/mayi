@@ -24,6 +24,7 @@ public interface SysUserDao extends BaseMapper<SysUser> {
      * @param username 用户名
      * @return result
      */
+    @Deprecated
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "departmentId", column = "department_id"),
