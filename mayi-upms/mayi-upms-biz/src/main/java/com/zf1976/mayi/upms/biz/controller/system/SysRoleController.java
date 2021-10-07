@@ -30,11 +30,13 @@ public class SysRoleController {
         this.service = service;
     }
 
+    @Log(description = "根据所有角色")
     @GetMapping("/all")
     public DataResult<IPage<RoleVO>> selectAllRole() {
         return DataResult.success(this.service.selectAllRole());
     }
 
+    @Log(description = "分页查询角色")
     @PostMapping("/page")
     public DataResult<IPage<RoleVO>> selectRolePage(@RequestBody Query<RoleQueryParam> query) {
         return DataResult.success(service.selectRolePage(query));
@@ -46,12 +48,13 @@ public class SysRoleController {
         return DataResult.success(service.selectRole(id));
     }
 
+    @Log(description = "根据id查询角色级别")
     @GetMapping("/level")
     public DataResult<Integer> getRoleLevel() {
         return DataResult.success(service.selectRoleLevel());
     }
 
-    @Log(description = "修改角色状态")
+    @Log(description = "根据id修改角色状态")
     @PatchMapping("/status")
     public DataResult<Void> setRoleStatus(@RequestParam @NotNull Long id, @RequestParam @NotNull Boolean enabled) {
         return DataResult.success(service.updateRoleStatus(id, enabled));

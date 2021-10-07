@@ -24,6 +24,7 @@ import com.zf1976.mayi.upms.biz.convert.SysUserConvert;
 import com.zf1976.mayi.upms.biz.dao.*;
 import com.zf1976.mayi.upms.biz.feign.RemoteAuthClient;
 import com.zf1976.mayi.upms.biz.mail.ValidateEmailService;
+import com.zf1976.mayi.upms.biz.pojo.Role;
 import com.zf1976.mayi.upms.biz.pojo.User;
 import com.zf1976.mayi.upms.biz.pojo.dto.user.UpdateEmailDTO;
 import com.zf1976.mayi.upms.biz.pojo.dto.user.UpdateInfoDTO;
@@ -106,17 +107,22 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         // 用户部门
         sysUser.setDepartment(department);
         // 查询用户角色
-        List<SysRole> roleList = this.roleDao.selectBatchByUserId(sysUser.getId());
+        List<SysRole> roleList = this.roleDao.selectBatchByUserId(sysUser.getId())
+                                             .stream().filter(SysRole::getEnabled)
+                                             .collect(Collectors.toList());
         sysUser.setRoleList(roleList);
         // 查询用户职位
-        List<SysPosition> positionList = this.positionDao.selectBatchByUserId(sysUser.getId());
+        List<SysPosition> positionList = this.positionDao.selectBatchByUserId(sysUser.getId())
+                                                         .stream()
+                                                         .filter(SysPosition::getEnabled)
+                                                         .collect(Collectors.toList());
         sysUser.setPositionList(positionList);
 
         User user = this.userConvert.convert(sysUser);
         // 权限值
-        Set<String> grantedAuthorities = this.grantedAuthorities(sysUser.getUsername(), sysUser.getId());
+        Set<String> grantedAuthorities = this.grantedAuthorities(user.getUsername(), user.getId());
         // 数据权限
-        Set<Long> grantedDataPermission = this.grantedDataPermission(sysUser.getUsername(), sysUser.getDepartmentId(), sysUser.getRoleList());
+        Set<Long> grantedDataPermission = this.grantedDataPermission(user.getUsername(), user.getDepartment().getId(), user.getRoleList());
         user.setDataPermissions(grantedDataPermission);
         user.setPermissions(grantedAuthorities);
         return user;
@@ -130,7 +136,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      * @param departmentId 部门id
      * @return 数据权限
      */
-    private Set<Long> grantedDataPermission(String username, long departmentId, List<SysRole> roleList) {
+    private Set<Long> grantedDataPermission(String username, long departmentId, Set<Role> roleList) {
 
         // 超级管理员
         if (ObjectUtils.nullSafeEquals(username, this.securityProperties.getOwner())) {
@@ -141,12 +147,12 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         }
 
         // 用户级别角色排序
-        final Set<SysRole> roles = roleList.stream()
-                                           .sorted(Comparator.comparingInt(SysRole::getLevel))
-                                           .collect(Collectors.toCollection(LinkedHashSet::new));
+        final Set<Role> roles = roleList.stream()
+                                        .sorted(Comparator.comparingInt(Role::getLevel))
+                                        .collect(Collectors.toCollection(LinkedHashSet::new));
         // 数据权限范围
         final Set<Long> dataPermission = new HashSet<>();
-        for (SysRole role : roles) {
+        for (Role role : roles) {
             switch (Objects.requireNonNull(role.getDataScope())) {
                 case LEVEL:
                     // 本级数据权限 用户部门
@@ -157,6 +163,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                     // 自定义用户/角色所在部门的数据权限
                     departmentDao.selectListByRoleId(role.getId())
                                  .stream()
+                                 .filter(SysDepartment::getEnabled)
                                  .map(SysDepartment::getId)
                                  .forEach(id -> {
                                      this.collectDepartmentTreeIds(id, dataPermission);
@@ -168,6 +175,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                     // 所有数据权限
                     return this.departmentDao.selectList(Wrappers.emptyWrapper())
                                              .stream()
+                                             .filter(SysDepartment::getEnabled)
                                              .map(SysDepartment::getId)
                                              .collect(Collectors.toSet());
             }
@@ -320,6 +328,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         public Set<Long> selectUserPositionIds(Long id){
             return this.positionDao.selectBatchByUserId(id)
                                    .stream()
+                                   .filter(SysPosition::getEnabled)
                                    .map(SysPosition::getId)
                                    .collect(Collectors.toSet());
         }
@@ -517,17 +526,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                 throw new BusinessException(BusinessMsgState.NOT_PHONE);
             }
 
-            // 校验手机号是否变化
-            if (dto.getPhone() != null && !ObjectUtils.nullSafeEquals(dto.getPhone(), sysUser.getPhone())) {
-                // 校验手机号是否已存在
-                super.lambdaQuery()
-                     .eq(SysUser::getPhone, dto.getPhone())
-                     .oneOpt()
-                     .ifPresent(var -> {
-                         throw new BusinessException(BusinessMsgState.PHONE_EXISTING);
-                     });
-                sysUser.setPhone(dto.getPhone());
-            }
+            sysUser.setPhone(dto.getPhone());
             sysUser.setGender(dto.getGender());
             sysUser.setNickName(dto.getNickName());
             super.savaOrUpdate(sysUser);
@@ -605,15 +604,11 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                 // 踢出当前被禁用用户
                 SessionManagement.removeSession(sysUser.getId());
             }
-            // 验证用户名，邮箱，手机是否已存在
+            // 验证用户名，是否已存在
             super.lambdaQuery()
-                 .select(SysUser::getUsername, SysUser::getEmail, SysUser::getPhone)
+                 .select(SysUser::getUsername)
                  .ne(SysUser::getId, dto.getId())
-                 .and(queryWrapper -> queryWrapper.eq(SysUser::getUsername, dto.getUsername())
-                                                  .or()
-                                                  .eq(SysUser::getEmail, dto.getEmail())
-                                                  .or()
-                                                  .eq(SysUser::getPhone, dto.getPhone()))
+                 .and(queryWrapper -> queryWrapper.eq(SysUser::getUsername, dto.getUsername()))
                  .list()
                  .forEach(entity -> super.validateFields(entity, dto, collection -> {
                      if (!CollectionUtils.isEmpty(collection)) {

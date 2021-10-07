@@ -38,6 +38,7 @@ public class SysUserController {
         this.validateService = ValidateEmailService.validateEmailService();
     }
 
+    @Log(description = "分页查询用户")
     @PostMapping("/page")
     public DataResult<IPage<UserVO>> selectUserPage(@RequestBody Query<UserQueryParam> query) {
         return DataResult.success(service.selectUserPage(query));
@@ -61,11 +62,13 @@ public class SysUserController {
         return DataResult.success(service.deleteUser(ids));
     }
 
+    @Log(description = "获取用户职位")
     @PostMapping("/position/{id}")
     public DataResult<Set<Long>> getUserPositionIds(@PathVariable Long id) {
         return DataResult.success(service.selectUserPositionIds(id));
     }
 
+    @Log(description = "获取用户角色")
     @PostMapping("/role/{id}")
     public DataResult<Set<Long>> getUserRoleIds(@PathVariable Long id) {
         return DataResult.success(service.selectUserRoleIds(id));
