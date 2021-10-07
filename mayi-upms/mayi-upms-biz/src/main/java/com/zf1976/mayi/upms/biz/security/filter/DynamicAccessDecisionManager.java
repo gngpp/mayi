@@ -64,15 +64,13 @@ public class DynamicAccessDecisionManager implements AccessDecisionManager {
                 }
                 condition = true;
                 break;
-            } else {
                 // 模式匹配
-                if (pathMatcher.match(entry.getKey(), uri)) {
-                    if (!ObjectUtils.nullSafeEquals(entry.getValue(), method)) {
-                        throw new AccessDeniedException("Resource does not support request the method：" + method);
-                    }
-                    condition = true;
-                    break;
+            } else if (pathMatcher.match(entry.getKey(), uri)) {
+                if (!ObjectUtils.nullSafeEquals(entry.getValue(), method)) {
+                    throw new AccessDeniedException("Resource does not support request the method：" + method);
                 }
+                condition = true;
+                break;
             }
         }
 

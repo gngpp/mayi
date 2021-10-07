@@ -44,24 +44,20 @@ public class DynamicSecurityMetadataSource implements FilterInvocationSecurityMe
         String uri = request.getRequestURI();
         // 资源URI--Permissions
         Set<Map.Entry<String, Collection<String>>> entrySet = this.loadDynamicDataSource().entrySet();
-        // eq匹配
+        // 权限匹配
         for (Map.Entry<String, Collection<String>> entry : entrySet) {
             // eq匹配成功退出
             if (ObjectUtils.nullSafeEquals(entry.getKey(), uri)) {
                 return entry.getValue()
-                            .stream()
-                            .map(SecurityConfig::new)
-                            .collect(Collectors.toUnmodifiableSet());
-            }
-        }
-        // 模式匹配
-        for (Map.Entry<String, Collection<String>> entry : entrySet) {
-            // 模式匹配成功退出
-            if (pathMatcher.match(entry.getKey(), uri)) {
+                        .stream()
+                        .map(SecurityConfig::new)
+                        .collect(Collectors.toUnmodifiableSet());
+                // 模式匹配成功退出
+            } else if (pathMatcher.match(entry.getKey(), uri)) {
                 return entry.getValue()
-                            .stream()
-                            .map(SecurityConfig::new)
-                            .collect(Collectors.toUnmodifiableList());
+                        .stream()
+                        .map(SecurityConfig::new)
+                        .collect(Collectors.toUnmodifiableList());
             }
         }
         // 不存在资源资源路径 返回空
