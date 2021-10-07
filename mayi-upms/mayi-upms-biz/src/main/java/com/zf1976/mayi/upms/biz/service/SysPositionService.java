@@ -17,6 +17,8 @@ import com.zf1976.mayi.upms.biz.pojo.vo.job.PositionVO;
 import com.zf1976.mayi.upms.biz.service.base.AbstractService;
 import com.zf1976.mayi.upms.biz.service.exception.PositionException;
 import com.zf1976.mayi.upms.biz.service.exception.enums.PositionState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -34,6 +36,7 @@ import java.util.*;
 @CacheConfig(namespace = Namespace.POSITION, dependsOn = Namespace.USER)
 public class SysPositionService extends AbstractService<SysPositionDao, SysPosition> {
 
+    private final Logger log = LoggerFactory.getLogger("[SysPositionService]");
     private final SysPositionConvert convert = SysPositionConvert.INSTANCE;
 
     /**

@@ -24,6 +24,8 @@ import com.zf1976.mayi.upms.biz.pojo.vo.role.RoleVO;
 import com.zf1976.mayi.upms.biz.service.base.AbstractService;
 import com.zf1976.mayi.upms.biz.service.exception.RoleException;
 import com.zf1976.mayi.upms.biz.service.exception.enums.RoleState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -45,6 +47,7 @@ import java.util.stream.Collectors;
 @CacheConfig(namespace = Namespace.ROLE, dependsOn = Namespace.USER)
 public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
 
+    private final Logger log = LoggerFactory.getLogger("[SysRoleService]");
     private final SysDepartmentDao sysDepartmentDao;
     private final SysMenuDao sysMenuDao;
     private final SysRoleConvert convert;

@@ -20,6 +20,8 @@ import com.zf1976.mayi.upms.biz.pojo.vo.dict.DictVO;
 import com.zf1976.mayi.upms.biz.service.base.AbstractService;
 import com.zf1976.mayi.upms.biz.service.exception.DictException;
 import com.zf1976.mayi.upms.biz.service.exception.enums.DictState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -37,6 +39,7 @@ import java.util.*;
 @CacheConfig(namespace = Namespace.DICT)
 public class SysDictService extends AbstractService<SysDictDao, SysDict> {
 
+    private final Logger log = LoggerFactory.getLogger("[SysDictService]");
     private final SysDictDetailDao sysDictDetailDao;
     private final SysDictConvert convert;
 

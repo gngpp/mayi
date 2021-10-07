@@ -1,10 +1,14 @@
 package com.zf1976.mayi.upms.biz.controller;
 
 import com.zf1976.mayi.common.log.annotation.Log;
-import com.zf1976.mayi.common.log.dao.SysLogDao;
-import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
+import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author mac
@@ -15,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class TestController {
 
     @Autowired
-    private SysLogDao sysLogDao;
+    private DynamicDataSourceService dynamicDataSourceService;
 
     @Log(description = "测试A接口")
     @RequestMapping(method = RequestMethod.GET, path = "/demo")
@@ -25,7 +29,30 @@ public class TestController {
 
     @Log(description = "测试B接口")
     @GetMapping("/{demo}")
-    public String testB(@PathVariable String demo){
+    public String testB(@PathVariable String demo) {
         return demo;
+    }
+
+    @GetMapping("/path")
+    public String testPath(@RequestParam String uri) {
+        final var pathMatcher = new AntPathMatcher();
+        // URI-Method
+        Map<String, String> methodMap = this.dynamicDataSourceService.loadResourceMethodMap();
+        // 条件
+        Set<Map.Entry<String, String>> entrySet = methodMap.entrySet();
+
+        // 匹配资源方法
+        for (Map.Entry<String, String> entry : entrySet) {
+            // eq匹配请求方法
+            if (ObjectUtils.nullSafeEquals(entry.getKey(), uri)) {
+                return entry.getKey();
+            } else {
+                // 模式匹配
+                if (pathMatcher.match(entry.getKey(), uri)) {
+                    return entry.getKey();
+                }
+            }
+        }
+        return "not matcher";
     }
 }

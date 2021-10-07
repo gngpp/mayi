@@ -13,8 +13,10 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import javax.servlet.http.*;
-import java.util.*;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -52,24 +54,20 @@ public class DynamicAccessDecisionManager implements AccessDecisionManager {
         // 条件
         boolean condition = false;
         Set<Map.Entry<String, String>> entrySet = methodMap.entrySet();
-        // eq匹配请求方法
+
+        // 匹配资源方法
         for (Map.Entry<String, String> entry : entrySet) {
+            // eq匹配请求方法
             if (ObjectUtils.nullSafeEquals(entry.getKey(), uri)) {
-                // 匹配资源方法
                 if (!ObjectUtils.nullSafeEquals(entry.getValue(), method)) {
                     throw new AccessDeniedException("Resource does not support request the method：" + method);
                 }
                 condition = true;
                 break;
-            }
-        }
-
-        if (!condition) {
-            // 模式匹配
-            for (Map.Entry<String, String> entry : entrySet) {
+            } else {
+                // 模式匹配
                 if (pathMatcher.match(entry.getKey(), uri)) {
-                    // 匹配资源方法
-                    if (!ObjectUtils.nullSafeEquals(method, entry.getValue())) {
+                    if (!ObjectUtils.nullSafeEquals(entry.getValue(), method)) {
                         throw new AccessDeniedException("Resource does not support request the method：" + method);
                     }
                     condition = true;

@@ -1,6 +1,5 @@
 package com.zf1976.mayi.auth.enhance;
 
-import com.zf1976.mayi.auth.LoginUserDetails;
 import com.zf1976.mayi.auth.SecurityContextHolder;
 import com.zf1976.mayi.common.core.constants.AuthConstants;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
@@ -28,8 +27,6 @@ public class JwtTokenEnhancer implements TokenEnhancer {
         additionalInformation.put(AuthConstants.ISSUER, SecurityContextHolder.getIssuer());
         // 签发时间 如果时间为new Date(), 网关拿公钥 解析错误:An error occurred while trying to decode Jwt: expiresAt must be after issueAt
         additionalInformation.put(AuthConstants.IAT, System.currentTimeMillis() / 1000);
-        // token唯一标识
-        additionalInformation.put(AuthConstants.JTI, oAuth2AccessToken.getValue());
         // 客户端id
         additionalInformation.put(AuthConstants.JWT_CLIENT_ID_KEY, oAuth2Request.getClientId());
         // grant类型

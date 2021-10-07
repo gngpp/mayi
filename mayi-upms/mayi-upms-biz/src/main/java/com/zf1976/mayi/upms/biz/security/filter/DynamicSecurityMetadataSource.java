@@ -44,8 +44,6 @@ public class DynamicSecurityMetadataSource implements FilterInvocationSecurityMe
         String uri = request.getRequestURI();
         // 资源URI--Permissions
         Set<Map.Entry<String, Collection<String>>> entrySet = this.loadDynamicDataSource().entrySet();
-        // 匹配条件
-        boolean condition = false;
         // eq匹配
         for (Map.Entry<String, Collection<String>> entry : entrySet) {
             // eq匹配成功退出

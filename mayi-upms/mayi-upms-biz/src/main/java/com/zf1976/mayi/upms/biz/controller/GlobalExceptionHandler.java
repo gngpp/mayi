@@ -39,6 +39,18 @@ public class GlobalExceptionHandler {
         return DataResult.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
     }
 
+    /**
+     * 全局异常类（拦截不到子类型处理）
+     *
+     * @param exception 异常
+     * @return {@link DataResult}
+     */
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    DataResult runtimeExceptionHandler(Exception exception) {
+        return DataResult.fail(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+    }
+
 
     /**
      * 安全管理异常拦截处理

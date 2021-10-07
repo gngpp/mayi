@@ -3,14 +3,15 @@ package com.zf1976.mayi.auth.enhance;
 import com.zf1976.mayi.auth.LoginUserDetails;
 import com.zf1976.mayi.auth.SecurityContextHolder;
 import com.zf1976.mayi.auth.enhance.serialize.JacksonSerializationStrategy;
-import com.zf1976.mayi.common.core.util.RequestUtil;
 import com.zf1976.mayi.common.core.constants.AuthGranterTypeConstants;
+import com.zf1976.mayi.common.core.util.RequestUtil;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.common.security.support.session.Session;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.common.ExpiringOAuth2RefreshToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
@@ -593,6 +594,7 @@ public class RedisTokenStoreEnhancer implements TokenStore {
                 .setToken(token.getValue())
                 .setBrowser(RequestUtil.getUserAgent())
                 .setExpiredTime(token.getExpiration())
+                .setPermissions(AuthorityUtils.authorityListToSet(authentication.getAuthorities()))
                 .setLoginTime(new Date())
                 .setOperatingSystemType(RequestUtil.getOpsSystemType())
                 .setOwner(this.properties.getOwner()

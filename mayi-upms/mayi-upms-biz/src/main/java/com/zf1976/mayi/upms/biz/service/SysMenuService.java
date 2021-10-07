@@ -20,6 +20,8 @@ import com.zf1976.mayi.upms.biz.pojo.vo.menu.MenuVO;
 import com.zf1976.mayi.upms.biz.service.base.AbstractService;
 import com.zf1976.mayi.upms.biz.service.exception.MenuException;
 import com.zf1976.mayi.upms.biz.service.exception.enums.MenuState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -42,6 +44,7 @@ import java.util.stream.Collectors;
 @CacheConfig(namespace = Namespace.MENU, dependsOn = Namespace.ROLE)
 public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
 
+    private final Logger log = LoggerFactory.getLogger("[SysMenuService]");
     private static final String LAYOUT_NAME = "Layout";
     public static final String NO_REDIRECT = "no_redirect";
     public static final String INDEX = "index";

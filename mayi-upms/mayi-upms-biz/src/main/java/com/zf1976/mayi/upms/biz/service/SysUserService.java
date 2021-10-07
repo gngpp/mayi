@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
 @CacheConfig(namespace = Namespace.USER, dependsOn = {Namespace.DEPARTMENT, Namespace.POSITION, Namespace.ROLE})
 public class SysUserService extends AbstractService<SysUserDao, SysUser> {
 
-    private final Logger log = LoggerFactory.getLogger("[UserService]");
+    private final Logger log = LoggerFactory.getLogger("[SysUserService]");
     private final byte[] DEFAULT_PASSWORD_BYTE = "123456".getBytes(StandardCharsets.UTF_8);
     private final SysPositionDao positionDao;
     private final SysDepartmentDao departmentDao;

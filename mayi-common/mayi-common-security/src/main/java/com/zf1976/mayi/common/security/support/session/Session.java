@@ -1,6 +1,7 @@
 package com.zf1976.mayi.common.security.support.session;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +48,10 @@ public class Session implements Serializable {
      */
     private String token;
     /**
+     * 权限
+     */
+    private Collection<String> permissions;
+    /**
      * 登录时间
      */
     private Date loginTime;
@@ -81,6 +86,15 @@ public class Session implements Serializable {
 
     public Session setUsername(String username) {
         this.username = username;
+        return this;
+    }
+
+    public Collection<String> getPermissions() {
+        return permissions;
+    }
+
+    public Session setPermissions(Collection<String> permissions) {
+        this.permissions = permissions;
         return this;
     }
 
@@ -184,6 +198,7 @@ public class Session implements Serializable {
                 ", ip='" + ip + '\'' +
                 ", ipRegion='" + ipRegion + '\'' +
                 ", token='" + token + '\'' +
+                ", permissions=" + permissions +
                 ", loginTime=" + loginTime +
                 ", expiredTime=" + expiredTime +
                 ", attribute=" + attribute +

@@ -2,10 +2,10 @@ package com.zf1976.mayi.auth.endpoint;
 
 import com.zf1976.mayi.auth.AuthorizationResult;
 import com.zf1976.mayi.auth.SecurityContextHolder;
-import com.zf1976.mayi.common.security.pojo.Captcha;
 import com.zf1976.mayi.common.component.validate.service.CaptchaService;
 import com.zf1976.mayi.common.component.validate.support.CaptchaGenerator;
 import com.zf1976.mayi.common.core.foundation.DataResult;
+import com.zf1976.mayi.common.security.pojo.Captcha;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -66,7 +66,7 @@ public class TokenEndpointEnhancer {
         com.wf.captcha.base.Captcha captcha = CaptchaGenerator.getCaptcha();
         // 生成uuid
         UUID uuid = ALTERNATIVE_JDK_ID_GENERATOR.generateId();
-        //将验证码保存在 redis 缓存中
+        // 将验证码保存在 redis 缓存中
         boolean isSave = captchaService.storeCaptcha(uuid.toString(), captcha.text());
         if (isSave) {
             if (logger.isDebugEnabled()) {

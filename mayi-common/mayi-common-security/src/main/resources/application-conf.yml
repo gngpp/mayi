@@ -73,6 +73,7 @@ security:
     - /login/**
     - /oauth/code
     - /api/monitor/**
+    - /api/test/**
 
 #公用缓存配置
 cache:

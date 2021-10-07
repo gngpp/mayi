@@ -19,6 +19,8 @@ import com.zf1976.mayi.upms.biz.pojo.vo.dept.DepartmentVO;
 import com.zf1976.mayi.upms.biz.service.base.AbstractService;
 import com.zf1976.mayi.upms.biz.service.exception.DepartmentException;
 import com.zf1976.mayi.upms.biz.service.exception.enums.DepartmentState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -40,7 +42,8 @@ import java.util.stream.Collectors;
 @CacheConfig(namespace = Namespace.DEPARTMENT, dependsOn = {Namespace.ROLE, Namespace.USER})
 public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysDepartment> {
 
-    private final int MAX_PAGE_DEPARTMENT = 9999;
+    private static final int MAX_PAGE_DEPARTMENT = 9999;
+    private final Logger log = LoggerFactory.getLogger("[SysDepartmentService]");
     private final DepartmentConvert convert = DepartmentConvert.INSTANCE;
 
     /**
