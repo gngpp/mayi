@@ -2,13 +2,13 @@ package com.zf1976.mayi.upms.biz.security.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zf1976.mayi.upms.biz.dao.SysPermissionDao;
-import com.zf1976.mayi.upms.biz.pojo.dto.PermissionDTO;
-import com.zf1976.mayi.upms.biz.pojo.po.SysPermission;
 import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
 import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
 import com.zf1976.mayi.common.core.constants.Namespace;
+import com.zf1976.mayi.upms.biz.dao.SysPermissionDao;
+import com.zf1976.mayi.upms.biz.pojo.dto.PermissionDTO;
+import com.zf1976.mayi.upms.biz.pojo.po.SysPermission;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.pojo.vo.PermissionVO;
 import com.zf1976.mayi.upms.biz.security.convert.SecurityConvert;
@@ -29,6 +29,7 @@ import java.util.Set;
         dependsOn = {Namespace.ROLE, Namespace.RESOURCE},
         postInvoke = {"initialize"}
 )
+@Transactional(rollbackFor = Throwable.class)
 public class PermissionService extends AbstractSecurityService<SysPermissionDao, SysPermission> implements InitPermission{
 
     private final SecurityConvert convert = SecurityConvert.INSTANCE;
@@ -59,7 +60,7 @@ public class PermissionService extends AbstractSecurityService<SysPermissionDao,
      * @return {@link Void}
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void savePermission(PermissionDTO permissionDTO) {
         // 判断权限值是否已经存在
         if (this.checkExitsPermissionValue(permissionDTO.getValue())) {
@@ -80,7 +81,7 @@ public class PermissionService extends AbstractSecurityService<SysPermissionDao,
      * @return {@link Void}
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void updatePermission(PermissionDTO permissionDTO) {
         // 判断权限该权限实体是否存在
         SysPermission sysPermission = super.lambdaQuery()
@@ -123,7 +124,7 @@ public class PermissionService extends AbstractSecurityService<SysPermissionDao,
      * @return {@link Void}
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void deletePermissionById(Long id) {
         if (id != null) {
             super.removeById(id);
@@ -144,7 +145,7 @@ public class PermissionService extends AbstractSecurityService<SysPermissionDao,
      * @return {@link Void}
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void deletePermissionByIds(Set<Long> ids) {
         //
         if (!super.removeByIds(ids)) {

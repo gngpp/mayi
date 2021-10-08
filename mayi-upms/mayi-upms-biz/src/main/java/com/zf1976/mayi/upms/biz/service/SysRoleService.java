@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @CacheConfig(namespace = Namespace.ROLE, dependsOn = {Namespace.USER, Namespace.PERMISSION})
+@Transactional(rollbackFor = Throwable.class)
 public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
 
     private final Logger log = LoggerFactory.getLogger("[SysRoleService]");
@@ -126,7 +127,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void updateRoleStatus(Long id, Boolean enabled) {
         if (!enabled) {
             // 存在用户关联不允许禁用当前角色
@@ -194,7 +195,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void savaRole(RoleDTO dto) {
         // 范围消息
         DataPermissionEnum permissionEnum = Optional.ofNullable(dto.getDataScope())
@@ -227,7 +228,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void updateRole(RoleDTO dto) {
         // 范围消息
         DataPermissionEnum permissionEnum = Optional.ofNullable(dto.getDataScope())
@@ -293,7 +294,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void deleteRole(Set<Long> ids) {
         ids.forEach(id -> {
             if (super.baseMapper.selectUserDependsOnById(id) > 0) {

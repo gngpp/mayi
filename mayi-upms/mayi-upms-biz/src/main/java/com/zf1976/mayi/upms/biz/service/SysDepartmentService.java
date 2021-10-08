@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @CacheConfig(namespace = Namespace.DEPARTMENT, dependsOn = {Namespace.ROLE, Namespace.USER})
+@Transactional(rollbackFor = Throwable.class)
 public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysDepartment> {
 
     private static final int MAX_PAGE_DEPARTMENT = 9999;
@@ -166,7 +167,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void savaDepartment(DepartmentDTO dto) {
         // 确认部门是否存在
         super.lambdaQuery()
@@ -187,7 +188,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void updateDepartment(DepartmentDTO dto) {
         // 查询部门
         SysDepartment department = super.lambdaQuery()
@@ -253,7 +254,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void deleteDepartmentList(Set<Long> ids) {
         final Set<Long> treeIds = this.collectCurrentDepartmentTreeIds(ids, new HashSet<>());
         if (!CollectionUtils.isEmpty(treeIds)) {
@@ -381,6 +382,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      * @param query request
      * @param response    response
      */
+    @Transactional(readOnly = true)
     public Void downloadExcelDept(Query<DeptQueryParam> query, HttpServletResponse response) {
         List<SysDepartment> departmentList = super.queryWrapper()
                                                   .chainQuery(query)

@@ -1,10 +1,10 @@
 package com.zf1976.mayi.upms.biz.controller.security;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.zf1976.mayi.upms.biz.pojo.dto.ClientDetailsDTO;
-import com.zf1976.mayi.upms.biz.pojo.vo.ClientDetailsVO;
 import com.zf1976.mayi.common.core.foundation.DataResult;
+import com.zf1976.mayi.upms.biz.pojo.dto.ClientDetailsDTO;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
+import com.zf1976.mayi.upms.biz.pojo.vo.ClientDetailsVO;
 import com.zf1976.mayi.upms.biz.security.service.OAuth2ClientService;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +23,6 @@ import java.util.Set;
         value = "/api/security/client"
 )
 public class OAuth2ClientController {
-
 
     private final OAuth2ClientService oAuth2ClientService;
 

@@ -4,20 +4,20 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Splitter;
-import com.zf1976.mayi.upms.biz.dao.ClientDetailsDao;
-import com.zf1976.mayi.upms.biz.pojo.po.ClientDetails;
-import com.zf1976.mayi.upms.biz.pojo.dto.ClientDetailsDTO;
-import com.zf1976.mayi.upms.biz.pojo.vo.ClientDetailsVO;
 import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
 import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
+import com.zf1976.mayi.common.core.constants.AuthGranterTypeConstants;
 import com.zf1976.mayi.common.core.constants.Namespace;
 import com.zf1976.mayi.common.core.validate.Validator;
 import com.zf1976.mayi.common.encrypt.EncryptUtil;
-import com.zf1976.mayi.common.core.constants.AuthGranterTypeConstants;
 import com.zf1976.mayi.common.security.support.session.Session;
 import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
+import com.zf1976.mayi.upms.biz.dao.ClientDetailsDao;
+import com.zf1976.mayi.upms.biz.pojo.dto.ClientDetailsDTO;
+import com.zf1976.mayi.upms.biz.pojo.po.ClientDetails;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
+import com.zf1976.mayi.upms.biz.pojo.vo.ClientDetailsVO;
 import com.zf1976.mayi.upms.biz.security.convert.ClientConvert;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 @Service
 @SuppressWarnings("all")
 @CacheConfig(namespace = Namespace.CLIENT)
+@Transactional(rollbackFor = Throwable.class)
 public class OAuth2ClientService extends ServiceImpl<ClientDetailsDao, ClientDetails> {
 
     private static final Pattern ID_SECRET_PATTERN = Pattern.compile("^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{10,20}$");
@@ -67,6 +68,7 @@ public class OAuth2ClientService extends ServiceImpl<ClientDetailsDao, ClientDet
      * @throws
      */
     @CachePut(key = "#query")
+    @Transactional(readOnly = true)
     public IPage<ClientDetailsVO> clientDetailsPage(Query<?> query) {
         Page<ClientDetails> sourcePage = super.lambdaQuery()
                                               .page(query.toPage());
@@ -100,7 +102,7 @@ public class OAuth2ClientService extends ServiceImpl<ClientDetailsDao, ClientDet
      * @return {@link Void}
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void addClient(ClientDetailsDTO dto) {
         // 校验客户端ID是否合格
         Validator.of(dto.getClientId())
@@ -132,7 +134,7 @@ public class OAuth2ClientService extends ServiceImpl<ClientDetailsDao, ClientDet
      * @return {@link Void}
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void editClient(ClientDetailsDTO dto) {
         // 查询客户端
         ClientDetails clientDetails = super.lambdaQuery()
@@ -275,7 +277,7 @@ public class OAuth2ClientService extends ServiceImpl<ClientDetailsDao, ClientDet
      * @return {@link Void}
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void deleteClient(String clientId) {
         final Session session = SessionManagement.getSession();
         if (ObjectUtils.nullSafeEquals(clientId, session.getClientId())) {
@@ -294,7 +296,7 @@ public class OAuth2ClientService extends ServiceImpl<ClientDetailsDao, ClientDet
      * @return {@link Void}
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void deleteBatchClient(Set<String> clientIdList) {
         if (CollectionUtils.isEmpty(clientIdList)) {
             throw new OAuth2Exception(OAuth2ErrorCodes.TEMPORARILY_UNAVAILABLE);

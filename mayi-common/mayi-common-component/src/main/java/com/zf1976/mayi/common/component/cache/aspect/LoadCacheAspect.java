@@ -18,6 +18,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
  */
 @Aspect
 @Component
+@Order(0)
 public class LoadCacheAspect {
 
     private final Logger log = LoggerFactory.getLogger("[LoadCacheAspect]");
@@ -74,65 +76,6 @@ public class LoadCacheAspect {
                 }
             }
         }
-    }
-
-    public static <T> T[] clone(T[] array) {
-        return array == null ? null : array.clone();
-    }
-
-    private void checkStatus() {
-        Assert.notNull(this.handler, "expression handler Uninitialized!");
-        Assert.notNull(this.cacheProviderMap, "cache provider Uninitialized!");
-    }
-
-    public void addProvider(CacheImplement relation, ICache<Object, Object> cacheProvider) {
-        if (this.cacheProviderMap == null) {
-            this.cacheProviderMap = new ConcurrentHashMap<>(2);
-        }
-        this.cacheProviderMap.put(relation, cacheProvider);
-    }
-
-    /**
-     * 获取被代理真实Class
-     *
-     * @param proxyObj 代理对象
-     * @return {@link Class<>}
-     */
-    private Class<?> extractTargetClass(Object proxyObj) {
-        return AopProxyUtils.ultimateTargetClass(proxyObj);
-    }
-
-    /**
-     * 查询调用
-     *
-     * @param joinPoint  切点
-     * @param annotation 注解
-     * @return {@link Object}
-     */
-    @Around("@annotation(com.zf1976.mayi.common.component.cache.annotation.CachePut) && @annotation(annotation))")
-    public Object put(ProceedingJoinPoint joinPoint, CachePut annotation) throws Throwable {
-        // Get the proxy class
-        Class<?> targetClass = this.extractTargetClass(joinPoint.getThis());
-        // Proxy method
-        Method method = this.handler.filterMethod(joinPoint);
-        // Cache configuration
-        CacheConfig classAnnotation = targetClass.getAnnotation(CacheConfig.class);
-        // namespaces
-        String namespace = classAnnotation == null ? annotation.namespace() : classAnnotation.namespace();
-        // Cache Key
-        String key = this.handler.parse(method, joinPoint.getArgs(), annotation.key(), String.class, annotation.key());
-        if (annotation.dynamics()) {
-            key = key.concat(SessionManagement.getCurrentUsername());
-        }
-        return this.cacheProviderMap.get(annotation.implement())
-                                    .getValueAndSupplier(namespace, key, annotation.expired(), () -> {
-                                        try {
-                                            return joinPoint.proceed();
-                                        } catch (Throwable throwable) {
-                                            log.error(throwable.getMessage(), throwable);
-                                        }
-                                        return null;
-                                    });
     }
 
     /**
@@ -200,4 +143,56 @@ public class LoadCacheAspect {
         return proceed;
     }
 
+    public static <T> T[] clone(T[] array) {
+        return array == null ? null : array.clone();
+    }
+
+    /**
+     * 查询调用
+     *
+     * @param joinPoint  切点
+     * @param annotation 注解
+     * @return {@link Object}
+     */
+    @Around("@annotation(com.zf1976.mayi.common.component.cache.annotation.CachePut) && @annotation(annotation))")
+    public Object put(ProceedingJoinPoint joinPoint, CachePut annotation) throws Throwable {
+        // Get the proxy class
+        Class<?> targetClass = this.extractTargetClass(joinPoint.getThis());
+        // Proxy method
+        Method method = this.handler.filterMethod(joinPoint);
+        // Cache configuration
+        CacheConfig classAnnotation = targetClass.getAnnotation(CacheConfig.class);
+        // namespaces
+        String namespace = classAnnotation == null ? annotation.namespace() : classAnnotation.namespace();
+        // Cache Key
+        String key = this.handler.parse(method, joinPoint.getArgs(), annotation.key(), String.class, annotation.key());
+        if (annotation.dynamics()) {
+            key = key.concat(SessionManagement.getCurrentUsername());
+        }
+        final var proceed = joinPoint.proceed();
+        return this.cacheProviderMap.get(annotation.implement())
+                                    .getValueAndSupplier(namespace, key, annotation.expired(), () -> proceed);
+    }
+
+    /**
+     * 获取被代理真实Class
+     *
+     * @param proxyObj 代理对象
+     * @return {@link Class<>}
+     */
+    private Class<?> extractTargetClass(Object proxyObj) {
+        return AopProxyUtils.ultimateTargetClass(proxyObj);
+    }
+
+    private void checkStatus() {
+        Assert.notNull(this.handler, "expression handler Uninitialized!");
+        Assert.notNull(this.cacheProviderMap, "cache provider Uninitialized!");
+    }
+
+    public void addProvider(CacheImplement relation, ICache<Object, Object> cacheProvider) {
+        if (this.cacheProviderMap == null) {
+            this.cacheProviderMap = new ConcurrentHashMap<>(2);
+        }
+        this.cacheProviderMap.put(relation, cacheProvider);
+    }
 }

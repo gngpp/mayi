@@ -1,4 +1,4 @@
-package com.zf1976.mayi.upms.biz.security;
+package com.zf1976.mayi.upms.biz.security.exception;
 
 /**
  * @author mac

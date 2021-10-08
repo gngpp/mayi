@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @CacheConfig(namespace = Namespace.MENU, dependsOn = Namespace.ROLE)
+@Transactional(rollbackFor = Throwable.class)
 public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
 
     private final Logger log = LoggerFactory.getLogger("[SysMenuService]");
@@ -258,7 +259,7 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void saveMenu(MenuDTO dto) {
         // 是否存在匹配菜单类型
         Optional.ofNullable(MenuTypeEnum.match(dto.getType()))
@@ -294,7 +295,7 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void updateMenu(MenuDTO dto) {
         // 是否存在匹配菜单类型
         Optional.ofNullable(MenuTypeEnum.match(dto.getType()))
@@ -370,7 +371,7 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void deleteMenuList(Set<Long> ids){
         final Set<Long> treeIds = this.collectCurrentMenuTreeIds(ids, new CopyOnWriteArraySet<>());
         if (!CollectionUtils.isEmpty(treeIds)) {

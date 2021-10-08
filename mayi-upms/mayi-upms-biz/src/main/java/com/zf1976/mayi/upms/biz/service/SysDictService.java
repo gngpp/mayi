@@ -37,6 +37,7 @@ import java.util.*;
  */
 @Service
 @CacheConfig(namespace = Namespace.DICT)
+@Transactional(rollbackFor = Throwable.class)
 public class SysDictService extends AbstractService<SysDictDao, SysDict> {
 
     private final Logger log = LoggerFactory.getLogger("[SysDictService]");
@@ -69,7 +70,7 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void saveDict(DictDTO dto) {
         // 确认字典名是否存在
         super.lambdaQuery()
@@ -90,7 +91,7 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void updateDict(DictDTO dto) {
 
         // 查询字典实体
@@ -121,7 +122,7 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void deleteDictList(Set<Long> ids) {
         super.deleteByIds(ids);
         return null;

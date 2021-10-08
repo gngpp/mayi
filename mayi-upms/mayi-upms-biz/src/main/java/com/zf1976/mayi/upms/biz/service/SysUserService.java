@@ -64,6 +64,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @CacheConfig(namespace = Namespace.USER, dependsOn = {Namespace.DEPARTMENT, Namespace.POSITION, Namespace.ROLE})
+@Transactional(rollbackFor = Throwable.class)
 public class SysUserService extends AbstractService<SysUserDao, SysUser> {
 
     private final Logger log = LoggerFactory.getLogger("[SysUserService]");
@@ -98,6 +99,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     }
 
     @CachePut(key = "#username")
+    @Transactional(readOnly = true)
     public User findUserByUsername(String username) {
         // 初步验证用户是否存在
         SysUser sysUser = super.lambdaQuery()
@@ -112,7 +114,8 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         sysUser.setDepartment(department);
         // 查询用户角色
         List<SysRole> roleList = this.roleDao.selectListByUserId(sysUser.getId())
-                                             .stream().filter(SysRole::getEnabled)
+                                             .stream()
+                                             .filter(SysRole::getEnabled)
                                              .collect(Collectors.toList());
         sysUser.setRoleList(roleList);
         // 查询用户职位
@@ -124,7 +127,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
 
         User user = this.userConvert.convert(sysUser);
         // 权限值
-        Set<String> grantedAuthorities = this.grantedAuthorities(user.getUsername());
+        Set<String> grantedAuthorities = this.grantedAuthorities(user.getUsername(), roleList);
         // 数据权限
         Set<Long> grantedDataPermission = this.grantedDataPermission(user.getUsername(), user.getDepartment().getId(), user.getRoleList());
         user.setDataPermissions(grantedDataPermission);
@@ -211,28 +214,21 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      * @param username 用户名
      * @return 返回用户权限信息
      */
-    private Set<String> grantedAuthorities(String username) {
+    private Set<String> grantedAuthorities(String username, List<SysRole> roles) {
         Set<String> authorities = new HashSet<>();
         String markerAdmin = securityProperties.getOwner();
         if (username.equals(markerAdmin)) {
             // 分配认证超级管理员角色
             authorities.add(SecurityConstants.ROLE + markerAdmin);
             return authorities;
-        } else {
-            List<SysRole> roles = roleDao.selectListByUsername(username);
-            authorities = roles.stream()
-                               .flatMap(role -> permissionDao.selectPermissionsByRoleId(role.getId())
-                                                             .stream()
-                                                             .map(Permission::getValue)
-                                                             .filter(p -> !StringUtils.isEmpty(p))
-                                       )
-                               .collect(Collectors.toSet());
         }
-        if (CollectionUtils.isEmpty(authorities)) {
-            return Collections.emptySet();
-        } else {
-            return authorities;
-        }
+        return roles.stream()
+                    .flatMap(role -> permissionDao.selectPermissionsByRoleId(role.getId())
+                                                  .stream()
+                                                  .map(Permission::getValue)
+                                                  .filter(p -> !StringUtils.isEmpty(p))
+                            )
+                    .collect(Collectors.toSet());
     }
     /**
      * 按条件分页查询用户
@@ -316,6 +312,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @param id id
          * @return role id
          */
+        @Transactional(readOnly = true)
         public Set<Long> selectUserRoleIds (Long id){
             return this.roleDao.selectListByUserId(id)
                                .stream()
@@ -329,6 +326,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @param id id
          * @return position id
          */
+        @Transactional(readOnly = true)
         public Set<Long> selectUserPositionIds(Long id){
             return this.positionDao.selectBatchByUserId(id)
                                    .stream()
@@ -345,7 +343,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @return /
          */
         @CacheEvict
-        @Transactional(rollbackFor = Exception.class)
+        @Transactional
         public Void updateUserStatus (Long id, Boolean enabled){
             SysUser sysUser = super.lambdaQuery()
                                    .eq(SysUser::getId, id)
@@ -376,7 +374,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @return /
          */
         @CacheEvict
-        @Transactional(rollbackFor = Exception.class)
+        @Transactional
         public Void updateAvatar (MultipartFile multipartFile){
             final SysUser sysUser = super.lambdaQuery()
                                          .select(SysUser::getId, SysUser::getAvatarName)
@@ -421,7 +419,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @return /
          */
         @CacheEvict
-        @Transactional(rollbackFor = Exception.class)
+        @Transactional
         public Void updatePassword (UpdatePasswordDTO dto){
             final SysUser sysUser = super.lambdaQuery()
                                          .select(SysUser::getId, SysUser::getPassword)
@@ -472,7 +470,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @return /
          */
         @CacheEvict
-        @Transactional(rollbackFor = Exception.class)
+        @Transactional
         public Void updateEmail (String code, UpdateEmailDTO dto){
 
             // 校验验证码是否为空
@@ -518,7 +516,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @return /
          */
         @CacheEvict
-        @Transactional(rollbackFor = Exception.class)
+        @Transactional
         public Void updateInformation (UpdateInfoDTO dto){
             // 查询当前用户是否存在
             SysUser sysUser = super.lambdaQuery()
@@ -544,7 +542,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @return /
          */
         @CacheEvict
-        @Transactional(rollbackFor = Exception.class)
+        @Transactional
         public Void saveUser (UserDTO dto){
             this.validateUsername(dto.getUsername());
             this.validatePhone(dto.getPhone());
@@ -586,7 +584,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @return /
          */
         @CacheEvict
-        @Transactional(rollbackFor = Exception.class)
+        @Transactional
         public Void updateUser (UserDTO dto){
             this.validatePhone(dto.getPhone());
             // 查询用户是否存在
@@ -680,7 +678,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @return /
          */
         @CacheEvict
-        @Transactional(rollbackFor = Exception.class)
+        @Transactional
         public Void deleteUser (Set < Long > ids) {
             // 超级管理员
             if (SessionManagement.isOwner()) {

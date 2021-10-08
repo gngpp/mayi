@@ -34,6 +34,7 @@ import java.util.*;
  */
 @Service
 @CacheConfig(namespace = Namespace.POSITION, dependsOn = Namespace.USER)
+@Transactional(rollbackFor = Throwable.class)
 public class SysPositionService extends AbstractService<SysPositionDao, SysPosition> {
 
     private final Logger log = LoggerFactory.getLogger("[SysPositionService]");
@@ -60,7 +61,7 @@ public class SysPositionService extends AbstractService<SysPositionDao, SysPosit
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void savePosition(PositionDTO dto) {
         // 确认职位名是否已经存在
         super.lambdaQuery()
@@ -81,7 +82,7 @@ public class SysPositionService extends AbstractService<SysPositionDao, SysPosit
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void updatePosition(PositionDTO dto) {
         // 查询更新岗位是否存在
         final SysPosition sysPosition = super.lambdaQuery()
@@ -111,7 +112,7 @@ public class SysPositionService extends AbstractService<SysPositionDao, SysPosit
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void deletePosition(Set<Long> ids) {
         super.deleteByIds(ids);
         super.baseMapper.deleteRelationByIds(ids);

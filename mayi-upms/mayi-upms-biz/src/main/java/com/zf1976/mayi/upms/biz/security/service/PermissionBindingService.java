@@ -1,17 +1,17 @@
 package com.zf1976.mayi.upms.biz.security.service;
 
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
-import com.zf1976.mayi.upms.biz.dao.SysPermissionDao;
-import com.zf1976.mayi.upms.biz.dao.SysResourceDao;
-import com.zf1976.mayi.upms.biz.pojo.ResourceLinkBinding;
-import com.zf1976.mayi.upms.biz.pojo.ResourceNode;
-import com.zf1976.mayi.upms.biz.pojo.RoleBinding;
-import com.zf1976.mayi.upms.biz.pojo.po.SysResource;
 import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
 import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
 import com.zf1976.mayi.common.core.constants.Namespace;
+import com.zf1976.mayi.upms.biz.dao.SysPermissionDao;
+import com.zf1976.mayi.upms.biz.dao.SysResourceDao;
 import com.zf1976.mayi.upms.biz.dao.SysRoleDao;
+import com.zf1976.mayi.upms.biz.pojo.ResourceLinkBinding;
+import com.zf1976.mayi.upms.biz.pojo.ResourceNode;
+import com.zf1976.mayi.upms.biz.pojo.RoleBinding;
+import com.zf1976.mayi.upms.biz.pojo.po.SysResource;
 import com.zf1976.mayi.upms.biz.pojo.po.SysRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +27,7 @@ import java.util.Set;
         dependsOn = {Namespace.ROLE, Namespace.RESOURCE},
         postInvoke = {"initialize"}
 )
+@Transactional(rollbackFor = Throwable.class)
 public class PermissionBindingService implements InitPermission{
 
     private final SysPermissionDao permissionDao;
@@ -57,6 +58,7 @@ public class PermissionBindingService implements InitPermission{
      * @return {@link List<RoleBinding>}
      */
     @CachePut(key = "selectRoleBindingList")
+    @Transactional(readOnly = true)
     public List<RoleBinding> selectRoleBindingList() {
         return permissionDao.selectRoleBindingList();
     }
@@ -64,9 +66,10 @@ public class PermissionBindingService implements InitPermission{
     /**
      * 查询绑定权限资源链接列表
      *
-     * @return {@link List< ResourceLinkBinding >}
+     * @return {@link List<ResourceLinkBinding>}
      */
     @CachePut(key = "selectResourceLinkBindingList")
+    @Transactional(readOnly = true)
     public List<ResourceLinkBinding> selectResourceLinkBindingList() {
         // 资源列表
         List<SysResource> resourceList = this.dynamicDataSourceService.list();
@@ -85,7 +88,7 @@ public class PermissionBindingService implements InitPermission{
      * @return {@link Void}
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void bindingRole(Long id, Set<Long> permissionIdList) {
         this.checkPermissionIdList(permissionIdList);
         // 查找当前绑定角色是否存在
@@ -111,7 +114,7 @@ public class PermissionBindingService implements InitPermission{
      * @return {@link Void}
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void bindingResource(Long id, Set<Long> permissionIdList) {
         this.checkPermissionIdList(permissionIdList);
         // 查找当前绑定资源是否存在
@@ -119,7 +122,7 @@ public class PermissionBindingService implements InitPermission{
                                           .eq(SysResource::getId, id)
                                           .oneOpt()
                                           .orElseThrow(() -> new SecurityException("The bound resource does not exist"));
-        // 当前资源节点不属于叶子节点，不允许绑定
+        // 当前资源节点属于顶级节点或非叶子节点，不允许绑定
         if (resource.getPid() == null || !resource.getLeaf()) {
             throw new SecurityException("The current resource node does not allow binding");
         }
@@ -141,7 +144,7 @@ public class PermissionBindingService implements InitPermission{
      * @return {@link Void}
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void unbindingResource(Long id, Set<Long> permissionIdList) {
         this.checkPermissionIdList(permissionIdList);
         // 查找当前绑定资源是否存在
@@ -167,7 +170,7 @@ public class PermissionBindingService implements InitPermission{
      * @return {@link Void}
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void unbindingRole(Long id, Set<Long> permissionIdList) {
         this.checkPermissionIdList(permissionIdList);
         // 查找当前绑定角色是否存在

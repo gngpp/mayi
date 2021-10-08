@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
  */
 @Service
 @CacheConfig(namespace = Namespace.DICT)
+@Transactional(rollbackFor = Throwable.class)
 public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysDictDetail> {
 
     private final Logger log = LoggerFactory.getLogger("[SysDictDetailService]");
@@ -79,7 +80,7 @@ public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysD
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void saveDictDetail(DictDetailDTO dto) {
         SysDictDetail sysDictDetail = convert.toEntity(dto);
         super.savaOrUpdate(sysDictDetail);
@@ -93,7 +94,7 @@ public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysD
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void updateDictDetail(DictDetailDTO dto) {
         // 查询字典细节实体
         SysDictDetail sysDictDetail = super.lambdaQuery()
@@ -115,7 +116,7 @@ public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysD
      * @return /
      */
     @CacheEvict
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Void deleteDictDetail(Long id) {
         if (!super.removeById(id)) {
             throw new DictException(DictState.DICT_NOT_FOUND);

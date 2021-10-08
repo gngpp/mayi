@@ -6,17 +6,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
+import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
+import com.zf1976.mayi.common.component.cache.annotation.CachePut;
+import com.zf1976.mayi.common.core.constants.KeyConstants;
+import com.zf1976.mayi.common.core.constants.Namespace;
+import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.upms.biz.dao.SysPermissionDao;
 import com.zf1976.mayi.upms.biz.dao.SysResourceDao;
 import com.zf1976.mayi.upms.biz.pojo.Permission;
 import com.zf1976.mayi.upms.biz.pojo.ResourceLinkBinding;
 import com.zf1976.mayi.upms.biz.pojo.ResourceNode;
 import com.zf1976.mayi.upms.biz.pojo.po.SysResource;
-import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
-import com.zf1976.mayi.common.component.cache.annotation.CachePut;
-import com.zf1976.mayi.common.core.constants.KeyConstants;
-import com.zf1976.mayi.common.core.constants.Namespace;
-import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
         namespace = Namespace.RESOURCE,
         postInvoke = {"initialize"}
 )
+@Transactional(rollbackFor = Throwable.class)
 public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysResource> implements InitPermission{
 
     private final Map<String, String> resourceMethodMap = new ConcurrentHashMap<>(16);
@@ -126,7 +127,7 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
     /**
      * 根据资源树构建资源链接列表
      *
-     * @return {@link List< ResourceLinkBinding >}
+     * @return {@link List<ResourceLinkBinding>}
      * @date 2021-05-07 23:43:49
      */
     public List<ResourceLinkBinding> generatorResourceLinkBindingList(List<ResourceNode> resourceNodeTree) {
@@ -253,6 +254,7 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
      * @return {@link Map<String,String>}
      */
     @CachePut(key = KeyConstants.RESOURCE_METHOD)
+    @Transactional(readOnly = true)
     public Map<String, String> loadResourceMethodMap() {
         if (CollectionUtils.isEmpty(this.resourceMethodMap)) {
             this.loadDynamicDataSource();
@@ -266,6 +268,7 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
      * @return getAllowUri
      */
     @CachePut(key = KeyConstants.RESOURCE_ALLOW)
+    @Transactional(readOnly = true)
     public List<String> loadAllowUri() {
         if (CollectionUtils.isEmpty(this.allowUriSet)) {
             this.loadDynamicDataSource();
