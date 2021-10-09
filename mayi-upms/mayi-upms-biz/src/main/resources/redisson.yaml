@@ -1,0 +1,35 @@
+---
+singleServerConfig:
+  idleConnectionTimeout: 10000
+  connectTimeout: 10000
+  timeout: 3000
+  retryAttempts: 3
+  retryInterval: 1500
+  subscriptionsPerConnection: 5
+  sslEnableEndpointIdentification: true
+  sslProvider: "JDK"
+  pingConnectionInterval: 30000
+  keepAlive: false
+  tcpNoDelay: true
+  nameMapper: !<org.redisson.api.DefaultNameMapper> { }
+  address: "redis://127.0.0.1:6379"
+  subscriptionConnectionMinimumIdleSize: 1
+  subscriptionConnectionPoolSize: 10
+  connectionMinimumIdleSize: 2
+  connectionPoolSize: 10
+  database: 0
+  dnsMonitoringInterval: 5000
+threads: 16
+nettyThreads: 32
+referenceEnabled: true
+transportMode: "NIO"
+lockWatchdogTimeout: 30000 #lock timeout
+reliableTopicWatchdogTimeout: 600000
+keepPubSubOrder: true
+useScriptCache: false
+minCleanUpDelay: 5
+maxCleanUpDelay: 1800
+cleanUpKeysAmount: 100
+nettyHook: !<org.redisson.client.DefaultNettyHook> { }
+useThreadClassLoader: true
+addressResolverGroupFactory: !<org.redisson.connection.DnsAddressResolverGroupFactory> { }

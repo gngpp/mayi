@@ -8,6 +8,7 @@ dependencies {
     implementation project(':mayi-common:mayi-common-encrypt')
     implementation project(':mayi-common:mayi-common-security')
     implementation('com.github.whvcse:easy-captcha:1.6.2')
+    implementation("org.redisson:redisson:${redissonVersion}")
     implementation("org.springframework.boot:spring-boot-starter-data-redis:${springbootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-aop:${springbootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-web:${springbootVersion}")
