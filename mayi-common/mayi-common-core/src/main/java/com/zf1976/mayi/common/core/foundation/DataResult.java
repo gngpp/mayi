@@ -18,6 +18,7 @@ import java.io.Serializable;
 @SuppressWarnings("rawtypes")
 public class DataResult<T> implements Serializable {
 
+    private static final String DEFAULT_PATH = "Invalid path.";
     /**
      * 响应是否成功
      */
@@ -202,7 +203,7 @@ public class DataResult<T> implements Serializable {
             return RequestUtil.getRequest()
                               .getRequestURI();
         } catch (Exception ignored) {
-            return null;
+            return DataResult.DEFAULT_PATH;
         }
     }
 

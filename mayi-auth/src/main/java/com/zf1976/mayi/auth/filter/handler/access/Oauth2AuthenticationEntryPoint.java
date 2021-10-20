@@ -2,14 +2,17 @@ package com.zf1976.mayi.auth.filter.handler.access;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zf1976.mayi.common.core.foundation.DataResult;
+import com.zf1976.mayi.common.core.util.JSONUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author mac
@@ -33,7 +36,8 @@ public class Oauth2AuthenticationEntryPoint implements AuthenticationEntryPoint 
         DataResult fail = DataResult.fail(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
         fail.setPath(httpServletRequest.getRequestURI());
         httpServletResponse.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.writeValue(httpServletResponse.getOutputStream(), fail);
+        ServletOutputStream outputStream = httpServletResponse.getOutputStream();
+        outputStream.write(JSONUtil.toJsonString(fail).getBytes(StandardCharsets.UTF_8));
+        outputStream.close();
     }
 }

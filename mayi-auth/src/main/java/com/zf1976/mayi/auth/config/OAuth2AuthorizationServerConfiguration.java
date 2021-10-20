@@ -158,8 +158,7 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
         List<TokenGranter> tokenGranters = new ArrayList<>();
         tokenGranters.add(new AuthorizationCodeTokenGranter(tokenServices, authorizationCodeServices, clientDetails, requestFactory));
         tokenGranters.add(new RefreshTokenEnhancerGranter(tokenServices, clientDetails, requestFactory));
-        ImplicitTokenGranter implicit = new ImplicitTokenGranter(tokenServices, clientDetails, requestFactory);
-        tokenGranters.add(implicit);
+        tokenGranters.add(new ImplicitTokenGranter(tokenServices, clientDetails, requestFactory));
         tokenGranters.add(new ClientCredentialsTokenGranter(tokenServices, clientDetails, requestFactory));
         if (this.authenticationManager != null) {
             tokenGranters.add(new ResourceOwnerPasswordTokenGranter(this.authenticationManager, tokenServices, clientDetails, requestFactory));
