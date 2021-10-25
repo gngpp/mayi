@@ -19,7 +19,7 @@ public abstract class AbstractGuavaCache<K, V> implements ICache<K, V> {
     protected static final Logger LOG = LoggerFactory.getLogger(AbstractGuavaCache.class);
     protected static final byte MAP_INITIAL_CAPACITY = 16;
     protected Map<String, Cache<K, V>> cacheSpace;
-    protected Cache<K, V> kvCache;
+    protected volatile Cache<K, V> kvCache;
     protected final GuavaCacheProperties properties;
 
     public AbstractGuavaCache(GuavaCacheProperties properties) {
