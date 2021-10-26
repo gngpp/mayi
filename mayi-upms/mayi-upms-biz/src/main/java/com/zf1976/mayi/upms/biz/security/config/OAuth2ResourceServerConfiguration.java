@@ -59,6 +59,7 @@ public class OAuth2ResourceServerConfiguration extends ResourceServerConfigurerA
             // OPTIONS放行
             .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
             .antMatchers("/api/authorities/**").permitAll()
+            .antMatchers("/actuator/**").permitAll()
             .antMatchers(this.securityProperties.getIgnoreUri()).permitAll()
             .anyRequest()
             .authenticated();

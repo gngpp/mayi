@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  **/
 public class RedisCacheProvider<K, V> implements ICache<K, V> {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final GuavaCacheProperties properties;
     private final RedisTemplate<Object, Object> redisTemplate;
 

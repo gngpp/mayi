@@ -1,4 +1,4 @@
-package com.zf1976.mayi.common.component.cache.aspect.handler;
+package com.zf1976.mayi.common.component.cache.handler;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;

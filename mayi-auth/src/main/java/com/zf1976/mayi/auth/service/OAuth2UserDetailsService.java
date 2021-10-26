@@ -35,7 +35,6 @@ public class OAuth2UserDetailsService implements UserDetailsService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) {
         DataResult<User> userDataResult = this.remoteUserService.getUser(username, SecurityConstants.FROM_IN);
         User user = userDataResult.getData();

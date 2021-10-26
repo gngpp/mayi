@@ -199,3 +199,5 @@ management:
   health:
     db:
       enabled: true
+    mail:
+      enabled: false

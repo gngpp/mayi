@@ -1,11 +1,10 @@
-package com.zf1976.mayi.common.component.cache.aspect;
+package com.zf1976.mayi.common.component.cache;
 
 
-import com.zf1976.mayi.common.component.cache.ICache;
 import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
 import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
-import com.zf1976.mayi.common.component.cache.aspect.handler.SpringElExpressionHandler;
+import com.zf1976.mayi.common.component.cache.handler.SpringElExpressionHandler;
 import com.zf1976.mayi.common.component.cache.enums.CacheImplement;
 import com.zf1976.mayi.common.component.cache.impl.GuavaCacheProvider;
 import com.zf1976.mayi.common.component.cache.impl.RedisCacheProvider;
@@ -15,9 +14,6 @@ import com.zf1976.mayi.common.security.support.session.manager.SessionManagement
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.redisson.Redisson;
-import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
@@ -26,15 +22,17 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.DigestUtils;
 import org.springframework.util.ReflectionUtils;
 
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -43,25 +41,13 @@ import java.util.stream.Collectors;
 @Aspect
 @Component
 @Order(0)
-public class CacheAspect {
+public class CacheAsideAspect extends AbstractCacheAsideLock {
 
     private static final Logger log = LoggerFactory.getLogger("[CacheAspect]");
     private final SpringElExpressionHandler handler = new SpringElExpressionHandler();
     private Map<CacheImplement, ICache<Object, Object>> cacheProviderMap;
-    private static final RedissonClient redissonClient;
 
-    static {
-        final Config config;
-        try {
-            final var resourceAsStream = CacheAspect.class.getClassLoader().getResourceAsStream("redisson.yaml");
-            config = Config.fromYAML(resourceAsStream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        redissonClient = Redisson.create(config);
-    }
-
-    public CacheAspect(RedisTemplate<Object, Object> template, GuavaCacheProperties properties) {
+    public CacheAsideAspect(RedisTemplate<Object, Object> template, GuavaCacheProperties properties) {
         this.addProvider(CacheImplement.CAFFEINE, new GuavaCacheProvider<>(properties));
         this.addProvider(CacheImplement.REDIS, new RedisCacheProvider<>(properties, template));
         this.checkStatus();
@@ -111,23 +97,13 @@ public class CacheAspect {
         Class<?> targetClass = this.extractTargetClass(joinPoint.getThis());
         // Cache configuration
         CacheConfig cacheConfig = targetClass.getAnnotation(CacheConfig.class);
-
-        // clear
-        this.clearCache(joinPoint, annotation, cacheConfig);
-
-        Object proceed;
-        final var lock = redissonClient.getFairLock(annotation.key());
-        try {
-            proceed = joinPoint.proceed();
-            List<String> methodList = Arrays.stream(addAll(annotation.postInvoke(), cacheConfig != null ? cacheConfig.postInvoke() : new String[0]))
-                                            .distinct()
-                                            .collect(Collectors.toUnmodifiableList());
-            // Execute the calling method after clearing the cache
-            this.executeMethodList(joinPoint, targetClass, methodList);
-            return proceed;
-        } finally {
-            lock.unlock();
-        }
+        List<String> methodList = Arrays.stream(addAll(annotation.postInvoke(), cacheConfig != null ? cacheConfig.postInvoke() : new String[0]))
+                                        .distinct()
+                                        .collect(Collectors.toUnmodifiableList());
+        return this.doLockAndUpdate(
+                joinPoint,
+                unused -> this.clearCache(joinPoint, annotation, cacheConfig),
+                unused -> this.executeMethodList(joinPoint, targetClass, methodList));
     }
 
     /**
@@ -148,13 +124,28 @@ public class CacheAspect {
         // namespaces
         String namespace = classAnnotation == null ? annotation.namespace() : classAnnotation.namespace();
         // Cache Key
-        String key = this.handler.parse(method, joinPoint.getArgs(), annotation.key(), String.class, annotation.key());
+        String cacheKey = this.extractCacheKey(method, joinPoint.getArgs(), annotation.key());
         if (annotation.dynamics()) {
-            key = key.concat(SessionManagement.getCurrentUsername());
+            cacheKey = cacheKey.concat(SessionManagement.getCurrentUsername());
         }
-        final var proceed = joinPoint.proceed();
-        return this.cacheProviderMap.get(annotation.implement())
-                                    .getValueAndSupplier(namespace, key, annotation.expired(), () -> proceed);
+        boolean lockCondition = false;
+        // DB data is being updated
+        if (lock.isLocked()) {
+            lockCondition = lock.tryLock(DEFAULT_LOCK_TIME, TimeUnit.SECONDS);
+            // timeout
+            if (!lockCondition) {
+                return null;
+            }
+        }
+        try {
+            Object proceed = joinPoint.proceed();
+            return this.cacheProviderMap.get(annotation.implement())
+                                        .getValueAndSupplier(namespace, cacheKey, annotation.expired(), () -> proceed);
+        } finally {
+            if (lockCondition) {
+                lock.unlock();
+            }
+        }
     }
 
     /**
@@ -177,7 +168,7 @@ public class CacheAspect {
         // Clear namespace based on cache implementation
         ICache<Object, Object> cacheProvider = this.cacheProviderMap.get(annotation.implement());
         // Cache Key
-        String key = annotation.key();
+        String cacheKey = annotation.key();
         // 默认策略清除所有缓存实现的命名空间
         if (annotation.strategy()) {
             this.cacheProviderMap.forEach((relation, cache) -> {
@@ -190,7 +181,7 @@ public class CacheAspect {
             });
         } else {
             // 不存在key，清除缓存空间
-            if (StringUtil.isEmpty(key)) {
+            if (StringUtil.isEmpty(cacheKey)) {
                 // 清除缓存空间
                 cacheProvider.invalidate(namespace);
                 // 清除依赖缓存空间
@@ -198,10 +189,15 @@ public class CacheAspect {
                     cacheProvider.invalidate(depend);
                 }
             } else {
-                key = this.handler.parse(method, joinPoint.getArgs(), key, String.class, null);
-                cacheProvider.invalidate(namespace, key);
+                cacheKey = this.extractCacheKey(method, joinPoint.getArgs(), cacheKey);
+                cacheProvider.invalidate(namespace, cacheKey);
             }
         }
+    }
+
+    private String extractCacheKey(Method method, Object[] arguments, String springEl) {
+        String parse = this.handler.parse(method, arguments, springEl, String.class, springEl);
+        return DigestUtils.md5DigestAsHex(parse.getBytes(StandardCharsets.UTF_8));
     }
 
     private void checkStatus() {
