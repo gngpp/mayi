@@ -7,7 +7,6 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 import static com.zf1976.mayi.common.core.util.DisableWarningUtil.disableWarning;
@@ -22,11 +21,11 @@ import static com.zf1976.mayi.common.core.util.DisableWarningUtil.disableWarning
 @EnableAsync
 @EnableWebSocket
 @EnableFeignClients(basePackages = "com.zf1976")
-public class SystemApplication {
+public class AdminApplication {
 
     public static void main(String[] args) {
         disableWarning();
-        SpringApplication.run(SystemApplication.class, args);
+        SpringApplication.run(AdminApplication.class, args);
     }
 
 }

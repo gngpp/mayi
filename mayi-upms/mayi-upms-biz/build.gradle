@@ -1,3 +1,4 @@
+//file:noinspection GroovyAssignabilityCheck
 plugins {
     id 'org.springframework.boot' version "${springbootVersion}"
     id 'io.spring.dependency-management' version "${springDependencyManagerVersion}"
@@ -45,23 +46,5 @@ dependencyManagement {
 }
 
 test {
-    useJUnitPlatform {
-        includeEngines "junit-jupiter"
-        excludeEngines "junit-vintage"
-    }
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
-}
-
-bootRun{
-    setMain("com.zf1976.mayi.upms.biz.SystemApplication")
-}
-
-jar.enabled = true
-
-
-bootJar {
-    mainClassName = "com.zf1976.mayi.upms.biz.SystemApplication"
-    launchScript()
+    useJUnitPlatform()
 }
