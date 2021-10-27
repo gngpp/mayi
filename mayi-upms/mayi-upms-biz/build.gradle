@@ -7,6 +7,8 @@ plugins {
 configurations {
     runtime.exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
     compile.exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
+    compile.exclude group: 'com.zaxxer', name: 'HikariCP', version: '3.4.5'
+    runtime.exclude group: 'com.zaxxer', name: 'HikariCP', version: '3.4.5'
 }
 
 dependencies {

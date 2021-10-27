@@ -1,1 +1,37 @@
-## 容器Dockerfile
+## 容器编排
+version: 1.0
+services:
+  mayi-upms-biz:
+    container_name: mayi-upms-biz
+    build:
+      context: ./dockerfiles/admin
+      dockerfile: Dockerfile
+    cap_add:
+      - ALL
+  mayi-auth:
+    container_name: mayi-auth
+    build:
+      context: ./dockerfiles/auth
+      dockerfile: Dockerfile
+    cap_add:
+      - ALL
+  mayi-gateway:
+    container_name: mayi-gateway
+    build:
+      context: ./dockerfiles/gateway
+      dockerfile: Dockerfile
+    cap_add:
+      - ALL
+  mayi-visual-monitor:
+    container_name: mayi-visual-monitor
+    build:
+      context: ./dockerfiles/monitor
+      dockerfile: Dockerfile
+    cap_add:
+      - ALL
+  redis:
+    image: redis
+  mysql:
+    image: mysql
+  nacos:
+    image: nacos/nacos-server

@@ -13,7 +13,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop:${springbootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-web:${springbootVersion}")
     implementation("org.springframework.boot:spring-boot-configuration-processor:${springbootVersion}")
-
 }
 
 

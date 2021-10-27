@@ -21,7 +21,6 @@ import static com.zf1976.mayi.common.core.util.DisableWarningUtil.disableWarning
 public class AuthApplication {
 
     public static void main(String[] args) {
-        disableWarning();
         SpringApplication.run(AuthApplication.class, args);
     }
 

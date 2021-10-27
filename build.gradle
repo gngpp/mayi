@@ -14,7 +14,7 @@ allprojects {
     apply plugin: 'java'
     apply from: this.rootProject.file('gradle.properties')
     group = 'com.zf1976'
-    version = 'v1.0.1'
+    version = 'latest'
 
     //指定编译版本
     sourceCompatibility = JavaVersion.VERSION_11

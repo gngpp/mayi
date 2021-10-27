@@ -24,7 +24,6 @@ import static com.zf1976.mayi.common.core.util.DisableWarningUtil.disableWarning
 public class AdminApplication {
 
     public static void main(String[] args) {
-        disableWarning();
         SpringApplication.run(AdminApplication.class, args);
     }
 
