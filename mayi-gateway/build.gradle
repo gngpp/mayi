@@ -32,3 +32,8 @@ dependencyManagement {
 test {
     useJUnitPlatform()
 }
+
+application {
+    mainClass = 'com.zf1976.mayi.gateway.GatewayApplication'
+    applicationDefaultJvmArgs = ["-Dspring.profiles.active=prod"]
+}

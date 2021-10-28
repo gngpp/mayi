@@ -1,3 +1,4 @@
+//file:noinspection GroovyAssignabilityCheck
 
 configurations.all() {
     Configuration configuration ->({
@@ -12,14 +13,14 @@ allprojects {
         options.encoding = "UTF-8"
     }
     apply plugin: 'java'
+    apply plugin: 'application'
     apply from: this.rootProject.file('gradle.properties')
+
     group = 'com.zf1976'
     version = 'latest'
-
-    //指定编译版本
+    // Specify compilation version
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
-
     configurations {
         compileOnly {
             extendsFrom annotationProcessor
@@ -27,9 +28,8 @@ allprojects {
     }
 }
 
-// 子项目设置
+// Specify compilation version
 subprojects {
-
      repositories {
          mavenLocal()
          maven {

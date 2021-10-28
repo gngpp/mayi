@@ -16,6 +16,8 @@ COPY ./mayi-gateway ./mayi-gateway
 COPY ./mayi-upms ./mayi-upms
 COPY ./mayi-visual ./mayi-visual
 RUN ./gradlew -b ./mayi-gateway/build.gradle bootJar --info
+# Cache config
+COPY ./bootstrap.yml ./bootstrap.yml
 # Rename mayi-gateway Jar
 RUN mv ./mayi-gateway/build/libs/mayi-gateway-latest.jar ./target.jar
 
@@ -29,9 +31,12 @@ LABEL url=https://github.com/zf1976/mayi
 # depes env
 ENV LANG C.UTF-8
 ENV JAR_FILE=/mayi/target.jar
+ENV CONFIG=/mayi/bootstrap.yml
 COPY --from=gradle-build $JAR_FILE ./target.jar
+COPY --from=gradle-build $CONFIG ./bootstrap.yml
 # depoly
-EXPOSE 8888
+EXPOSE 7777
+EXPOSE 5555
 ENV JVM_OPTS="-Xms256m -Xmx256m" \
     TZ=Asia/Shanghai
-CMD exec java $JVM_OPTS -jar /mayi/target.jar
+CMD exec java $JVM_OPTS -Djava.security.egd=file:/dev/./urandom -jar /mayi/target.jar --spring.config.additional-location=/mayi/bootstrap.yml

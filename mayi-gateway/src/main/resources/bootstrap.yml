@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: dev
   application:
     name: mayi-gateway
   cloud:
@@ -30,22 +28,3 @@ spring:
             - Path=/api/**, /avatar/**, /static/**, /druid/**
   #          filters:
   #         - PrefixPath=2
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: http://mayi.auth:9000/oauth/token_key
-          jwt-check-uri: http://mayi.auth:9000/oauth/check_token
-          issuer-uri: http:mayi-auth:9000
-  #redis
-  redis:
-    host: mayi-redis
-    password:
-    port: 6379
-    database: 0
-    timeout: 5000
-    jedis:
-      pool:
-        max-wait: 10
-        max-active: 32
-        min-idle: 2

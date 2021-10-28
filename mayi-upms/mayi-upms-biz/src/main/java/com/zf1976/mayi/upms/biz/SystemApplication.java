@@ -9,8 +9,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
-import static com.zf1976.mayi.common.core.util.DisableWarningUtil.disableWarning;
-
 /**
  * @author mac
  * @date 2021/1/14
@@ -21,10 +19,10 @@ import static com.zf1976.mayi.common.core.util.DisableWarningUtil.disableWarning
 @EnableAsync
 @EnableWebSocket
 @EnableFeignClients(basePackages = "com.zf1976")
-public class AdminApplication {
+public class SystemApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AdminApplication.class, args);
+        SpringApplication.run(SystemApplication.class, args);
     }
 
 }

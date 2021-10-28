@@ -14,5 +14,10 @@
       "name": "executor.core-pool-size",
       "type": "java.lang.String",
       "description": "Description for executor.core-pool-size."
+    },
+    {
+      "name": "security.logout-url",
+      "type": "java.lang.String",
+      "description": "Description for security.logout-url."
     }
   ]}

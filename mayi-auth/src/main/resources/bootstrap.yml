@@ -14,31 +14,9 @@ server:
 #配置
 spring:
   profiles:
-    active: conf,dev
+    active: '@profileName@'
   application:
     name: mayi-auth
-  datasource:
-    username: root
-    password: itcast
-    url: jdbc:mysql://localhost:3306/master?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      connection-timeout: 30000
-      maximum-pool-size: 20
-      max-lifetime: 1800000
-      minimum-idle: 5
-
-  redis:
-    host: 127.0.0.1
-    password:
-    port: 6379
-    database: 0
-    timeout: 5000
-    jedis:
-      pool:
-        max-wait: 10
-        max-active: 32
-        min-idle: 2
 
   #json序列化配置
   jackson:
@@ -49,24 +27,6 @@ spring:
   servlet:
     multipart:
       enabled: true
-
-#admin监控
-  boot:
-    admin:
-      client:
-        url: http://localhost:4444
-        username: admin
-        password: 123456
-  thymeleaf:
-    check-template: true
-    check-template-location: true
-    enabled: true
-    mode: HTML5
-    prefix: classpath:/templates/
-    encoding: UTF-8
-    servlet:
-      content-type: text/html
-    suffix: .html
 
 #actuator监控
 management:
@@ -89,7 +49,6 @@ management:
     db:
       enabled: true
 
-
 #公用线程池配置
 executor:
   # 配置核心线程数
@@ -106,7 +65,6 @@ executor:
   thred-group-name: [ Auth-Group ]
   # bean名
   bean-name: AuthorizationServerTaskExecutor
-
 
 #mybatis-plus 配置
 mybatis-plus:
@@ -133,29 +91,3 @@ auth:
 feign:
   httpclient:
     connection-timeout: 5000
-
----
-#nacos配置
-spring:
-  profiles: prod
-  cloud:
-    nacos:
-      config:
-        file-extension: yaml
-      server-addr: innas.cn:8848
-      discovery:
-        register-enabled: true
-        enabled: true
-
----
-#nacos配置
-spring:
-  profiles: dev
-  cloud:
-    nacos:
-      config:
-        file-extension: yaml
-      server-addr: 127.0.0.1:8848
-      discovery:
-        register-enabled: true
-        enabled: true

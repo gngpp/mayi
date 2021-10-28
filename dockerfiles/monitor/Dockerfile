@@ -34,4 +34,4 @@ COPY --from=gradle-build $JAR_FILE ./target.jar
 EXPOSE 4444
 ENV JVM_OPTS="-Xms256m -Xmx256m" \
     TZ=Asia/Shanghai
-CMD exec java $JVM_OPTS -jar /mayi/target.jar
+CMD exec java $JVM_OPTS -Djava.security.egd=file:/dev/./urandom -jar /mayi/target.jar

@@ -1,0 +1,55 @@
+spring:
+  datasource:
+    username: root
+    password: itcast
+    url: jdbc:mysql://mayi.mysql:3306/master?useSSL=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 20
+      max-lifetime: 1800000
+      minimum-idle: 5
+#Redis
+  redis:
+    host: mayi.redis
+    password:
+    port: 6379
+    database: 0
+    timeout: 5000
+    jedis:
+      pool:
+        max-wait: 10
+        max-active: 32
+        min-idle: 2
+
+#Nacos配置
+  cloud:
+    nacos:
+      config:
+        file-extension: yaml
+        timeout: 600000
+      discovery:
+        heart-beat-timeout: 600000
+      server-addr: mayi.nacos:8848
+
+  #Admin监控
+  boot:
+    admin:
+      client:
+        url: http://mayi.admin.monitor:4444
+        username: admin
+        password: 123456
+  thymeleaf:
+    check-template: true
+    check-template-location: true
+    enabled: true
+    mode: HTML5
+    prefix: classpath:/templates/
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+    suffix: .html
+
+security:
+  # logout url
+  logout-url: http://mayi.gateway:8888/oauth/logout

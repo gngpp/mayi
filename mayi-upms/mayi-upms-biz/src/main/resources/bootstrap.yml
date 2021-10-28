@@ -5,66 +5,8 @@ server:
       max: 500
     max-connections: 20000
 spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/master?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT
-    username: root
-    password: itcast
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    type: com.alibaba.druid.pool.DruidDataSource            #alibaba连接池
-    druid:
-      initial-size: 10                                      #初始化建立10条链接
-      max-active: 30                                        #最多二十条
-      min-idle: 5                                           #最小连接数量
-      max-wait: 60000                                       #获取连接时最大等待时间
-      time-between-eviction-runs-millis: 60000              #连接有效性检测时间
-      min-evictable-idle-time-millis: 300000                #连接在池中最小生存的时间
-      max-evictable-idle-time-millis: 900000                #连接在池中最大生存的时间
-      test-while-idle: true
-      test-on-borrow: false
-      test-on-return: false
-      validation-query: select 1                            #检测连接是否有效
-      webStatFilter:                                        #配置监控统计
-        enabled: true
-      stat-view-servlet:
-        enabled: true
-        url-pattern: /druid/*
-        reset-enable: false
-        #配合filter开启iframe
-        allow:
-      filter:
-        stat:
-          enabled: true
-          log-slow-sql: true                                #记录慢SQL
-          slow-sql-millis: 1000
-          merge-sql: true
-        wall:
-          config:
-            multi-statement-allow: true
-      aop-patterns: com.zf1976.mayi.*.endpoint.*
-  #redis
-  redis:
-    host: 127.0.0.1
-    password:
-    port: 6379
-    database: 0
-    timeout: 5000
-    jedis:
-      pool:
-        max-wait: 10
-        max-active: 32
-        min-idle: 2
-
-  profiles: #加载配置文件
-    active: conf,prod
-  cloud:
-    nacos:
-      config:
-        file-extension: yaml
-      server-addr: 127.0.0.1:8848
-      discovery:
-        register-enabled: true
-        enabled: true
-  mail:                                                     #邮件默认配置
+  #邮件默认配置
+  mail:
     default-encoding: UTF-8
     host: smtp.mxhichina.com
     password: Fengge123
@@ -75,39 +17,22 @@ spring:
           socketFactory:
             class: javax.net.ssl.SSLSocketFactory
     username: antemain@innas.cn
-
-  jackson:                                                  #json序列化配置
+  #json序列化配置
+  jackson:
     time-zone: GMT+8
     default-property-inclusion: non_null
     date-format: yyyy-MM-dd HH:mm:ss
-
-  servlet: #servlet配置
+  #servlet配置
+  servlet:
     multipart:
       enabled: true
-
-  thymeleaf: #thymeleaf模版
+  #thymeleaf模版
+  thymeleaf:
     suffix: .html
   application:
     name: mayi-upms-biz
-  #admin监控注册
-  boot:
-    admin:
-      client:
-        url: http://localhost:4444
-        username: admin
-        password: 123456
 
-  security:
-    oauth2:
-      resourceserver:
-        resource-id: mayi-upms-biz
-        jwt:
-          issuer-uri: http://127.0.0.1:9000
-          jwk-set-uri: http://127.0.0.1:9000/oauth/token_key
-          jwt-check-uri: http://127.0.0.1:9000/oauth/check_token
-        opaquetoken:
-          client-id: system
-          client-secret: 123456
+
 # 数据库备份
 sql-backup:
   home: user.home

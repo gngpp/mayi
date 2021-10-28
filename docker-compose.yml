@@ -1,11 +1,8 @@
 ## 容器编排
-version: "3.9"
-
-networks:
-  frontend:
-    external: true
+version: "3"
 
 services:
+
   mayi-upms-biz:
     container_name: mayi-upms-biz
     restart: always
@@ -15,13 +12,12 @@ services:
     build:
       context: ./
       dockerfile: ./dockerfiles/admin/Dockerfile
-    cap_add:
-      - ALL
     image: mayi-upms-biz
     depends_on:
       - mayi-nacos
       - mayi-mysql
       - mayi-redis
+    hostname: mayi.upms.biz
 
   mayi-auth:
     container_name: mayi-auth
@@ -32,43 +28,37 @@ services:
     build:
       context: ./
       dockerfile: ./dockerfiles/auth/Dockerfile
-    cap_add:
-      - ALL
     image: mayi-auth
     depends_on:
       - mayi-nacos
       - mayi-mysql
       - mayi-redis
+      - mayi-upms-biz
+    hostname: mayi.auth
 
   mayi-gateway:
     container_name: mayi-gateway
     restart: always
     ports:
       - "8888:8888"
-    expose:
-      - "8888"
     build:
       context: ./
       dockerfile: ./dockerfiles/gateway/Dockerfile
     image: mayi-gateway
     depends_on:
-      - mayi-redis
       - mayi-nacos
+      - mayi-redis
     hostname: mayi.gateway
-    networks:
-      - frontend
-    links:
-      - "mayi-nacos:mayi.nacos"
-      - "mayi-redis:mayi.redis"
 
-  mayi-visual-monitor:
-    container_name: mayi-visual-monitor
+  mayi-admin-monitor:
+    container_name: mayi-admin-monitor
     ports:
       - "4444:4444"
     build:
       context: ./
       dockerfile: ./dockerfiles/monitor/Dockerfile
-    image: mayi-visual-monitor
+    image: mayi-admin-monitor
+    hostname: mayi.admin.monitor
 
   mayi-redis:
     container_name: mayi-redis
@@ -76,11 +66,7 @@ services:
     restart: always
     ports:
       - "6379:6379"
-    expose:
-      - "6379"
     hostname: mayi.redis
-    networks:
-      - frontend
 
   mayi-mysql:
     container_name: mayi-mysql
@@ -90,21 +76,21 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: itcast
+    security_opt:
+      - seccomp:unconfined
     image: mayi-mysql
     ports:
       - "3306:3306"
-    expose:
-      - "3306"
     hostname: mayi.mysql
 
   mayi-nacos:
     container_name: mayi-nacos
     image: nacos/nacos-server
     restart: always
+    environment:
+      - "MODE=standalone"
     ports:
       - "8848:8848"
-    expose:
-      - "8848"
+    depends_on:
+      - mayi-mysql
     hostname: mayi.nacos
-    networks:
-      - frontend

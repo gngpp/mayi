@@ -1,10 +1,33 @@
 server:
   port: 8888
+
 spring:
   cloud:
     nacos:
       config:
-        server-addr: mayi.nacos:8848
+        server-addr: localhost:8848
         file-extension: yaml
+        timeout: 600000
       discovery:
-        server-addr: mayi.nacos:8848
+        server-addr: localhost:8848
+        heart-beat-timeout: 600000
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:9000/oauth/token_key
+          jwt-check-uri: http://localhost:9000/oauth/check_token
+          issuer-uri: http://localhost:9000
+
+  redis:
+    host: localhost
+    password:
+    port: 6379
+    database: 0
+    timeout: 5000
+    jedis:
+      pool:
+        max-wait: 10
+        max-active: 32
+        min-idle: 2
