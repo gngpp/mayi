@@ -1,37 +1,110 @@
 ## 容器编排
-version: 1.0
+version: "3.9"
+
+networks:
+  frontend:
+    external: true
+
 services:
   mayi-upms-biz:
     container_name: mayi-upms-biz
+    restart: always
+    ports:
+      - "7777:5555"
+      - "5555:5555"
     build:
-      context: ./dockerfiles/admin
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: ./dockerfiles/admin/Dockerfile
     cap_add:
       - ALL
+    image: mayi-upms-biz
+    depends_on:
+      - mayi-nacos
+      - mayi-mysql
+      - mayi-redis
+
   mayi-auth:
     container_name: mayi-auth
+    restart: always
+    ports:
+      - "9000:9000"
+      - "6666:6666"
     build:
-      context: ./dockerfiles/auth
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: ./dockerfiles/auth/Dockerfile
     cap_add:
       - ALL
+    image: mayi-auth
+    depends_on:
+      - mayi-nacos
+      - mayi-mysql
+      - mayi-redis
+
   mayi-gateway:
     container_name: mayi-gateway
+    restart: always
+    ports:
+      - "8888:8888"
+    expose:
+      - "8888"
     build:
-      context: ./dockerfiles/gateway
-      dockerfile: Dockerfile
-    cap_add:
-      - ALL
+      context: ./
+      dockerfile: ./dockerfiles/gateway/Dockerfile
+    image: mayi-gateway
+    depends_on:
+      - mayi-redis
+      - mayi-nacos
+    hostname: mayi.gateway
+    networks:
+      - frontend
+    links:
+      - "mayi-nacos:mayi.nacos"
+      - "mayi-redis:mayi.redis"
+
   mayi-visual-monitor:
     container_name: mayi-visual-monitor
+    ports:
+      - "4444:4444"
     build:
-      context: ./dockerfiles/monitor
-      dockerfile: Dockerfile
-    cap_add:
-      - ALL
-  redis:
+      context: ./
+      dockerfile: ./dockerfiles/monitor/Dockerfile
+    image: mayi-visual-monitor
+
+  mayi-redis:
+    container_name: mayi-redis
     image: redis
-  mysql:
-    image: mysql
-  nacos:
+    restart: always
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+    hostname: mayi.redis
+    networks:
+      - frontend
+
+  mayi-mysql:
+    container_name: mayi-mysql
+    build:
+      context: ./
+      dockerfile: ./dockerfiles/db/Dockerfile
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: itcast
+    image: mayi-mysql
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    hostname: mayi.mysql
+
+  mayi-nacos:
+    container_name: mayi-nacos
     image: nacos/nacos-server
+    restart: always
+    ports:
+      - "8848:8848"
+    expose:
+      - "8848"
+    hostname: mayi.nacos
+    networks:
+      - frontend

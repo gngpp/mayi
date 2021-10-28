@@ -1,7 +1,6 @@
-
 spring:
   profiles:
-    active: prod,dev
+    active: dev
   application:
     name: mayi-gateway
   cloud:
@@ -35,12 +34,12 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://127.0.0.1:9000/oauth/token_key
-          jwt-check-uri: http://127.0.0.1:9000/oauth/check_token
-          issuer-uri: http:127.0.0.1:9000
+          jwk-set-uri: http://mayi.auth:9000/oauth/token_key
+          jwt-check-uri: http://mayi.auth:9000/oauth/check_token
+          issuer-uri: http:mayi-auth:9000
   #redis
   redis:
-    host: 127.0.0.1
+    host: mayi-redis
     password:
     port: 6379
     database: 0

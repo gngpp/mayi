@@ -32,6 +32,7 @@ ENV JAR_FILE=/mayi/target.jar
 COPY --from=gradle-build $JAR_FILE ./target.jar
 # depoly
 EXPOSE 7777
+EXPOSE 5555
 ENV JVM_OPTS="-Xms256m -Xmx256m" \
     TZ=Asia/Shanghai
 CMD exec java $JVM_OPTS -jar /mayi/target.jar
