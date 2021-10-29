@@ -5,6 +5,8 @@ server:
       max: 500
     max-connections: 20000
 spring:
+  application:
+    name: mayi-upms-biz
   #邮件默认配置
   mail:
     default-encoding: UTF-8
@@ -29,9 +31,6 @@ spring:
   #thymeleaf模版
   thymeleaf:
     suffix: .html
-  application:
-    name: mayi-upms-biz
-
 
 # 数据库备份
 sql-backup:
@@ -100,9 +99,6 @@ email:
   expired: 300000
   name: Ant
   subject: 验证码
-
-
-  #admin监控
 
 #actuator监控
 management:

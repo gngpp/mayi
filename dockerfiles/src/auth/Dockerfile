@@ -9,25 +9,24 @@ COPY ./gradle.properties ./gradle.properties
 COPY ./gradlew ./gradlew
 COPY ./gradlew.bat ./gradlew.bat
 COPY ./lombok.config ./lombok.config
-COPY ./bootstrap.yml ./bootstrap.yml
 COPY ./build.gradle ./build.gradle
 COPY ./mayi-auth ./mayi-auth
 COPY ./mayi-common ./mayi-common
 COPY ./mayi-gateway ./mayi-gateway
 COPY ./mayi-upms ./mayi-upms
 COPY ./mayi-visual ./mayi-visual
-RUN ./gradlew -b ./mayi-upms/mayi-upms-biz/build.gradle bootJar --info
+RUN ./gradlew -b ./mayi-auth/build.gradle bootJar --info
 # Cache config
 COPY ./bootstrap.yml ./bootstrap.yml
-# Rename mayi-upms-biz Jar
-RUN mv ./mayi-upms/mayi-upms-biz/build/libs/mayi-upms-biz-latest.jar ./target.jar
+# Rename mayi-gateway Jar
+RUN mv ./mayi-auth/build/libs/mayi-auth-latest.jar ./target.jar
 
 # Target image
 FROM adoptopenjdk:11-jre-openj9
 USER root
 WORKDIR /mayi
 MAINTAINER zf1976 <verticle@foxmail.com>
-LABEL name=mayi-upms-biz
+LABEL name=mayi-auth
 LABEL url=https://github.com/zf1976/mayi
 # depes env
 ENV LANG C.UTF-8

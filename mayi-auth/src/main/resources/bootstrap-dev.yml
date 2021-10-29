@@ -22,15 +22,16 @@ spring:
         max-active: 32
         min-idle: 2
 
-#Nacos配置
+#Nacos
   cloud:
     nacos:
       config:
         file-extension: yaml
       server-addr: localhost:8848
       discovery:
-        register-enabled: true
-        enabled: true
+        heart-beat-timeout: 5000
+        heart-beat-interval: 3000
+        ip-delete-timeout: 600000 #one minute
 
 #Admin监控
   boot:

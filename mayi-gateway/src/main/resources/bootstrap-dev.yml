@@ -1,16 +1,15 @@
 server:
   port: 8888
-
 spring:
   cloud:
     nacos:
+      server-addr: localhost:8848
       config:
-        server-addr: localhost:8848
         file-extension: yaml
-        timeout: 600000
       discovery:
-        server-addr: localhost:8848
-        heart-beat-timeout: 600000
+        heart-beat-timeout: 5000
+        heart-beat-interval: 3000
+        ip-delete-timeout: 600000 #one minute
 
   security:
     oauth2:

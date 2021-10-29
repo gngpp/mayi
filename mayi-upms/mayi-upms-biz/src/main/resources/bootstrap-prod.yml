@@ -53,9 +53,13 @@ spring:
     nacos:
       config:
         file-extension: yaml
-        timeout: 600000
+        config-retry-time: 1000
+        max-retry: 20
+        config-long-poll-timeout: 1000
       discovery:
-        heart-beat-timeout: 600000
+        heart-beat-timeout: 5000
+        heart-beat-interval: 3000
+        ip-delete-timeout: 600000 #one minute
       server-addr: mayi.nacos:8848
 
   #admin监控注册

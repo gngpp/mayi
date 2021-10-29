@@ -167,7 +167,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                     break;
 
                 case CUSTOMIZE:
-                    // 自定义用户/角色所在部门的数据权限
+                    // 自定义用户/角色所在部门的数据权限 - 只能是启用状态部门
                     departmentDao.selectListByRoleId(role.getId())
                                  .stream()
                                  .filter(SysDepartment::getEnabled)

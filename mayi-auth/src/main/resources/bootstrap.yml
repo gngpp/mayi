@@ -13,17 +13,13 @@ server:
       worker: 20
 #配置
 spring:
-  profiles:
-    active: '@profileName@'
   application:
     name: mayi-auth
-
   #json序列化配置
   jackson:
     time-zone: GMT+8
     default-property-inclusion: non_null
     date-format: yyyy-MM-dd HH:mm:ss
-
   servlet:
     multipart:
       enabled: true
