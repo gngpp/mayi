@@ -3,10 +3,6 @@ plugins {
     id 'io.spring.dependency-management' version "${springDependencyManagerVersion}"
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation("de.codecentric:spring-boot-admin-starter-server:${adminMonitorVersion}")
     implementation("org.springframework.boot:spring-boot-starter-security:${springbootVersion}")

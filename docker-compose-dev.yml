@@ -1,4 +1,4 @@
-## ソースコードからのCI/CD
+## ci/cd from source code
 version: "3"
 
 services:
@@ -11,7 +11,7 @@ services:
       - "5555:5555"
     build:
       context: ./
-      dockerfile: ./dockerfiles/src/system/Dockerfile
+      dockerfile: docker/dev/system/Dockerfile
     image: mayi-upms-biz
     depends_on:
       - mayi-nacos
@@ -27,7 +27,7 @@ services:
       - "6666:6666"
     build:
       context: ./
-      dockerfile: ./dockerfiles/src/auth/Dockerfile
+      dockerfile: docker/dev/auth/Dockerfile
     image: mayi-auth
     depends_on:
       - mayi-nacos
@@ -42,7 +42,7 @@ services:
       - "8888:8888"
     build:
       context: ./
-      dockerfile: ./dockerfiles/src/gateway/Dockerfile
+      dockerfile: docker/dev/gateway/Dockerfile
     image: mayi-gateway
     depends_on:
       - mayi-nacos
@@ -50,18 +50,18 @@ services:
     hostname: mayi.gateway
 
   mayi-admin-monitor:
-    container_name: mayi-admin-monitor
+    container_name: mayi-visual-admin
     ports:
       - "4444:4444"
     build:
       context: ./
-      dockerfile: ./dockerfiles/src/monitor/Dockerfile
+      dockerfile: docker/dev/monitor/Dockerfile
     image: mayi-admin-monitor
-    hostname: mayi.admin.monitor
+    hostname: mayi-visual-admin
 
   mayi-redis:
     container_name: mayi-redis
-    image: redis
+    image: redis:6.2.6
     restart: always
     ports:
       - "6379:6379"
@@ -71,7 +71,7 @@ services:
     container_name: mayi-mysql
     build:
       context: ./
-      dockerfile: ./dockerfiles/db/Dockerfile
+      dockerfile: ./docker/db/Dockerfile
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: itcast
