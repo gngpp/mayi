@@ -27,9 +27,10 @@ spring:
     nacos:
       config:
         file-extension: yaml
-        config-retry-time: 1000
-        max-retry: 20
-        config-long-poll-timeout: 1000
+        config-retry-time: 3000
+        max-retry: 30
+        config-long-poll-timeout: 3000
+        timeout: 5000
       discovery:
         heart-beat-timeout: 5000
         heart-beat-interval: 3000

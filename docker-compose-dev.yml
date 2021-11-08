@@ -1,4 +1,4 @@
-## ci/cd from source code
+## ci/cd from the finished product
 version: "3"
 
 services:
@@ -56,8 +56,8 @@ services:
     build:
       context: ./
       dockerfile: docker/dev/monitor/Dockerfile
-    image: mayi-admin-monitor
-    hostname: mayi-visual-admin
+    image: mayi-visual-admin
+    hostname: mayi.visual.admin
 
   mayi-redis:
     container_name: mayi-redis

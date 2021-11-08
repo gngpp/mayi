@@ -37,7 +37,7 @@ FROM adoptopenjdk:11-jre-openj9
 USER root
 WORKDIR /mayi
 MAINTAINER zf1976 <verticle@foxmail.com>
-LABEL name=mayi-admin-monitor
+LABEL name=mayi-visual-admin
 LABEL url=https://github.com/zf1976/mayi
 # env
 ENV LANG C.UTF-8

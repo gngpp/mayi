@@ -1,0 +1,39 @@
+## ci/cd from the finished product
+version: "3"
+
+services:
+
+  mayi-redis:
+    container_name: mayi-redis
+    image: redis:6.2.6
+    restart: always
+    ports:
+      - "6379:6379"
+    hostname: mayi.redis
+
+  mayi-mysql:
+    container_name: mayi-mysql
+    build:
+      context: ./
+      dockerfile: ./docker/db/Dockerfile
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: itcast
+    security_opt:
+      - seccomp:unconfined
+    image: mayi-mysql
+    ports:
+      - "3306:3306"
+    hostname: mayi.mysql
+
+  mayi-nacos:
+    container_name: mayi-nacos
+    image: nacos/nacos-server
+    restart: always
+    environment:
+      - "MODE=standalone"
+    ports:
+      - "8848:8848"
+    depends_on:
+      - mayi-mysql
+    hostname: mayi.nacos

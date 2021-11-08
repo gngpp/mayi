@@ -6,6 +6,10 @@ spring:
       server-addr: localhost:8848
       config:
         file-extension: yaml
+        config-retry-time: 3000
+        max-retry: 30
+        config-long-poll-timeout: 3000
+        timeout: 5000
       discovery:
         heart-beat-timeout: 5000
         heart-beat-interval: 3000
