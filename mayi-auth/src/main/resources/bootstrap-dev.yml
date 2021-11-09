@@ -2,7 +2,7 @@ spring:
   datasource:
     username: root
     password: itcast
-    url: jdbc:mysql://localhost:3306/master?useSSL=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT
+    url: jdbc:mysql://127.0.0.1:3306/master?useSSL=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 30000
@@ -11,7 +11,7 @@ spring:
       minimum-idle: 5
 #Redis
   redis:
-    host: localhost
+    host: 127.0.0.1
     password:
     port: 6379
     database: 0
@@ -31,17 +31,17 @@ spring:
         max-retry: 30
         config-long-poll-timeout: 3000
         timeout: 5000
-      server-addr: localhost:8848
       discovery:
         heart-beat-timeout: 5000
         heart-beat-interval: 3000
         ip-delete-timeout: 600000 #one minute
+      server-addr: 127.0.0.1:8848
 
 #Admin监控
   boot:
     admin:
       client:
-        url: http://localhost:4444
+        url: http://127.0.0.1:4444
         username: admin
         password: 123456
   thymeleaf:
@@ -57,4 +57,4 @@ spring:
 
 security:
   # logout url
-  logout-url: http://localhost:8888/oauth/logout
+  logout-url: http://127.0.0.1:8888/oauth/logout

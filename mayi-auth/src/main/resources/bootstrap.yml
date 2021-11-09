@@ -62,17 +62,6 @@ executor:
   # bean名
   bean-name: AuthorizationServerTaskExecutor
 
-#mybatis-plus 配置
-mybatis-plus:
-  global-config:
-    db-config:
-      update-strategy: not_null
-  configuration:
-    map-underscore-to-camel-case: true
-    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  check-config-location: true
-  type-enums-package: com.zf1976.mayi.upms.biz.pojo.enums
-  mapper-locations: classpath:/mapper/*.xml,classpath:/authMapper/*.xml
 
 # api接口加密
 api-encrypt:
@@ -86,4 +75,8 @@ auth:
 
 feign:
   httpclient:
-    connection-timeout: 5000
+    connection-timeout: 50000
+    connection-timer-repeat: 3000
+  compression:
+    response:
+      useGzipDecoder: true

@@ -3,7 +3,7 @@ server:
 spring:
   cloud:
     nacos:
-      server-addr: localhost:8848
+      server-addr: 127.0.0.1:8848
       config:
         file-extension: yaml
         config-retry-time: 3000
@@ -19,12 +19,12 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:9000/oauth/token_key
-          jwt-check-uri: http://localhost:9000/oauth/check_token
-          issuer-uri: http://localhost:9000
+          jwk-set-uri: http://127.0.0.1:9000/oauth/token_key
+          jwt-check-uri: http://127.0.0.1:9000/oauth/check_token
+          issuer-uri: http://127.0.0.1:9000
 
   redis:
-    host: localhost
+    host: 127.0.0.1
     password:
     port: 6379
     database: 0
