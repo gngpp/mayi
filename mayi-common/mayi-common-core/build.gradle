@@ -1,5 +1,6 @@
 
 dependencies {
+    implementation("org.lionsoul:ip2region:${ipRegionVersion}")
     implementation("javax.servlet:javax.servlet-api:3.1.0")
     implementation("org.springframework.boot:spring-boot-starter-json:${springbootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-data-redis:${springbootVersion}")

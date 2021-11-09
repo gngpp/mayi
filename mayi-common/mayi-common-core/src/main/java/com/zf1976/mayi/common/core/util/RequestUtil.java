@@ -2,6 +2,10 @@ package com.zf1976.mayi.common.core.util;
 
 
 import eu.bitwalker.useragentutils.UserAgent;
+import org.lionsoul.ip2region.DataBlock;
+import org.lionsoul.ip2region.DbConfig;
+import org.lionsoul.ip2region.DbMakerConfigException;
+import org.lionsoul.ip2region.DbSearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -31,12 +35,12 @@ import java.util.Objects;
 public final class RequestUtil extends RequestContextHolder {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestUtil.class);
-    private static final String UNKNOWN_HOST = "UNKNOWN HOST";
     private static final String UNKNOWN = "unknown";
-    private static final String REGION = "intranet";
+    private static final String INNER_REGION = "intranet";
     private static final int IP_LENGTH = 15;
     private static final HttpClient HTTP_CLIENT;
     private static final String IP_API;
+    private static final DbSearcher IP_REGION_SEARCHER;
 
     static {
         IP_API = SpringContextHolder.getProperties("ip.region.base-url");
@@ -44,6 +48,15 @@ public final class RequestUtil extends RequestContextHolder {
                                 .version(HttpClient.Version.HTTP_1_1)
                                 .connectTimeout(Duration.ofMillis(500))
                                 .build();
+        try {
+            final var dbConfig = new DbConfig();
+            final var resourceAsStream = RequestUtil.class.getClassLoader().getResourceAsStream("ip2region.db");
+            Assert.notNull(resourceAsStream, "ipRegion.db resource cannot been null");
+            IP_REGION_SEARCHER = new DbSearcher(dbConfig, resourceAsStream.readAllBytes());
+        } catch (DbMakerConfigException | IOException e) {
+            throw new RuntimeException("ip region database init error.");
+        }
+
     }
 
     /**
@@ -108,18 +121,31 @@ public final class RequestUtil extends RequestContextHolder {
      * @param ip ip
      * @return 区域
      */
+    public static String getLocalIpRegion(String ip) {
+        try {
+            DataBlock dataBlock = IP_REGION_SEARCHER.memorySearch(ip);
+            String region = dataBlock.getRegion();
+            String address = region.replace("0|", "");
+            char symbol = '|';
+            if (address.charAt(address.length() - 1) == symbol) {
+                address = address.substring(0, address.length() - 1);
+            }
+            return address.equals("内网IP|内网IP") ? INNER_REGION : address;
+        } catch (Exception e) {
+            return UNKNOWN;
+        }
+    }
+
     public static String getIpRegion(String ip) {
         try {
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                                           .version(HttpClient.Version.HTTP_1_1)
-                                           .GET()
-                                           .timeout(Duration.ofMillis(500))
-                                           .uri(URI.create(IP_API + ip))
-                                           .build();
-            HttpResponse<String> response = HTTP_CLIENT.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            return getRegionResult(response);
-        } catch (IOException | InterruptedException ignored) {
-            return UNKNOWN_HOST;
+            final var ipRegion = getLocalIpRegion(ip);
+            if (ipRegion.equals(UNKNOWN)) {
+                return getHttpIpRegion(ip);
+            }
+            return ipRegion;
+        } catch (Exception e) {
+            LOG.error("get ip region error", e.getCause());
+            return UNKNOWN;
         }
     }
 
@@ -129,11 +155,21 @@ public final class RequestUtil extends RequestContextHolder {
      * @return region
      */
     public static String getIpRegion() {
+        final var ipAddress = getIpAddress();
+        return getIpRegion(ipAddress);
+    }
+
+    public static String getHttpIpRegion(String ip) {
         try {
-            String ipRegion = IpUtil.getInterIP();
-            return getIpRegion(ipRegion);
-        } catch (Exception e) {
-            LOG.error("get ip region error", e.getCause());
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                                                 .version(HttpClient.Version.HTTP_1_1)
+                                                 .GET()
+                                                 .timeout(Duration.ofMillis(500))
+                                                 .uri(URI.create(IP_API + ip))
+                                                 .build();
+            HttpResponse<String> response = HTTP_CLIENT.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            return getRegionResult(response);
+        } catch (IOException | InterruptedException ignored) {
             return UNKNOWN;
         }
     }
