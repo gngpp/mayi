@@ -241,7 +241,12 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     public IPage<UserVO> selectUserPage (Query<UserQueryParam> query) {
         IPage<SysUser> sourcePage;
         // 非super admin 过滤数据权限
-        if (!SessionManagement.isOwner()) {
+        if (SessionManagement.isOwner()) {
+            sourcePage = super.queryWrapper()
+                              .chainQuery(query)
+                              .selectPage();
+
+        } else {
             // 用户可观察数据范围
             Set<Long> dataPermission = this.findUserByUsername(SessionManagement.getCurrentUsername()).getDataPermissions();
             List<Long> userIds = super.baseMapper.selectIdsByDepartmentIds(dataPermission);
@@ -249,12 +254,8 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                               .chainQuery(query, () -> {
                                   // 自定义条件
                                   return ChainWrappers.queryChain(super.baseMapper)
-                                                      .in(getColumn(SysUser::getId), userIds);
+                                                      .in(!CollectionUtils.isEmpty(userIds), getColumn(SysUser::getId), userIds);
                               })
-                              .selectPage();
-        } else {
-            sourcePage = super.queryWrapper()
-                              .chainQuery(query)
                               .selectPage();
         }
         // 根据部门分页
@@ -277,14 +278,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                         finalSourcePage.setRecords(collectUser);
                     }
                 });
-        return super.mapPageToTarget(sourcePage, sysUser -> {
-            ChainWrappers.lambdaQueryChain(this.departmentDao)
-                         .select(SysDepartment::getId, SysDepartment::getName)
-                         .eq(SysDepartment::getId, sysUser.getDepartmentId())
-                         .oneOpt()
-                         .ifPresent(sysUser::setDepartment);
-            return this.userConvert.toVo(sysUser);
-        });
+        return super.mapPageToTarget(sourcePage, this.userConvert::toVo);
     }
 
         /**

@@ -162,8 +162,7 @@ public abstract class AbstractService<D extends BaseMapper<E>, E> extends Servic
         // 清除本地变量
         this.removeThreadLocalVariable();
         // 分页查询
-        IPage<E> page = this.selectPage(query, queryChainWrapper);
-        return page;
+        return this.selectPage(query, queryChainWrapper);
     }
 
     /**
@@ -188,7 +187,7 @@ public abstract class AbstractService<D extends BaseMapper<E>, E> extends Servic
      * @return page
      */
     public IPage<E> selectPage(Query<? extends AbstractQueryParam> query, QueryChainWrapper<E> queryChainWrapper) {
-        //Clear local variables
+        // Clear local variables
         this.removeThreadLocalVariable();
         Page<E> configPage = this.getPage(query);
         return queryChainWrapper.page(configPage);
@@ -202,9 +201,9 @@ public abstract class AbstractService<D extends BaseMapper<E>, E> extends Servic
      */
     public IPage<E> selectPage(Query<? extends AbstractQueryParam> query,
                                LambdaQueryChainWrapper<E> lambdaQueryChainWrapper) {
-        Page<E> configPage = this.getPage(query);
         // Clear local variables
         this.removeThreadLocalVariable();
+        Page<E> configPage = this.getPage(query);
         return lambdaQueryChainWrapper.page(configPage);
     }
 
@@ -267,11 +266,11 @@ public abstract class AbstractService<D extends BaseMapper<E>, E> extends Servic
     public AbstractService<D, E> chainQuery(Query<? extends AbstractQueryParam> query, Supplier<QueryChainWrapper<E>> supplier) {
         Assert.notNull(query, BusinessMsgState.PARAM_ILLEGAL.getReasonPhrase());
         AbstractQueryParam param = query.getQuery();
-        QueryChainWrapper<E> supplierWrapper = supplier.get();
         if (param == null) {
             return this;
         }
         this.queryThreadLocal.set(query);
+        QueryChainWrapper<E> supplierWrapper = supplier.get();
         if (supplierWrapper == null) {
             supplierWrapper = wrapperThreadLocal.get();
             // 校验是否初始化
@@ -280,8 +279,7 @@ public abstract class AbstractService<D extends BaseMapper<E>, E> extends Servic
             // 自定义wrapper
             this.wrapperThreadLocal.set(supplierWrapper);
         }
-        for (Field field : param.getClass()
-                                .getDeclaredFields()) {
+        for (Field field : param.getClass().getDeclaredFields()) {
             ReflectionUtils.makeAccessible(field);
             String fieldName = StringUtil.camelToUnderline(field.getName());
             Object fieldVal = ReflectionUtils.getField(field, param);
