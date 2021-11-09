@@ -15,6 +15,7 @@ import java.util.Arrays;
  * @author ant
  * Create by Ant on 2020/10/14 8:03 下午
  */
+@SuppressWarnings("DeprecatedIsStillUsed")
 @Deprecated
 public class SecurityPermissionEvaluator implements PermissionEvaluator {
 

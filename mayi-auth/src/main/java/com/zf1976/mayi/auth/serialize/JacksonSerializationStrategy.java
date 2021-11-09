@@ -1,4 +1,4 @@
-package com.zf1976.mayi.auth.enhance.serialize;
+package com.zf1976.mayi.auth.serialize;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;

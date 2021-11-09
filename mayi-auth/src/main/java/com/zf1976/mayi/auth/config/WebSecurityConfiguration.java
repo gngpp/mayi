@@ -2,12 +2,12 @@ package com.zf1976.mayi.auth.config;
 
 import com.zf1976.mayi.auth.SecurityContextHolder;
 import com.zf1976.mayi.auth.enhance.JdbcClientDetailsServiceEnhancer;
-import com.zf1976.mayi.auth.enhance.MD5PasswordEncoder;
+import com.zf1976.mayi.auth.enhance.codec.MD5PasswordEncoder;
 import com.zf1976.mayi.auth.filter.OAuth2TokenAuthenticationFilter;
 import com.zf1976.mayi.auth.filter.SignatureAuthenticationFilter;
-import com.zf1976.mayi.auth.filter.provider.DaoAuthenticationEnhancerProvider;
 import com.zf1976.mayi.auth.filter.handler.logout.OAuth2LogoutHandler;
 import com.zf1976.mayi.auth.filter.handler.logout.Oauth2LogoutSuccessHandler;
+import com.zf1976.mayi.auth.filter.provider.DaoAuthenticationEnhancerProvider;
 import com.zf1976.mayi.common.security.property.AuthProperties;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
@@ -62,6 +62,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return this.passwordEncoder;
     }
 
+
+    /**
+     * authentication server key pair
+     *
+     * @return {@link KeyPair}
+     */
     @Bean
     @DependsOn(value = "securityProperties")
     @ConditionalOnMissingBean
@@ -115,7 +121,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
            .and()
            .headers().frameOptions().disable()
            .and()
-           .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
+           .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
        // 授权认证处理
         http.authorizeRequests()

@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
+ * authentication endpoint
+ *
  * @author mac
  * Create by Ant on 2020/9/1 下午11:14
  */
@@ -39,10 +41,18 @@ public class TokenEndpointEnhancer {
         this.tokenEndpoint = tokenEndpoint;
     }
 
+    /**
+     * reject get request
+     *
+     * @param principal  auth principal
+     * @param parameters param
+     * @return {@link DataResult<OAuth2AccessToken>}
+     */
     @GetMapping("/token")
     public DataResult<OAuth2AccessToken> getAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
         throw new HttpRequestMethodNotSupportedException("GET");
     }
+
 
     @PostMapping("/token")
     public DataResult<AuthorizationResult> postAccessToken(Principal principal,
@@ -52,21 +62,25 @@ public class TokenEndpointEnhancer {
         } else {
             ResponseEntity<OAuth2AccessToken> responseEntity = this.tokenEndpoint.postAccessToken(principal, parameters);
             OAuth2AccessToken oAuth2AccessToken = responseEntity.getBody();
-            if (responseEntity.getStatusCode()
-                              .is2xxSuccessful() && oAuth2AccessToken != null) {
+            if (responseEntity.getStatusCode().is2xxSuccessful() && oAuth2AccessToken != null) {
                 return DataResult.success(new AuthorizationResult(oAuth2AccessToken, SecurityContextHolder.getAuthorizationUser()));
             }
             throw new InsufficientAuthenticationException("Client authentication failed.");
         }
     }
 
+    /**
+     * get verification code
+     *
+     * @return @{@link ResponseEntity<Captcha>}
+     */
     @GetMapping("/code")
     public ResponseEntity<Captcha> getVerifyCode() {
-        // 获取验证码
+        // get verification code
         com.wf.captcha.base.Captcha captcha = CaptchaGenerator.getCaptcha();
-        // 生成uuid
+        // generate uuid
         UUID uuid = ALTERNATIVE_JDK_ID_GENERATOR.generateId();
-        // 将验证码保存在 redis 缓存中
+        // save the verification code in the redis cache
         boolean isSave = captchaService.storeCaptcha(uuid.toString(), captcha.text());
         if (isSave) {
             if (logger.isDebugEnabled()) {

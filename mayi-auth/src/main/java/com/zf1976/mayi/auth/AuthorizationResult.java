@@ -12,7 +12,7 @@ public class AuthorizationResult {
     private final OAuth2AccessToken oAuth2AccessToken;
     private final User user;
 
-    public AuthorizationResult(OAuth2AccessToken oAuth2AccessToken,User user) {
+    public AuthorizationResult(OAuth2AccessToken oAuth2AccessToken, User user) {
         this.oAuth2AccessToken = oAuth2AccessToken;
         this.user = user;
     }

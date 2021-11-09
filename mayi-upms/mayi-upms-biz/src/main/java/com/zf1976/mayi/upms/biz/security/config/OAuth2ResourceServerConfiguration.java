@@ -78,7 +78,7 @@ public class OAuth2ResourceServerConfiguration extends ResourceServerConfigurerA
     }
 
     /**
-     * 分布式缓存（Redis）校验token
+     * 远程校验token
      *
      * @return {@link RemoteTokenServices}
      */

@@ -1,4 +1,4 @@
-package com.zf1976.ant.auth.config.task;
+package com.zf1976.mayi.auth.config.task;
 
 import com.zf1976.mayi.common.core.config.ThreadPoolProperties;
 import org.springframework.context.annotation.Bean;

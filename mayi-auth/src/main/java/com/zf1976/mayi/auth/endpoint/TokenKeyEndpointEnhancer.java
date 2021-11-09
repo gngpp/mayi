@@ -29,6 +29,12 @@ public class TokenKeyEndpointEnhancer {
         publicKeyJson = new JWKSet(rsaKey).toJSONObject();
     }
 
+    /**
+     * 获取公钥
+     *
+     * @param principal auth principal
+     * @return {@link java.io.Serializable}
+     */
     @GetMapping("/oauth/token_key")
     public Serializable getKey(Principal principal) {
         if (principal == null && (this.keyPair.getPublic() == null)) {

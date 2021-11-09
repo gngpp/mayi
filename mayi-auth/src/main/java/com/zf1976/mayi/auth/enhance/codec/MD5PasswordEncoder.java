@@ -1,4 +1,4 @@
-package com.zf1976.mayi.auth.enhance;
+package com.zf1976.mayi.auth.enhance.codec;
 
 import com.zf1976.mayi.common.encrypt.MD5Encoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
