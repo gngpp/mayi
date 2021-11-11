@@ -1,6 +1,7 @@
 package com.zf1976.mayi.auth.config;
 
 import com.zf1976.mayi.auth.enhance.codec.MD5PasswordEncoder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,9 +17,9 @@ public class WebSecurityConfiguration {
 
     private final PasswordEncoder passwordEncoder = new MD5PasswordEncoder();
 
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return this.passwordEncoder;
-//    }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return this.passwordEncoder;
+    }
 
 }

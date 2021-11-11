@@ -125,6 +125,7 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 			// 授权认证处理
 			.authorizeHttpRequests((authorize) -> authorize
 							.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+							.antMatchers("/authorized/**").permitAll()
 							.antMatchers(properties.getIgnoreUri()).permitAll()
 							.anyRequest()
 							.authenticated()

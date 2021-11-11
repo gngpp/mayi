@@ -71,7 +71,7 @@ security:
     # 阿里巴巴监控
     - /druid/**
     - /login/**
-    - /oauth/code
+    - /oauth2/code
     - /api/monitor/**
     - /api/test/**
 
