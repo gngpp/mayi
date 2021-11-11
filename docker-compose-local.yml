@@ -34,6 +34,6 @@ services:
       - "MODE=standalone"
     ports:
       - "8848:8848"
-    #    depends_on:
-    #      - mayi-mysql
+    depends_on:
+      - mayi-mysql
     hostname: mayi.nacos
