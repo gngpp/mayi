@@ -1,6 +1,7 @@
-package com.zf1976.mayi.auth;
+package com.zf1976.mayi.auth.deprecate;
 
 
+import com.zf1976.mayi.auth.LoginUserDetails;
 import com.zf1976.mayi.auth.exception.IllegalAccessException;
 import com.zf1976.mayi.common.core.util.SpringContextHolder;
 import com.zf1976.mayi.common.security.enums.AuthenticationState;

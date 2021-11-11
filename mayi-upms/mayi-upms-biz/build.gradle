@@ -27,18 +27,20 @@ dependencies {
     implementation("de.codecentric:spring-boot-admin-starter-client:${adminMonitorVersion}")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}")
-    implementation("com.alibaba.cloud:spring-cloud-alibaba-dependencies:${nacosVersion}")
-    implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery:${nacosVersion}")
-    implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config:${nacosVersion}")
     implementation "org.springframework.boot:spring-boot-starter-websocket"
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation("org.springframework.boot:spring-boot-starter-undertow")
-    implementation 'org.springframework.cloud:spring-cloud-starter-oauth2'
     implementation "org.springframework.security:spring-security-oauth2-jose"
     implementation('org.springframework.boot:spring-boot-starter-validation')
     implementation('org.springframework.boot:spring-boot-starter-data-redis')
     implementation("org.springframework.boot:spring-boot-configuration-processor")
+
+    // spring cloud
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+    implementation 'org.springframework.cloud:spring-cloud-starter-oauth2'
+    implementation("com.alibaba.cloud:spring-cloud-alibaba-dependencies:${nacosVersion}")
+    implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery:${nacosVersion}")
+    implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config:${nacosVersion}")
 }
 
 dependencyManagement {

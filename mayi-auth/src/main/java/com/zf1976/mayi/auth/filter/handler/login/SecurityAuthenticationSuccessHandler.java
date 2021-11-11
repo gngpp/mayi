@@ -2,8 +2,8 @@ package com.zf1976.mayi.auth.filter.handler.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.power.common.util.Base64Util;
-import com.zf1976.mayi.auth.LoginResponse;
 import com.zf1976.mayi.auth.SecurityContextHolder;
+import com.zf1976.mayi.auth.deprecate.LoginResponse;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.common.encrypt.EncryptUtil;
 import org.slf4j.Logger;

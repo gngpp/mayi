@@ -1,10 +1,10 @@
 package com.zf1976.mayi.auth.filter.provider;
 
 import com.zf1976.mayi.auth.LoginUserDetails;
-import com.zf1976.mayi.auth.JwtTokenProvider;
-import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
+import com.zf1976.mayi.auth.deprecate.JwtTokenProvider;
 import com.zf1976.mayi.common.core.util.SpringContextHolder;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
+import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

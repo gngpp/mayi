@@ -1,6 +1,6 @@
 package com.zf1976.mayi.auth.config.evaluator;
 
-import com.zf1976.mayi.auth.JwtTokenProvider;
+import com.zf1976.mayi.auth.deprecate.JwtTokenProvider;
 import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;

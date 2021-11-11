@@ -1,4 +1,4 @@
-package com.zf1976.mayi.auth;
+package com.zf1976.mayi.auth.deprecate;
 
 import org.springframework.security.core.userdetails.UserDetails;
 

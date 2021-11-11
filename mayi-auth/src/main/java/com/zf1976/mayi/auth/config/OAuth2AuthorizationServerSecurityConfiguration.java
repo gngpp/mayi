@@ -21,17 +21,20 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import org.springframework.beans.factory.config.BeanDefinition;
+import com.zf1976.mayi.auth.filter.handler.access.Oauth2AccessDeniedHandler;
+import com.zf1976.mayi.auth.filter.handler.access.Oauth2AuthenticationEntryPoint;
+import com.zf1976.mayi.common.security.property.SecurityProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Role;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -43,11 +46,10 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.rsa.crypto.KeyStoreKeyFactory;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
@@ -60,6 +62,35 @@ import java.util.UUID;
 @Configuration
 public class OAuth2AuthorizationServerSecurityConfiguration {
 
+	private final SecurityProperties properties;
+	private final UserDetailsService userDetailsService;
+
+	public OAuth2AuthorizationServerSecurityConfiguration(SecurityProperties properties, UserDetailsService userDetailsService) {
+		this.properties = properties;
+		this.userDetailsService = userDetailsService;
+	}
+
+	/**
+	 * authentication server key pair
+	 *
+	 * @return {@link KeyPair}
+	 */
+	@Bean
+	@DependsOn(value = "securityProperties")
+	@ConditionalOnMissingBean
+	public KeyPair keyPair() {
+		ClassPathResource classPathResource = new ClassPathResource("root.jks");
+		KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(classPathResource, properties.getRsaSecret().toCharArray());
+		return keyStoreKeyFactory.getKeyPair("root", properties.getRsaSecret().toCharArray());
+	}
+
+	/**
+	 * 授权处理
+	 *
+	 * @param http http security
+	 * @return {@link SecurityFilterChain}
+	 * @throws Exception e
+	 */
 	@Bean
 	@Order(1)
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -67,18 +98,38 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 		return http.formLogin(Customizer.withDefaults()).build();
 	}
 
+	/**
+	 * 标准安全处理
+	 *
+	 * @param http http security
+	 * @return {@link SecurityFilterChain}
+	 * @throws Exception e
+	 */
 	@Bean
 	@Order(2)
 	public SecurityFilterChain standardSecurityFilterChain(HttpSecurity http) throws Exception {
 		// @formatter:off
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
+			.cors()
+			.and()
+			.csrf().disable()
+			.formLogin()
+			.and()
+			.headers().frameOptions().disable()
+			.and()
+			.exceptionHandling().accessDeniedHandler(new Oauth2AccessDeniedHandler())
+			.authenticationEntryPoint(new Oauth2AuthenticationEntryPoint())
+			.and()
+			.userDetailsService(this.userDetailsService)
+			// 授权认证处理
 			.authorizeHttpRequests((authorize) -> authorize
-				.anyRequest().authenticated()
-			)
+							.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+							.antMatchers(properties.getIgnoreUri()).permitAll()
+							.anyRequest()
+							.authenticated()
+								  )
 			.formLogin(Customizer.withDefaults());
-		// @formatter:on
-
 		return http.build();
 	}
 
@@ -86,13 +137,14 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 	public RegisteredClientRepository registeredClientRepository() {
 		// @formatter:off
 		RegisteredClient loginClient = RegisteredClient.withId(UUID.randomUUID().toString())
-				.clientId("login-client")
-				.clientSecret("{noop}openid-connect")
-				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-				.redirectUri("http://127.0.0.1:8080/login/oauth2/code/login-client")
-				.redirectUri("http://127.0.0.1:8080/authorized")
+													   .clientId("login-client")
+													   .clientSecret("{noop}openid-connect")
+													   .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+													   .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+													   .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+													   .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+													   .redirectUri("http://127.0.0.1:9000/login/oauth2/code/login-client")
+													   .redirectUri("http://127.0.0.1:9000/authorized")
 				.scope(OidcScopes.OPENID)
 				.scope(OidcScopes.PROFILE)
 				.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
@@ -129,6 +181,11 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 		return NimbusJwtDecoder.withPublicKey((RSAPublicKey) keyPair.getPublic()).build();
 	}
 
+	/**
+	 * 授权提供配置
+	 *
+	 * @return {@link ProviderSettings}
+	 */
 	@Bean
 	public ProviderSettings providerSettings() {
 		return ProviderSettings.builder()
