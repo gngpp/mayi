@@ -1,11 +1,6 @@
 package com.zf1976.mayi.auth.config;
 
-import com.zf1976.mayi.auth.SecurityContextHolder;
-import com.zf1976.mayi.auth.enhance.JdbcClientDetailsServiceEnhancer;
 import com.zf1976.mayi.auth.enhance.codec.MD5PasswordEncoder;
-import com.zf1976.mayi.auth.filter.OAuth2TokenAuthenticationFilter;
-import com.zf1976.mayi.auth.filter.SignatureAuthenticationFilter;
-import com.zf1976.mayi.auth.filter.handler.logout.OAuth2LogoutHandler;
 import com.zf1976.mayi.auth.filter.handler.logout.Oauth2LogoutSuccessHandler;
 import com.zf1976.mayi.auth.filter.provider.DaoAuthenticationEnhancerProvider;
 import com.zf1976.mayi.common.security.property.AuthProperties;
@@ -27,9 +22,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+import org.springframework.security.rsa.crypto.KeyStoreKeyFactory;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
 import java.security.KeyPair;
 
@@ -116,7 +110,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
            .formLogin()
            .and()
            .logout().logoutUrl("/oauth/logout").deleteCookies("JSESSIONID").invalidateHttpSession(true)
-           .addLogoutHandler(new OAuth2LogoutHandler())
+//           .addLogoutHandler(new OAuth2LogoutHandler())
            .logoutSuccessHandler(new Oauth2LogoutSuccessHandler())
            .and()
            .headers().frameOptions().disable()
@@ -130,16 +124,16 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers(properties.getIgnoreUri()).permitAll()
             .anyRequest().authenticated()
             .and()
-            .httpBasic()
-            .and()
-            .addFilterBefore(new OAuth2TokenAuthenticationFilter(properties), LogoutFilter.class);
+            .httpBasic();
+//            .and()
+//            .addFilterBefore(new OAuth2TokenAuthenticationFilter(properties), LogoutFilter.class);
 
-        var jdbcClientDetailsServiceEnhancer = SecurityContextHolder.getShareObject(JdbcClientDetailsServiceEnhancer.class);
-        if (this.authProperties.getEnableSignature()) {
-            http.addFilterBefore(new SignatureAuthenticationFilter(jdbcClientDetailsServiceEnhancer,
-                    "/oauth/**", "/**"
-            ), SecurityContextPersistenceFilter.class);
-        }
+//        var jdbcClientDetailsServiceEnhancer = SecurityContextHolder.getShareObject(JdbcClientDetailsServiceEnhancer.class);
+//        if (this.authProperties.getEnableSignature()) {
+//            http.addFilterBefore(new SignatureAuthenticationFilter(jdbcClientDetailsServiceEnhancer,
+//                    "/oauth/**", "/**"
+//            ), SecurityContextPersistenceFilter.class);
+//        }
     }
 
 }

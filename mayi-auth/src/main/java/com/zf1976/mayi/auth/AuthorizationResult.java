@@ -1,7 +1,7 @@
 package com.zf1976.mayi.auth;
 
 import com.zf1976.mayi.upms.biz.pojo.User;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 
 /**
  * @author mac
