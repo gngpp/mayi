@@ -102,32 +102,13 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     @Transactional(readOnly = true)
     public User findUserByUsername(String username) {
         // 初步验证用户是否存在
-        SysUser sysUser = super.lambdaQuery()
-                               .eq(SysUser::getUsername, username)
-                               .oneOpt()
-                               .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
-        // 查询用户部门
-        SysDepartment department = ChainWrappers.lambdaQueryChain(this.departmentDao)
-                                                .eq(SysDepartment::getId, sysUser.getDepartmentId())
-                                                .one();
-        // 用户部门
-        sysUser.setDepartment(department);
-        // 查询用户角色
-        List<SysRole> roleList = this.roleDao.selectListByUserId(sysUser.getId())
-                                             .stream()
-                                             .filter(SysRole::getEnabled)
-                                             .collect(Collectors.toList());
-        sysUser.setRoleList(roleList);
-        // 查询用户职位
-        List<SysPosition> positionList = this.positionDao.selectBatchByUserId(sysUser.getId())
-                                                         .stream()
-                                                         .filter(SysPosition::getEnabled)
-                                                         .collect(Collectors.toList());
-        sysUser.setPositionList(positionList);
-
+        SysUser sysUser = super.baseMapper.selectOneByUsername(username);
+        if (sysUser == null) {
+            throw new UserException(UserState.USER_NOT_FOUND);
+        }
         User user = this.userConvert.convert(sysUser);
         // 权限值
-        Set<String> grantedAuthorities = this.grantedAuthorities(user.getUsername(), roleList);
+        Set<String> grantedAuthorities = this.grantedAuthorities(user.getUsername(), user.getRoleList());
         // 数据权限
         Set<Long> grantedDataPermission = this.grantedDataPermission(user.getUsername(), user.getDepartment().getId(), user.getRoleList());
         user.setDataPermissions(grantedDataPermission);
@@ -143,7 +124,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      * @param departmentId 部门id
      * @return 数据权限
      */
-    private Set<Long> grantedDataPermission(String username, long departmentId, Set<Role> roleList) {
+    private Set<Long> grantedDataPermission(String username, long departmentId, List<Role> roleList) {
 
         // 超级管理员
         if (ObjectUtils.nullSafeEquals(username, this.securityProperties.getOwner())) {
@@ -154,9 +135,10 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         }
 
         // 用户级别角色排序
-        final Set<Role> roles = roleList.stream()
-                                        .sorted(Comparator.comparingInt(Role::getLevel))
-                                        .collect(Collectors.toCollection(LinkedHashSet::new));
+        final List<Role> roles = roleList.stream()
+                                         .filter(Role::getEnabled)
+                                         .sorted(Comparator.comparingInt(Role::getLevel))
+                                         .collect(Collectors.toList());
         // 数据权限范围
         final Set<Long> dataPermission = new HashSet<>();
         for (Role role : roles) {
@@ -191,6 +173,29 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     }
 
     /**
+     * 获取用户权限
+     *
+     * @param username 用户名
+     * @return 返回用户权限信息
+     */
+    private Set<String> grantedAuthorities(String username, List<Role> roles) {
+        Set<String> authorities = new HashSet<>();
+        String markerAdmin = securityProperties.getOwner();
+        if (username.equals(markerAdmin)) {
+            // 分配认证超级管理员角色
+            authorities.add(SecurityConstants.ROLE + markerAdmin);
+            return authorities;
+        }
+        return roles.stream()
+                    .flatMap(role -> permissionDao.selectPermissionsByRoleId(role.getId())
+                                                  .stream()
+                                                  .map(Permission::getValue)
+                                                  .filter(p -> !StringUtils.isEmpty(p))
+                            )
+                    .collect(Collectors.toSet());
+    }
+
+    /**
      * 收集部门树id
      *
      * @param departmentId id
@@ -209,28 +214,6 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     }
 
     /**
-     * 获取用户权限
-     *
-     * @param username 用户名
-     * @return 返回用户权限信息
-     */
-    private Set<String> grantedAuthorities(String username, List<SysRole> roles) {
-        Set<String> authorities = new HashSet<>();
-        String markerAdmin = securityProperties.getOwner();
-        if (username.equals(markerAdmin)) {
-            // 分配认证超级管理员角色
-            authorities.add(SecurityConstants.ROLE + markerAdmin);
-            return authorities;
-        }
-        return roles.stream()
-                    .flatMap(role -> permissionDao.selectPermissionsByRoleId(role.getId())
-                                                  .stream()
-                                                  .map(Permission::getValue)
-                                                  .filter(p -> !StringUtils.isEmpty(p))
-                            )
-                    .collect(Collectors.toSet());
-    }
-    /**
      * 按条件分页查询用户
      *
      * @param query request page
@@ -238,8 +221,8 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      */
     @CachePut(key = "#query", dynamics = true)
     @Transactional(readOnly = true)
-    public IPage<UserVO> selectUserPage (Query<UserQueryParam> query) {
-        IPage<SysUser> sourcePage;
+    public IPage<UserVO> selectUserPage(Query<UserQueryParam> query) {
+        final IPage<SysUser> sourcePage;
         // 非super admin 过滤数据权限
         if (SessionManagement.isOwner()) {
             sourcePage = super.queryWrapper()
@@ -259,7 +242,6 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                               .selectPage();
         }
         // 根据部门分页
-        IPage<SysUser> finalSourcePage = sourcePage;
         Optional.ofNullable(query.getQuery())
                 .ifPresent(queryParam -> {
                     if (queryParam.getDepartmentId() != null) {
@@ -271,11 +253,11 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                                           .map(SysDepartment::getId)
                                           .forEach(id -> this.selectDepartmentTreeIds(id, collectIds));
                         collectIds.add(departmentId);
-                        List<SysUser> collectUser = finalSourcePage.getRecords()
-                                                                   .stream()
-                                                                   .filter(sysUser -> collectIds.contains(sysUser.getDepartmentId()))
-                                                                   .collect(Collectors.toList());
-                        finalSourcePage.setRecords(collectUser);
+                        List<SysUser> collectUser = sourcePage.getRecords()
+                                                              .stream()
+                                                              .filter(sysUser -> collectIds.contains(sysUser.getDepartmentId()))
+                                                              .collect(Collectors.toList());
+                        sourcePage.setRecords(collectUser);
                     }
                 });
         return super.mapPageToTarget(sourcePage, this.userConvert::toVo);
@@ -322,7 +304,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          */
         @Transactional(readOnly = true)
         public Set<Long> selectUserPositionIds(Long id){
-            return this.positionDao.selectBatchByUserId(id)
+            return this.positionDao.selectListByUserId(id)
                                    .stream()
                                    .filter(SysPosition::getEnabled)
                                    .map(SysPosition::getId)

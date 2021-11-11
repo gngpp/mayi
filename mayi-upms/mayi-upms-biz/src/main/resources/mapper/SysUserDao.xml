@@ -6,7 +6,7 @@
         insert into sys_user_position_relation(user_id, position_id)
         values
         <foreach collection="jobIds" item="jobId" separator=",">
-            (#{id}, #{jobId})
+        (#{id}, #{jobId})
         </foreach>
     </insert>
 
@@ -48,11 +48,41 @@
     <select id="selectIdsByDepartmentIds" resultType="java.lang.Long">
         select distinct user_id
         from sys_user_role_relation join sys_role_department_relation srd
-            on sys_user_role_relation.role_id = srd.role_id
+        on sys_user_role_relation.role_id = srd.role_id
         where srd.department_id
         in
         <foreach collection="departmentIds" item="departmentId" index="index" open="(" close=")" separator=",">
             #{departmentId}
         </foreach>
+    </select>
+    <!--    根据用户名查询用户，包括部门-->
+    <resultMap id="selectOneByUsernameMap" type="com.zf1976.mayi.upms.biz.pojo.po.SysUser">
+        <id property="id" column="id"/>
+        <association property="department" column="department_id"
+                     select="com.zf1976.mayi.upms.biz.dao.SysDepartmentDao.selectById"/>
+        <collection property="positionList" column="id"
+                    select="com.zf1976.mayi.upms.biz.dao.SysPositionDao.selectListByUserId"/>
+        <collection property="roleList" column="id"
+                    select="com.zf1976.mayi.upms.biz.dao.SysRoleDao.selectListByUserId"/>
+    </resultMap>
+    <select id="selectOneByUsername" resultMap="selectOneByUsernameMap">
+        select id,
+               department_id,
+               username,
+               password,
+               phone,
+               email,
+               gender,
+               avatar_name,
+               nick_name,
+               version,
+               enabled,
+               update_time,
+               update_by,
+               create_time,
+               create_by,
+               pwd_reset_time
+        from sys_user
+        where sys_user.username = #{username}
     </select>
 </mapper>

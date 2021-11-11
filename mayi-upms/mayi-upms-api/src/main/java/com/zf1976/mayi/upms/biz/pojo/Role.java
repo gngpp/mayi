@@ -21,6 +21,11 @@ public class Role implements Serializable {
     private String name;
 
     /**
+     * 状态
+     */
+    private Boolean enabled;
+
+    /**
      * 角色级别
      */
     private Integer level;
@@ -50,6 +55,15 @@ public class Role implements Serializable {
         return level;
     }
 
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public Role setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+        return this;
+    }
+
     public void setLevel(Integer level) {
         this.level = level;
     }
@@ -67,6 +81,7 @@ public class Role implements Serializable {
         return "Role{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", enabled=" + enabled +
                 ", level=" + level +
                 ", dataScope=" + dataScope +
                 '}';

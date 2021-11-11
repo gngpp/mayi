@@ -9,7 +9,7 @@
     </delete>
 
     <!--查询用户岗位-->
-    <select id="selectBatchByUserId" resultType="com.zf1976.mayi.upms.biz.pojo.po.SysPosition">
+    <select id="selectListByUserId" resultType="com.zf1976.mayi.upms.biz.pojo.po.SysPosition">
         select id,
                name,
                enabled,
@@ -17,7 +17,8 @@
                create_by,
                update_by,
                create_time,
-               update_time
+               update_time,
+               version
         from sys_position
                  join sys_user_position_relation suj on sys_position.id = suj.position_id
         where user_id = #{userId}

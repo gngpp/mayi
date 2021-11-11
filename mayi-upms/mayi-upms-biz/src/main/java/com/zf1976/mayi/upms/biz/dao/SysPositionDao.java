@@ -30,6 +30,6 @@ public interface SysPositionDao extends BaseMapper<SysPosition> {
      * @param userId 用户id
      * @return 岗位collection
      */
-    List<SysPosition> selectBatchByUserId(@Param("userId") Long userId);
+    List<SysPosition> selectListByUserId(@Param("userId") Long userId);
 
 }

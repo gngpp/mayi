@@ -42,11 +42,10 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
 
     private final Logger log = LoggerFactory.getLogger("[SysDictService]");
     private final SysDictDetailDao sysDictDetailDao;
-    private final SysDictConvert convert;
+    private final SysDictConvert convert = SysDictConvert.INSTANCE;
 
     public SysDictService(SysDictDetailDao sysDictDetailDao) {
         this.sysDictDetailDao = sysDictDetailDao;
-        this.convert = SysDictConvert.INSTANCE;
     }
 
     /**

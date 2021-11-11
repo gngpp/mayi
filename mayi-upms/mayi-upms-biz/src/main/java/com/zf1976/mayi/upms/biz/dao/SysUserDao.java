@@ -39,9 +39,18 @@ public interface SysUserDao extends BaseMapper<SysUser> {
     SysUser selectByUsername(@Param("username") String username);
 
     /**
+     * 根据用户名查询用户，包含部门，用户角色，用户职位
+     *
+     * @param username 用户名
+     * @return {@link SysUser}
+     */
+    SysUser selectOneByUsername(@Param("username") String username);
+
+    /**
      * 添加岗位依赖关系
-    　　　　 *
-     * @param id id
+     * 　　　　 *
+     *
+     * @param id     id
      * @param jobIds job collection id
      */
     void savePositionRelationById(@Param("id") long id, @Param("jobIds") Collection<Long> jobIds);

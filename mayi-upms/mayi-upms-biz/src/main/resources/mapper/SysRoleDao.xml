@@ -70,12 +70,13 @@
                name,
                level,
                description,
-               data_scope,
                enabled,
-               create_by,
-               update_by,
+               data_scope,
                create_time,
-               update_time
+               create_by,
+               update_time,
+               update_by,
+               version
         from sys_role
                  join sys_user_role_relation sur on sys_role.id = sur.role_id
         where user_id = #{userId}

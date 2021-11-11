@@ -315,7 +315,7 @@ public class RedisTokenStoreEnhancer implements TokenStore {
 
                 // 以id_to_session:前缀id指向Session
                 conn.set(idToSessionKey, serializeSession);
-                // 以token_to_session:前缀token指向Session
+                // 以access_to_session:前缀token指向Session
                 conn.set(accessToSessionKey, serializeSession);
                 // 以access:前缀token指向OAuth2AccessToken
                 conn.set(accessKey, serializedAccessToken);

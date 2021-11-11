@@ -4,6 +4,7 @@ import com.zf1976.mayi.upms.biz.pojo.enums.GenderEnum;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,12 +26,12 @@ public class User implements Serializable {
     /**
      * 角色信息
      */
-    private Set<Role> roleList;
+    private List<Role> roleList;
 
     /**
      * 职位信息
      */
-    private Set<Position> positionList;
+    private List<Position> positionList;
 
     /**
      * 权限
@@ -103,20 +104,22 @@ public class User implements Serializable {
         this.department = department;
     }
 
-    public Set<Role> getRoleList() {
+    public List<Role> getRoleList() {
         return roleList;
     }
 
-    public void setRoleList(Set<Role> roleList) {
+    public User setRoleList(List<Role> roleList) {
         this.roleList = roleList;
+        return this;
     }
 
-    public Set<Position> getPositionList() {
+    public List<Position> getPositionList() {
         return positionList;
     }
 
-    public void setPositionList(Set<Position> positionList) {
+    public User setPositionList(List<Position> positionList) {
         this.positionList = positionList;
+        return this;
     }
 
     public Set<String> getPermissions() {

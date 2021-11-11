@@ -1,6 +1,7 @@
 package com.zf1976.mayi.upms.biz.controller;
 
 import com.zf1976.mayi.common.log.annotation.Log;
+import com.zf1976.mayi.upms.biz.dao.SysUserDao;
 import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.AntPathMatcher;
@@ -21,6 +22,9 @@ public class TestController {
     @Autowired
     private DynamicDataSourceService dynamicDataSourceService;
 
+    @Autowired
+    private SysUserDao sysUserDao;
+
     @Log(description = "测试A接口")
     @RequestMapping(method = RequestMethod.GET, path = "/demo")
     public void testA(@RequestParam String description) {
@@ -31,6 +35,12 @@ public class TestController {
     @GetMapping("/{demo}")
     public String testB(@PathVariable String demo) {
         return demo;
+    }
+
+    @Log(description = "测试SQL")
+    @GetMapping("/sql")
+    public Object testSql() {
+        return sysUserDao.selectOneByUsername("admin");
     }
 
     @GetMapping("/path")
