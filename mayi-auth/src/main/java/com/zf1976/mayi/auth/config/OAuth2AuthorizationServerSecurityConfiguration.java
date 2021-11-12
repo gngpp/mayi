@@ -110,8 +110,6 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
 		OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =
 				new OAuth2AuthorizationServerConfigurer<>();
-		authorizationServerConfigurer.clientAuthentication(oAuth2ClientAuthenticationConfigurer -> {
-		});
 
 		// authorization endpoint
 		authorizationServerConfigurer
@@ -130,6 +128,7 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 		RequestMatcher endpointsMatcher = authorizationServerConfigurer
 				.getEndpointsMatcher();
 
+
 		http.exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(new Oauth2AccessDeniedHandler())
 																												 .authenticationEntryPoint(new Oauth2AuthenticationEntryPoint()))
 			.requestMatcher(endpointsMatcher)
@@ -143,6 +142,7 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 
 	@Bean
 	public RegisteredClientRepository registeredClientRepository() {
+
 		if (this.registeredClientRepository == null) {
 			synchronized (this) {
 				if (this.registeredClientRepository == null) {
@@ -156,7 +156,6 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 				}
 			}
 		}
-
 
 		return this.registeredClientRepository;
 	}

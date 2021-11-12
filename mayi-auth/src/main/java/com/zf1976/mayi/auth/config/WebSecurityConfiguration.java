@@ -44,7 +44,6 @@ public class WebSecurityConfiguration {
     @Bean
     @Order(2)
     public SecurityFilterChain standardSecurityFilterChain(HttpSecurity http) throws Exception {
-        // @formatter:off
 
         // 授权认证处理
         http.authorizeHttpRequests((authorize) -> authorize
