@@ -24,13 +24,11 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.zf1976.mayi.auth.filter.handler.access.Oauth2AccessDeniedHandler;
 import com.zf1976.mayi.auth.filter.handler.access.Oauth2AuthenticationEntryPoint;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,7 +38,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
@@ -48,7 +48,6 @@ import org.springframework.security.oauth2.server.authorization.web.authenticati
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2ClientCredentialsAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
-import org.springframework.security.rsa.crypto.KeyStoreKeyFactory;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationConverter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -84,19 +83,6 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	/**
-	 * authentication server key pair
-	 *
-	 * @return {@link KeyPair}
-	 */
-	@Bean
-	@DependsOn(value = "securityProperties")
-	@ConditionalOnMissingBean
-	public KeyPair keyPair() {
-		ClassPathResource classPathResource = new ClassPathResource("root.jks");
-		KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(classPathResource, properties.getRsaSecret().toCharArray());
-		return keyStoreKeyFactory.getKeyPair("root", properties.getRsaSecret().toCharArray());
-	}
 
 	/**
 	 * 授权处理
@@ -141,6 +127,7 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 	}
 
 	@Bean
+	@Order(1)
 	public RegisteredClientRepository registeredClientRepository() {
 
 		if (this.registeredClientRepository == null) {
@@ -160,6 +147,32 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 		return this.registeredClientRepository;
 	}
 
+	/**
+	 * grant_type authorization_code consent authorization
+	 *
+	 * @param jdbcOperations jdbc
+	 * @return {@link OAuth2AuthorizationConsentService}
+	 */
+	@Bean
+	@Order(2)
+	@DependsOn({"jdbcTemplate", "registeredClientRepository"})
+	public OAuth2AuthorizationConsentService authorizationConsentService(JdbcOperations jdbcOperations) {
+		// Will be used by the ConsentController
+		return new JdbcOAuth2AuthorizationConsentService(jdbcOperations, this.registeredClientRepository);
+	}
+
+	/**
+	 * order grant_type authorization
+	 *
+	 * @param jdbcOperations jdbc
+	 * @return {@link OAuth2AuthorizationService}
+	 */
+	@Bean
+	@Order(2)
+	@DependsOn({"jdbcTemplate", "registeredClientRepository"})
+	public OAuth2AuthorizationService auth2AuthorizationService(JdbcOperations jdbcOperations) {
+		return new JdbcOAuth2AuthorizationService(jdbcOperations, this.registeredClientRepository);
+	}
 
 
 	@Bean
@@ -220,11 +233,6 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 							   .build();
 	}
 
-	@Bean
-	public OAuth2AuthorizationConsentService authorizationConsentService(JdbcOperations jdbcOperations) {
-		// Will be used by the ConsentController
-		return new JdbcOAuth2AuthorizationConsentService(jdbcOperations, this.registeredClientRepository);
-	}
 
 	/**
 	 * 1. /oauth2/token 认证流程

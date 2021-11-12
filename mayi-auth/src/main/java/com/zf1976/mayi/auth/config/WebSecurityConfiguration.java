@@ -2,15 +2,21 @@ package com.zf1976.mayi.auth.config;
 
 import com.zf1976.mayi.auth.enhance.codec.MD5PasswordEncoder;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.rsa.crypto.KeyStoreKeyFactory;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.security.KeyPair;
 
 
 /**
@@ -32,6 +38,20 @@ public class WebSecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return this.passwordEncoder;
+    }
+
+    /**
+     * authentication server key pair
+     *
+     * @return {@link KeyPair}
+     */
+    @Bean
+    @DependsOn(value = "securityProperties")
+    @ConditionalOnMissingBean
+    public KeyPair keyPair() {
+        ClassPathResource classPathResource = new ClassPathResource("root.jks");
+        KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(classPathResource, properties.getRsaSecret().toCharArray());
+        return keyStoreKeyFactory.getKeyPair("root", properties.getRsaSecret().toCharArray());
     }
 
     /**
