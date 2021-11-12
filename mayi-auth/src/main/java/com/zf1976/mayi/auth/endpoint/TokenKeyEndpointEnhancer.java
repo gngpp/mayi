@@ -34,7 +34,7 @@ public class TokenKeyEndpointEnhancer {
      * @param principal auth principal
      * @return {@link java.io.Serializable}
      */
-    @GetMapping("/oauth/token_key")
+    @GetMapping("/oauth2/token_key")
     public Map<String, Object> getKey(Principal principal) {
         if (principal == null && (this.keyPair.getPublic() == null)) {
             throw new AccessDeniedException("You need to authenticate to see a shared key");

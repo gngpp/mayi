@@ -24,7 +24,7 @@ security:
   #token 头
   token-header: MAYI-ADMIN
   # 签发方
-  token-issuer: mayi
+  token-issuer: https://www.mayi.cn
   # 是否限制单用户登录
   token-single: true
   # authorities key

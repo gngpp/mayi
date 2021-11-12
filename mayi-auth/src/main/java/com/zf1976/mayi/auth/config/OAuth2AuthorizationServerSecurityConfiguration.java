@@ -125,7 +125,8 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 			// 授权认证处理
 			.authorizeHttpRequests((authorize) -> authorize
 							.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-							.antMatchers("/authorized/**").permitAll()
+							// 兼容旧版本接口
+							.antMatchers("/oauth2/token_key").permitAll()
 							.antMatchers(properties.getIgnoreUri()).permitAll()
 							.anyRequest()
 							.authenticated()
@@ -170,27 +171,39 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 		// @formatter:off
 		RSAKey rsaKey = new RSAKey.Builder(publicKey)
 				.privateKey(privateKey)
-				.keyID(UUID.randomUUID().toString())
 				.build();
 		// @formatter:on
 		JWKSet jwkSet = new JWKSet(rsaKey);
 		return new ImmutableJWKSet<>(jwkSet);
 	}
 
+	/**
+	 * token 解码器
+	 * @param keyPair 密钥对
+	 * @return {@link JwtDecoder}
+	 */
 	@Bean
 	public JwtDecoder jwtDecoder(KeyPair keyPair) {
 		return NimbusJwtDecoder.withPublicKey((RSAPublicKey) keyPair.getPublic()).build();
 	}
 
 	/**
-	 * 授权提供配置
+	 * 授权端点配置配置
 	 *
 	 * @return {@link ProviderSettings}
 	 */
+	@SuppressWarnings("SpellCheckingInspection")
 	@Bean
 	public ProviderSettings providerSettings() {
 		return ProviderSettings.builder()
-							   .issuer("http://localhost:9000").build();
+							   .authorizationEndpoint("/oauth2/authorize")
+							   .tokenEndpoint("/oauth2/token")
+							   .jwkSetEndpoint("/oauth2/jwks")
+							   .tokenRevocationEndpoint("/oauth2/revoke")
+							   .tokenIntrospectionEndpoint("/oauth2/introspect")
+							   .oidcClientRegistrationEndpoint("/connect/register")
+							   .issuer(this.properties.getTokenIssuer())
+							   .build();
 	}
 
 }

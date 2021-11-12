@@ -31,13 +31,15 @@ spring:
         max-retry: 30
         config-long-poll-timeout: 3000
         timeout: 5000
+        enabled: false
       discovery:
         heart-beat-timeout: 5000
         heart-beat-interval: 3000
         ip-delete-timeout: 600000 #one minute
+        enabled: false
       server-addr: 127.0.0.1:8848
 
-#Admin监控
+  #Admin监控
   boot:
     admin:
       client:
