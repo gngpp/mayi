@@ -1,4 +1,4 @@
-package com.zf1976.mayi.upms.biz.controller.security;
+package com.zf1976.mayi.upms.biz.security.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zf1976.mayi.common.core.foundation.DataResult;
@@ -22,6 +22,7 @@ import java.util.Set;
 @RequestMapping(
         value = "/api/security/client"
 )
+@Deprecated
 public class OAuth2ClientController {
 
     private final OAuth2ClientService oAuth2ClientService;

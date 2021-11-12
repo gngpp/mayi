@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
  * @date 2021/4/10
  */
 @Repository
+@Deprecated
 public interface ClientDetailsDao extends BaseMapper<ClientDetails> {
 }

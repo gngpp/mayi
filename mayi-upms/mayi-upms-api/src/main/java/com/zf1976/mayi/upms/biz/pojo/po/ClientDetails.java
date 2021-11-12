@@ -10,7 +10,9 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
  * @author mac
  * @date 2021/4/10
  */
+@SuppressWarnings("DeprecatedIsStillUsed")
 @TableName("oauth_client_details")
+@Deprecated
 public class ClientDetails extends Model<ClientDetails> {
 
     /**

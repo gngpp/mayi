@@ -1,8 +1,8 @@
-package com.zf1976.mayi.upms.biz.controller.security;
+package com.zf1976.mayi.upms.biz.security.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.zf1976.mayi.upms.biz.pojo.ResourceNode;
 import com.zf1976.mayi.common.core.foundation.DataResult;
+import com.zf1976.mayi.upms.biz.pojo.ResourceNode;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.springframework.security.access.prepost.PreAuthorize;

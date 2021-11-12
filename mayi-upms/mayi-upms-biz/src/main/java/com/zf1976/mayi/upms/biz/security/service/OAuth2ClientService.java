@@ -36,6 +36,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
+ * 2021/11/12 开始作废
+ *
  * @author mac
  * @date 2021/4/10
  */
@@ -43,6 +45,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("all")
 @CacheConfig(namespace = Namespace.CLIENT)
 @Transactional(rollbackFor = Throwable.class)
+@Deprecated
 public class OAuth2ClientService extends ServiceImpl<ClientDetailsDao, ClientDetails> {
 
     private static final Pattern ID_SECRET_PATTERN = Pattern.compile("^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{10,20}$");

@@ -19,9 +19,9 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 @EnableAsync
 @EnableWebSocket
 @EnableFeignClients(basePackages = "com.zf1976")
-public class SystemApplication {
+public class MayiApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SystemApplication.class, args);
+        SpringApplication.run(MayiApplication.class, args);
     }
 }

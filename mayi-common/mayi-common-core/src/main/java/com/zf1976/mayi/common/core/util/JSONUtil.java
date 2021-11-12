@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.zf1976.mayi.common.core.constants.ParameterConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
@@ -24,13 +26,14 @@ import java.util.TimeZone;
 @SuppressWarnings("all")
 public class JSONUtil {
 
-    private final static ObjectMapper JSON_MAPPER = new ObjectMapper();
+    public static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+    public static final Logger log = LoggerFactory.getLogger("JSONUtil");
 
     static {
         // 忽略在json字符串中存在，但是在java对象中不存在对应属性的情况
         JSON_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         // 忽略空Bean转json的错误
-        JSON_MAPPER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS,false);
+        JSON_MAPPER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         // 允许不带引号的字段名称
         JSON_MAPPER.configure(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES.mappedFeature(), true);
         // 允许单引号
@@ -83,6 +86,7 @@ public class JSONUtil {
             }
             return JSON_MAPPER.writeValueAsString(o);
         } catch (JsonProcessingException e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -99,6 +103,7 @@ public class JSONUtil {
         try {
             return JSON_MAPPER.readValue(json, cls);
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -118,6 +123,7 @@ public class JSONUtil {
             JavaType javaType = JSON_MAPPER.getTypeFactory().constructParametricType(parametrized, parameterClasses);
             return JSON_MAPPER.readValue(json, javaType);
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -134,6 +140,7 @@ public class JSONUtil {
         try {
             return JSON_MAPPER.readValue(json, typeReference);
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -157,6 +164,7 @@ public class JSONUtil {
         try {
             return JSON_MAPPER.readTree(json);
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -186,6 +194,7 @@ public class JSONUtil {
         try {
             return JSON_MAPPER.readValue(json, List.class);
         } catch (JsonProcessingException e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -203,6 +212,7 @@ public class JSONUtil {
             JavaType javaType = JSON_MAPPER.getTypeFactory().constructParametricType(List.class, cls);
             return JSON_MAPPER.readValue(json, javaType);
         } catch (JsonProcessingException e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -216,7 +226,7 @@ public class JSONUtil {
         try {
             JSON_MAPPER.writeValue(response.getOutputStream(), o);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -224,7 +234,7 @@ public class JSONUtil {
         try {
             return JSON_MAPPER.readValue(json, tClass);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             return null;
         }
     }

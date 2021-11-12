@@ -17,10 +17,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 @EnableFeignClients(basePackageClasses = RemoteUserService.class)
 @EnableConfigurationProperties
-public class AuthApplication {
+public class OAuth2AuthorizationServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AuthApplication.class, args);
+        SpringApplication.run(OAuth2AuthorizationServerApplication.class, args);
     }
 
 }

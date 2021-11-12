@@ -1,10 +1,13 @@
-package com.zf1976.mayi.upms.biz.controller.security;
+package com.zf1976.mayi.upms.biz.security.controller;
 
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.upms.biz.communication.Inner;
 import com.zf1976.mayi.upms.biz.pojo.User;
 import com.zf1976.mayi.upms.biz.service.SysUserService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 /**

@@ -14,33 +14,38 @@ ext {
 }
 
 dependencies {
+    // sub projects
     implementation project(':mayi-upms:mayi-upms-api')
     implementation project(':mayi-common:mayi-common-core')
     implementation project(':mayi-common:mayi-common-encrypt')
     implementation project(':mayi-common:mayi-common-component')
     implementation project(':mayi-common:mayi-common-security')
+
+    // miscellaneous
     implementation "io.jsonwebtoken:jjwt-api:$jwtVersion"
     implementation "io.jsonwebtoken:jjwt-impl:$jwtVersion"
     implementation "io.jsonwebtoken:jjwt-jackson:$jwtVersion"
+    implementation "de.codecentric:spring-boot-admin-starter-client:$adminMonitorVersion"
     implementation 'com.github.whvcse:easy-captcha:1.6.2'
     implementation 'com.github.shalousun:common-util:1.9.2'
+    runtimeOnly "mysql:mysql-connector-java:$mysqlConnectorVersion"
+
+    // SpringBoot
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation "org.springframework.boot:spring-boot-starter-undertow"
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation "org.springframework.security:spring-security-oauth2-authorization-server:$authServerVersion"
-    implementation "de.codecentric:spring-boot-admin-starter-client:$adminMonitorVersion"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
-    implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
     implementation 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    runtimeOnly "mysql:mysql-connector-java:$mysqlConnectorVersion"
 
     // SpringCloud
     implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
+    implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
     implementation "org.springframework.cloud:spring-cloud-loadbalancer"
     implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery"
     implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config"

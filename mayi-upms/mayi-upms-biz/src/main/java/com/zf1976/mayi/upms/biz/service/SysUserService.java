@@ -104,7 +104,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         // 初步验证用户是否存在
         SysUser sysUser = super.baseMapper.selectOneByUsername(username);
         if (sysUser == null) {
-            throw new UserException(UserState.USER_NOT_FOUND);
+            throw new UserException(UserState.USER_NOT_FOUND, username);
         }
         User user = this.userConvert.convert(sysUser);
         // 权限值

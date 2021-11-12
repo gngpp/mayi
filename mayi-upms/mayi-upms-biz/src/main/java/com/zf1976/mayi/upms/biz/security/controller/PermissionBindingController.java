@@ -1,8 +1,8 @@
-package com.zf1976.mayi.upms.biz.controller.security;
+package com.zf1976.mayi.upms.biz.security.controller;
 
+import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.upms.biz.pojo.ResourceLinkBinding;
 import com.zf1976.mayi.upms.biz.pojo.RoleBinding;
-import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.upms.biz.security.service.PermissionBindingService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
