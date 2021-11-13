@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,6 +61,7 @@ public class AuthorizationConsentController {
 		Set<String> scopesToApprove = new HashSet<>();
 		Set<String> previouslyApprovedScopes = new HashSet<>();
 		RegisteredClient registeredClient = this.registeredClientRepository.findByClientId(clientId);
+		Assert.notNull(registeredClient, "registerClient cannot been null!");
 		OAuth2AuthorizationConsent currentAuthorizationConsent =
 				this.authorizationConsentService.findById(registeredClient.getId(), principal.getName());
 		Set<String> authorizedScopes;

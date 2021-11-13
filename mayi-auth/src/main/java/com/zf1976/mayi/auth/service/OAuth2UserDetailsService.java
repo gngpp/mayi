@@ -1,6 +1,5 @@
 package com.zf1976.mayi.auth.service;
 
-import com.zf1976.mayi.auth.LoginUserDetails;
 import com.zf1976.mayi.auth.exception.UserNotFountException;
 import com.zf1976.mayi.auth.feign.RemoteUserService;
 import com.zf1976.mayi.common.core.constants.SecurityConstants;
@@ -11,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.SpringSecurityMessageSource;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -46,10 +45,15 @@ public class OAuth2UserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UserNotFountException(AuthenticationState.USER_NOT_FOUNT);
         }
-        if (!user.getEnabled()) {
-            throw new LockedException(this.messages.getMessage("AccountStatusUserDetailsChecker.locked", "User account is locked"));
-        }
-        return new LoginUserDetails(user);
+        final var permissions = String.join(",", user.getPermissions());
+        return AuthorizationUserDetails.builder()
+                                       .delegateUser(user)
+                                       .username(user.getUsername())
+                                       .password(user.getPassword())
+                                       .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList(permissions))
+                                       .accountLocked(!user.getEnabled())
+                                       .disabled(!user.getEnabled())
+                                       .build();
     }
 
 }

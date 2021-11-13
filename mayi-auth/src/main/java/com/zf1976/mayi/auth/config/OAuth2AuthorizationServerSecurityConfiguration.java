@@ -21,8 +21,8 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.zf1976.mayi.auth.config.authorization.OAuthorizationRowMapperEnhancer;
 import com.zf1976.mayi.auth.filter.handler.access.Oauth2AccessDeniedHandler;
-import com.zf1976.mayi.auth.filter.handler.access.Oauth2AuthenticationEntryPoint;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -114,9 +114,9 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 		RequestMatcher endpointsMatcher = authorizationServerConfigurer
 				.getEndpointsMatcher();
 
-
-		http.exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(new Oauth2AccessDeniedHandler())
-																												 .authenticationEntryPoint(new Oauth2AuthenticationEntryPoint()))
+		http.exceptionHandling()
+			.accessDeniedHandler(new Oauth2AccessDeniedHandler())
+			.and()
 			.requestMatcher(endpointsMatcher)
 			.authorizeRequests(authorizeRequests ->
 							authorizeRequests.anyRequest().authenticated()
@@ -171,7 +171,9 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 	@Order(2)
 	@DependsOn({"jdbcTemplate", "registeredClientRepository"})
 	public OAuth2AuthorizationService auth2AuthorizationService(JdbcOperations jdbcOperations) {
-		return new JdbcOAuth2AuthorizationService(jdbcOperations, this.registeredClientRepository);
+		final var jdbcOAuth2AuthorizationService = new JdbcOAuth2AuthorizationService(jdbcOperations, this.registeredClientRepository);
+		jdbcOAuth2AuthorizationService.setAuthorizationRowMapper(new OAuthorizationRowMapperEnhancer(this.registeredClientRepository));
+		return jdbcOAuth2AuthorizationService;
 	}
 
 

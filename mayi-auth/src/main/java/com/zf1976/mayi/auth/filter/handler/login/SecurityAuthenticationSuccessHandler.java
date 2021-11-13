@@ -22,7 +22,6 @@ import java.io.IOException;
  * @author ant
  * Create by Ant on 2020/9/12 10:03 上午
  */
-@Deprecated
 public class SecurityAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());

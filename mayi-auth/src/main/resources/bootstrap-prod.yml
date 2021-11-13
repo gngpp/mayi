@@ -2,7 +2,7 @@ spring:
   datasource:
     username: root
     password: itcast
-    url: jdbc:mysql://mayi.mysql:3306/master?useSSL=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT
+    url: jdbc:mysql://mayi.mysql:3306/master?useSSL=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 30000

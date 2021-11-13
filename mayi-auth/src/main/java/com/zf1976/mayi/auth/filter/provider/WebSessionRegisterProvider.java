@@ -1,7 +1,7 @@
 package com.zf1976.mayi.auth.filter.provider;
 
-import com.zf1976.mayi.auth.LoginUserDetails;
 import com.zf1976.mayi.auth.deprecate.JwtTokenProvider;
+import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
 import com.zf1976.mayi.common.core.util.SpringContextHolder;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
@@ -22,7 +22,7 @@ public class WebSessionRegisterProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         final String token = JwtTokenProvider.createToken(authentication);
-        final LoginUserDetails userDetails = (LoginUserDetails) authentication.getDetails();
+        final AuthorizationUserDetails userDetails = (AuthorizationUserDetails) authentication.getDetails();
         //校验登陆状态 踢下线
         if (CONFIG.getTokenSingle()) {
             SessionManagement.removeSession(userDetails.getId());

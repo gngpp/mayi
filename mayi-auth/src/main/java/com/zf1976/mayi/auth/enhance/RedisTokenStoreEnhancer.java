@@ -1,6 +1,6 @@
 package com.zf1976.mayi.auth.enhance;
 
-//import com.zf1976.mayi.auth.LoginUserDetails;
+//import com.zf1976.mayi.auth.AuthorizationUserDetails;
 //import com.zf1976.mayi.auth.SecurityContextHolder;
 //import com.zf1976.mayi.auth.serialize.JacksonSerializationStrategy;
 //import com.zf1976.mayi.common.core.constants.AuthGranterTypeConstants;
@@ -270,7 +270,7 @@ package com.zf1976.mayi.auth.enhance;
 //            return;
 //        }
 //        // 认证成功信息细节
-//        LoginUserDetails details = (LoginUserDetails) authentication.getPrincipal();
+//        AuthorizationUserDetails details = (AuthorizationUserDetails) authentication.getPrincipal();
 //        // 保存认证成功细节
 //        authentication.setDetails(details);
 //        // 保存认证
@@ -583,7 +583,7 @@ package com.zf1976.mayi.auth.enhance;
 //    private Session generationSession(OAuth2AccessToken token, OAuth2Authentication authentication) {
 //        Object principal = authentication.getUserAuthentication()
 //                                         .getPrincipal();
-//        LoginUserDetails details = (LoginUserDetails) principal;
+//        AuthorizationUserDetails details = (AuthorizationUserDetails) principal;
 //        String clientId = authentication.getOAuth2Request()
 //                                        .getClientId();
 //        return new Session()

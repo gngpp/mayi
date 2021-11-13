@@ -1,7 +1,7 @@
 package com.zf1976.mayi.auth.filter.handler.logout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zf1976.mayi.auth.LoginUserDetails;
+import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ public class Oauth2LogoutSuccessHandler implements LogoutSuccessHandler {
     }
 
     private String extractUsername(Authentication authentication) {
-        LoginUserDetails userDetails = (LoginUserDetails) authentication.getPrincipal();
+        AuthorizationUserDetails userDetails = (AuthorizationUserDetails) authentication.getPrincipal();
         return userDetails.getUsername();
     }
 }

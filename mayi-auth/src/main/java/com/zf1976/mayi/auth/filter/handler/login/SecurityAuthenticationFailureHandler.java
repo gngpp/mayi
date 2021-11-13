@@ -20,7 +20,6 @@ import java.io.IOException;
  * Create by Ant on 2020/9/12 10:04 上午
  */
 @SuppressWarnings("rawtypes")
-@Deprecated
 public class SecurityAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
     /**

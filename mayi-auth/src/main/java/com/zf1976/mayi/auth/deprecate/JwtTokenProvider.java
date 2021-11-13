@@ -1,8 +1,8 @@
 package com.zf1976.mayi.auth.deprecate;
 
 
-import com.zf1976.mayi.auth.LoginUserDetails;
 import com.zf1976.mayi.auth.exception.IllegalAccessException;
+import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
 import com.zf1976.mayi.common.core.util.SpringContextHolder;
 import com.zf1976.mayi.common.security.enums.AuthenticationState;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
@@ -58,7 +58,7 @@ public class JwtTokenProvider {
      * @return token
      */
     public static String createToken(Authentication authentication) {
-        final LoginUserDetails userDetails = (LoginUserDetails) authentication.getDetails();
+        final AuthorizationUserDetails userDetails = (AuthorizationUserDetails) authentication.getDetails();
         final String uuid = (String) authentication.getCredentials();
         final String authorities = authentication.getAuthorities()
                                            .stream()

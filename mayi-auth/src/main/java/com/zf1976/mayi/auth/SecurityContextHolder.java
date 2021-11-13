@@ -1,5 +1,6 @@
 package com.zf1976.mayi.auth;
 
+import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.upms.biz.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class SecurityContextHolder extends org.springframework.security.core.con
      */
     public static User getAuthorizationUser() {
         try {
-            LoginUserDetails details = (LoginUserDetails) getContext().getAuthentication().getDetails();
+            AuthorizationUserDetails details = (AuthorizationUserDetails) getContext().getAuthentication().getDetails();
             return details.getDelegate() ;
         } catch (Exception ignored) {
             throw new InsufficientAuthenticationException("User authentication failed.");
