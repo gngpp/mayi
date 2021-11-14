@@ -55,6 +55,7 @@ spring:
       content-type: text/html
     suffix: .html
 
+
 security:
-  # logout url
-  logout-url: http://127.0.0.1:8888/oauth/logout
+  # revoke url
+  logout-url: http://127.0.0.1:8888/oauth/revoke

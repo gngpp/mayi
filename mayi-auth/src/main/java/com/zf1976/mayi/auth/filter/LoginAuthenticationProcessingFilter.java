@@ -3,13 +3,13 @@ package com.zf1976.mayi.auth.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.power.common.util.Base64Util;
 import com.zf1976.mayi.auth.exception.BadCredentialsException;
+import com.zf1976.mayi.auth.filter.handler.success.OAuth2AuthenticationFailureHandler;
+import com.zf1976.mayi.auth.filter.handler.success.OAuth2AuthenticationSuccessHandler;
 import com.zf1976.mayi.auth.filter.manager.AuthenticationProviderManager;
-import com.zf1976.mayi.auth.filter.handler.login.SecurityAuthenticationFailureHandler;
-import com.zf1976.mayi.auth.filter.handler.login.SecurityAuthenticationSuccessHandler;
 import com.zf1976.mayi.common.encrypt.EncryptUtil;
 import com.zf1976.mayi.common.security.enums.AuthenticationState;
-import com.zf1976.mayi.common.security.pojo.dto.LoginDTO;
 import com.zf1976.mayi.common.security.pojo.dto.AuthenticationDTO;
+import com.zf1976.mayi.common.security.pojo.dto.LoginDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -45,8 +45,8 @@ public class LoginAuthenticationProcessingFilter extends AbstractAuthenticationP
     public LoginAuthenticationProcessingFilter() {
         super("/oauth/token");
         this.setAuthenticationManager(new AuthenticationProviderManager());
-        this.setAuthenticationSuccessHandler(new SecurityAuthenticationSuccessHandler());
-        this.setAuthenticationFailureHandler(new SecurityAuthenticationFailureHandler());
+        this.setAuthenticationSuccessHandler(new OAuth2AuthenticationSuccessHandler());
+        this.setAuthenticationFailureHandler(new OAuth2AuthenticationFailureHandler());
     }
 
     @Override

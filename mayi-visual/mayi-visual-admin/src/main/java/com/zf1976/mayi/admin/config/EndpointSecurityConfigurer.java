@@ -2,16 +2,10 @@ package com.zf1976.mayi.admin.config;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import java.util.UUID;
 
 /**
  * @author mac
@@ -41,15 +35,15 @@ public class EndpointSecurityConfigurer extends WebSecurityConfigurerAdapter {
         successHandler.setDefaultTargetUrl(adminServerContextPath +"/applications");
 
         http.authorizeRequests()
-            .antMatchers(adminServerContextPath +  "/assets/**").permitAll()
-            .antMatchers(adminServerContextPath + "/login").permitAll()
+            .antMatchers(adminServerContextPath + "/assets/**").permitAll()
+            .antMatchers(adminServerContextPath + "/success").permitAll()
             .anyRequest().authenticated()
             .and()
-            .formLogin().loginPage(adminServerContextPath  + "/login").permitAll()
+            .formLogin().loginPage(adminServerContextPath + "/success").permitAll()
             .successHandler(successHandler).permitAll()
             .and()
-            .logout().logoutUrl(adminServerContextPath +  "/logout").permitAll()
-            .logoutSuccessUrl(adminServerContextPath + "/logout").permitAll()
+            .logout().logoutUrl(adminServerContextPath + "/revoke").permitAll()
+            .logoutSuccessUrl(adminServerContextPath + "/revoke").permitAll()
             .and()
             .httpBasic()
             .and()

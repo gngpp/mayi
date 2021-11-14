@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.zf1976.mayi.auth.config;
+package com.zf1976.mayi.auth.config.oauth2;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -22,7 +22,6 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.zf1976.mayi.auth.config.authorization.OAuthorizationRowMapperEnhancer;
-import com.zf1976.mayi.auth.filter.handler.access.Oauth2AccessDeniedHandler;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,7 +68,7 @@ import java.util.Arrays;
  */
 @SuppressWarnings("DanglingJavadoc")
 @Configuration
-public class OAuth2AuthorizationServerSecurityConfiguration {
+public class AuthorizationServerSecurityConfiguration {
 
 	private final SecurityProperties properties;
 	private static final String CUSTOM_CONSENT_PAGE_URI = "/oauth2/consent";
@@ -77,7 +76,7 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 	private final PasswordEncoder passwordEncoder;
 	private volatile RegisteredClientRepository registeredClientRepository;
 
-	public OAuth2AuthorizationServerSecurityConfiguration(SecurityProperties properties, JdbcOperations jdbcOperations, PasswordEncoder passwordEncoder) {
+	public AuthorizationServerSecurityConfiguration(SecurityProperties properties, JdbcOperations jdbcOperations, PasswordEncoder passwordEncoder) {
 		this.properties = properties;
 		this.jdbcOperations = jdbcOperations;
 		this.passwordEncoder = passwordEncoder;
@@ -99,35 +98,33 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 
 		// authorization endpoint
 		authorizationServerConfigurer
-				.authorizationEndpoint(authorizationEndpoint ->
-						authorizationEndpoint.consentPage(CUSTOM_CONSENT_PAGE_URI));
+				.authorizationEndpoint(configurer ->
+						configurer.consentPage(CUSTOM_CONSENT_PAGE_URI));
 
 		// /oauth2/token
-		authorizationServerConfigurer.tokenEndpoint(oAuth2TokenEndpointConfigurer -> {
+		authorizationServerConfigurer.tokenEndpoint(configurer -> {
 			final var delegatingAuthenticationConverter = new DelegatingAuthenticationConverter(Arrays.asList(
 					new OAuth2AuthorizationCodeAuthenticationConverter(),
 					new OAuth2ClientCredentialsAuthenticationConverter(),
 					new OAuth2RefreshTokenAuthenticationConverter(),
 					new BasicAuthenticationConverter()));
-			oAuth2TokenEndpointConfigurer.accessTokenRequestConverter(delegatingAuthenticationConverter);
+			configurer.accessTokenRequestConverter(delegatingAuthenticationConverter);
 		});
 		RequestMatcher endpointsMatcher = authorizationServerConfigurer
 				.getEndpointsMatcher();
 
-		http.exceptionHandling()
-			.accessDeniedHandler(new Oauth2AccessDeniedHandler())
-			.and()
-			.requestMatcher(endpointsMatcher)
+		// Allow security to be processed only at the oauth2 authentication endpoint
+		http.requestMatcher(endpointsMatcher)
 			.authorizeRequests(authorizeRequests ->
 							authorizeRequests.anyRequest().authenticated()
 							  )
+			// ignored oauth2 endpoint url
 			.csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
 			.apply(authorizationServerConfigurer);
 		return http.formLogin(Customizer.withDefaults()).build();
 	}
 
 	@Bean
-	@Order(1)
 	public RegisteredClientRepository registeredClientRepository() {
 
 		if (this.registeredClientRepository == null) {
@@ -154,11 +151,10 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 	 * @return {@link OAuth2AuthorizationConsentService}
 	 */
 	@Bean
-	@Order(2)
 	@DependsOn({"jdbcTemplate", "registeredClientRepository"})
-	public OAuth2AuthorizationConsentService authorizationConsentService(JdbcOperations jdbcOperations) {
+	public OAuth2AuthorizationConsentService authorizationConsentService(JdbcOperations jdbcOperations, RegisteredClientRepository registeredClientRepository) {
 		// Will be used by the ConsentController
-		return new JdbcOAuth2AuthorizationConsentService(jdbcOperations, this.registeredClientRepository);
+		return new JdbcOAuth2AuthorizationConsentService(jdbcOperations, registeredClientRepository);
 	}
 
 	/**
@@ -168,24 +164,20 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 	 * @return {@link OAuth2AuthorizationService}
 	 */
 	@Bean
-	@Order(2)
 	@DependsOn({"jdbcTemplate", "registeredClientRepository"})
-	public OAuth2AuthorizationService auth2AuthorizationService(JdbcOperations jdbcOperations) {
-		final var jdbcOAuth2AuthorizationService = new JdbcOAuth2AuthorizationService(jdbcOperations, this.registeredClientRepository);
-		jdbcOAuth2AuthorizationService.setAuthorizationRowMapper(new OAuthorizationRowMapperEnhancer(this.registeredClientRepository));
+	public OAuth2AuthorizationService auth2AuthorizationService(JdbcOperations jdbcOperations, RegisteredClientRepository registeredClientRepository) {
+		final var jdbcOAuth2AuthorizationService = new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
+		jdbcOAuth2AuthorizationService.setAuthorizationRowMapper(new OAuthorizationRowMapperEnhancer(registeredClientRepository));
 		return jdbcOAuth2AuthorizationService;
 	}
-
 
 	@Bean
 	public JWKSource<SecurityContext> jwkSource(KeyPair keyPair) {
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
 		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-		// @formatter:off
 		RSAKey rsaKey = new RSAKey.Builder(publicKey)
 				.privateKey(privateKey)
 				.build();
-		// @formatter:on
 		JWKSet jwkSet = new JWKSet(rsaKey);
 		return new ImmutableJWKSet<>(jwkSet);
 	}
@@ -208,7 +200,7 @@ public class OAuth2AuthorizationServerSecurityConfiguration {
 	 * {@link org.springframework.security.oauth2.server.authorization.web.OAuth2TokenEndpointFilter} -> /oauth2/token 令牌端点
 	 * {@link org.springframework.security.oauth2.server.authorization.web.OAuth2ClientAuthenticationFilter} -> 客户端认证
 	 * {@link org.springframework.security.oauth2.server.authorization.web.OAuth2AuthorizationEndpointFilter} -> /oauth2/authorize 授权端点
-	 * {@link org.springframework.security.oauth2.server.authorization.web.OAuth2TokenIntrospectionEndpointFilter} -> /oatuh2/introspect 令牌自省端点, 说白了就是返回令牌信息
+	 * {@link org.springframework.security.oauth2.server.authorization.web.OAuth2TokenIntrospectionEndpointFilter} -> /oauth2/introspect 令牌自省端点, 说白了就是返回令牌信息
 	 *
 	 * authentication provider list
 	 * {@link org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationCodeAuthenticationProvider}

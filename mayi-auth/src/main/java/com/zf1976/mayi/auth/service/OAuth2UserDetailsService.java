@@ -39,7 +39,7 @@ public class OAuth2UserDetailsService implements UserDetailsService {
             userDataResult = this.remoteUserService.getUser(username, SecurityConstants.FROM_IN);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new AuthenticationServiceException("server error");
+            throw new AuthenticationServiceException("authorization server error.");
         }
         User user = userDataResult.getData();
         if (user == null) {

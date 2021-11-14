@@ -7,8 +7,6 @@ plugins {
 configurations {
     runtime.exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
     compile.exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
-    compile.exclude group: 'com.zaxxer', name: 'HikariCP', version: '3.4.5'
-    runtime.exclude group: 'com.zaxxer', name: 'HikariCP', version: '3.4.5'
 }
 
 dependencies {
@@ -19,33 +17,41 @@ dependencies {
     implementation project(':mayi-common:mayi-common-security')
     implementation project(':mayi-common:mayi-common-component')
     implementation project(':mayi-common:mayi-common-datasource')
+
     implementation('cn.hutool:hutool-poi:5.4.5')
     implementation('org.apache.poi:poi-ooxml:4.1.2')
     implementation "com.github.oshi:oshi-core:${oshiCoreVersion}"
-    implementation("org.springframework.boot:spring-boot-starter-mail:${springbootVersion}")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springbootVersion}")
     implementation("de.codecentric:spring-boot-admin-starter-client:${adminMonitorVersion}")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}")
-    implementation "org.springframework.boot:spring-boot-starter-websocket"
-    implementation('org.springframework.boot:spring-boot-starter-web')
-    implementation("org.springframework.boot:spring-boot-starter-undertow")
-    implementation "org.springframework.security:spring-security-oauth2-jose"
-    implementation('org.springframework.boot:spring-boot-starter-validation')
-    implementation('org.springframework.boot:spring-boot-starter-data-redis')
-    implementation("org.springframework.boot:spring-boot-configuration-processor")
 
-    // spring cloud
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
-    implementation 'org.springframework.cloud:spring-cloud-starter-oauth2'
-    implementation("com.alibaba.cloud:spring-cloud-alibaba-dependencies:${nacosVersion}")
-    implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery:${nacosVersion}")
-    implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config:${nacosVersion}")
+
+    // SpringBoot
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation "org.springframework.boot:spring-boot-starter-websocket"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-undertow"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework.boot:spring-boot-starter-data-redis"
+    implementation "org.springframework.boot:spring-boot-configuration-processor"
+
+    // Resource server
+    implementation 'com.nimbusds:oauth2-oidc-sdk'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+    // SpringCloud
+    implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
+    implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
+    implementation "org.springframework.cloud:spring-cloud-loadbalancer"
+    implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery"
+    implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config"
 }
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$alibabaVersion"
     }
 }
 

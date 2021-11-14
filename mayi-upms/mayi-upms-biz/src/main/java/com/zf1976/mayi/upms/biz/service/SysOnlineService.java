@@ -3,14 +3,14 @@ package com.zf1976.mayi.upms.biz.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zf1976.mayi.common.core.foundation.DataResult;
-import com.zf1976.mayi.common.security.support.session.Session;
-import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
 import com.zf1976.mayi.common.core.util.RedisUtil;
 import com.zf1976.mayi.common.core.util.StringUtil;
-import com.zf1976.mayi.upms.biz.feign.RemoteAuthClient;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
+import com.zf1976.mayi.common.security.support.session.Session;
+import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
 import com.zf1976.mayi.upms.biz.convert.SessionConvert;
+import com.zf1976.mayi.upms.biz.feign.RemoteAuthClient;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.pojo.query.SessionQueryParam;
 import com.zf1976.mayi.upms.biz.pojo.vo.SessionVO;
@@ -117,7 +117,7 @@ public class SysOnlineService {
                     try {
                         this.clientHttpRequest = requestFactory.createRequest(URI.create(securityProperties.getLogoutUrl()),HttpMethod.POST);
                     } catch (IOException e) {
-                        log.error("create logout request client fail：{}", e.getMessage());
+                        log.error("create revoke request client fail：{}", e.getMessage());
                     }
                 }
             }

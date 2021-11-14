@@ -19,7 +19,6 @@ import com.zf1976.mayi.upms.biz.pojo.po.ClientDetails;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.pojo.vo.ClientDetailsVO;
 import com.zf1976.mayi.upms.biz.security.convert.ClientConvert;
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -284,10 +283,10 @@ public class OAuth2ClientService extends ServiceImpl<ClientDetailsDao, ClientDet
     public Void deleteClient(String clientId) {
         final Session session = SessionManagement.getSession();
         if (ObjectUtils.nullSafeEquals(clientId, session.getClientId())) {
-            throw new OAuth2Exception("Prohibit deleting the currently logged in client");
+            throw new RuntimeException("Prohibit deleting the currently logged in client");
         }
         if (!super.removeById(clientId)) {
-            throw new OAuth2Exception(OAuth2ErrorCodes.INVALID_CLIENT);
+            throw new RuntimeException(OAuth2ErrorCodes.INVALID_CLIENT);
         }
         return null;
     }
@@ -302,16 +301,16 @@ public class OAuth2ClientService extends ServiceImpl<ClientDetailsDao, ClientDet
     @Transactional
     public Void deleteBatchClient(Set<String> clientIdList) {
         if (CollectionUtils.isEmpty(clientIdList)) {
-            throw new OAuth2Exception(OAuth2ErrorCodes.TEMPORARILY_UNAVAILABLE);
+            throw new RuntimeException(OAuth2ErrorCodes.TEMPORARILY_UNAVAILABLE);
         }
         final Session session = SessionManagement.getSession();
         for (String clientId : clientIdList) {
             if (ObjectUtils.nullSafeEquals(clientId, session.getClientId())) {
-                throw new OAuth2Exception("Prohibit deleting the currently logged in client");
+                throw new RuntimeException("Prohibit deleting the currently logged in client");
             }
         }
         if (!super.removeByIds(clientIdList)) {
-            throw new OAuth2Exception(OAuth2ErrorCodes.INVALID_CLIENT);
+            throw new RuntimeException(OAuth2ErrorCodes.INVALID_CLIENT);
         }
         return null;
     }

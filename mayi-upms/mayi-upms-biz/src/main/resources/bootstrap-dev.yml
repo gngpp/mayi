@@ -74,14 +74,10 @@ spring:
   security:
     oauth2:
       resourceserver:
-        resource-id: mayi-upms-biz
-        jwt:
-          issuer-uri: http://127.0.0.1:9000
-          jwk-set-uri: http://127.0.0.1:9000/oauth/token_key
-          jwt-check-uri: http://127.0.0.1:9000/oauth/check_token
         opaquetoken:
           client-id: system
           client-secret: 123456
+          introspection-uri: http://127.0.0.1:9000/oauth2/introspect
 security:
-  # logout url
-  logout-url: http://127.0.0.1:8888/oauth/logout
+  # revoke url
+  logout-url: http://127.0.0.1:8888/oauth2/revoke

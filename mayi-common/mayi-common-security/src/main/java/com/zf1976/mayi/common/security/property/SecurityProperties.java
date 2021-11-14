@@ -3,8 +3,6 @@ package com.zf1976.mayi.common.security.property;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
 /**
  * 安全信息配置
  *
@@ -76,7 +74,7 @@ public class SecurityProperties {
      */
     private String rsaSecret;
     /**
-     * logout url
+     * revoke url
      */
     private String logoutUrl;
     /**

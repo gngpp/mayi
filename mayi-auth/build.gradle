@@ -1,6 +1,6 @@
 //file:noinspection GroovyAssignabilityCheck
 plugins {
-    id 'org.springframework.boot' version "$authSpringbootVersion"
+    id 'org.springframework.boot' version "$springbootVersion"
     id 'io.spring.dependency-management' version "${springDependencyManagerVersion}"
 }
 
@@ -34,14 +34,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation "org.springframework.boot:spring-boot-starter-undertow"
     implementation 'org.springframework.boot:spring-boot-starter-aop'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation "org.springframework.security:spring-security-oauth2-authorization-server:$authServerVersion"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
     implementation 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Authorization Server And Resource Server (dependency has been integrated Authorization Server / Resource Server and Spring Security)
+    implementation "org.springframework.security:spring-security-oauth2-authorization-server:$authorizationServerVersion"
 
     // SpringCloud
     implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
@@ -55,8 +56,8 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$authSpringCloudVersion"
-        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$authAlibabaVersion"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$alibabaVersion"
     }
 }
 

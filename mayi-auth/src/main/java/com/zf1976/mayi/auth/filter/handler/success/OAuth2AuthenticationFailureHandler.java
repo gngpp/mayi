@@ -1,4 +1,4 @@
-package com.zf1976.mayi.auth.filter.handler.login;
+package com.zf1976.mayi.auth.filter.handler.success;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zf1976.mayi.auth.exception.*;
@@ -20,14 +20,14 @@ import java.io.IOException;
  * Create by Ant on 2020/9/12 10:04 上午
  */
 @SuppressWarnings("rawtypes")
-public class SecurityAuthenticationFailureHandler implements AuthenticationFailureHandler {
+public class OAuth2AuthenticationFailureHandler implements AuthenticationFailureHandler {
 
     /**
      * 认证失败处理
      *
-     * @param httpServletRequest request
+     * @param httpServletRequest  request
      * @param httpServletResponse response
-     * @param e exception
+     * @param e                   exception
      * @throws IOException 向上抛异常
      */
     @Override

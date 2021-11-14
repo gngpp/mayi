@@ -1,4 +1,4 @@
-package com.zf1976.mayi.auth.filter.handler.login;
+package com.zf1976.mayi.auth.filter.handler.success;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.power.common.util.Base64Util;
@@ -22,7 +22,7 @@ import java.io.IOException;
  * @author ant
  * Create by Ant on 2020/9/12 10:03 上午
  */
-public class SecurityAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final ObjectMapper jsonMapper = new ObjectMapper();

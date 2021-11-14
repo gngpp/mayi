@@ -17,15 +17,15 @@ dependencies {
     implementation "org.springframework.security:spring-security-config"
     implementation "org.springframework.boot:spring-boot-starter-test"
     implementation "org.springframework.boot:spring-boot-starter-data-redis"
-    implementation "com.alibaba.cloud:spring-cloud-alibaba-dependencies:${nacosVersion}"
-    implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery:${nacosVersion}"
-    implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config:${nacosVersion}"
+    implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery"
+    implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config"
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
 
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$alibabaVersion"
     }
 }
 

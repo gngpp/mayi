@@ -56,5 +56,5 @@ spring:
     suffix: .html
 
 security:
-  # logout url
-  logout-url: http://mayi.gateway:8888/oauth/logout
+  # revoke url
+  logout-url: http://mayi.gateway:8888/oauth/revoke

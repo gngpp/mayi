@@ -1,4 +1,4 @@
-package com.zf1976.mayi.auth.filter.handler.logout;
+package com.zf1976.mayi.auth.filter.handler.revoke;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
@@ -29,7 +29,7 @@ public class Oauth2LogoutSuccessHandler implements LogoutSuccessHandler {
         httpServletResponse.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         httpServletResponse.setStatus(HttpStatus.OK.value());
         objectMapper.writeValue(httpServletResponse.getOutputStream(), DataResult.success("Have to log out！"));
-        log.info("Authentication principle {} is logout", this.extractUsername(authentication));
+        log.info("Authentication principle {} is revoke", this.extractUsername(authentication));
     }
 
     private String extractUsername(Authentication authentication) {

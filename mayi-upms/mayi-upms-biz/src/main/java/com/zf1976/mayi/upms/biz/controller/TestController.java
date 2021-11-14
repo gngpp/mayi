@@ -38,7 +38,7 @@ public class TestController {
     }
 
     @Log(description = "测试SQL")
-    @GetMapping("/sql")
+    @PostMapping("/sql")
     public Object testSql() {
         return sysUserDao.selectOneByUsername("admin");
     }

@@ -24,7 +24,7 @@ security:
   #token 头
   token-header: MAYI-ADMIN
   # 签发方
-  token-issuer: http://mayi-auth:9000
+  token-issuer: http://127.0.0.1:9000
   # 是否限制单用户登录
   token-single: true
   # authorities key
@@ -49,8 +49,8 @@ security:
   token-refresh-scope: 3600
   # jwt证书 rsa密钥
   rsa-secret: 123456
-  # logout url
-  logout-url: http://localhost:8888/oauth/logout
+  # revoke url
+  logout-url: http://localhost:8888/oauth/revoke
   # 白名单URI
   ignore-uri:
     # swagger 文档
@@ -70,10 +70,7 @@ security:
     - /file/**
     # 阿里巴巴监控
     - /druid/**
-    - /login/**
-    - /oauth2/code
     - /api/monitor/**
-    - /api/test/**
 
 #公用缓存配置
 cache:
