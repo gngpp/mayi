@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.zf1976.mayi.common.core.constants.ParameterConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,7 @@ public class JSONUtil {
         JSON_MAPPER.setDateFormat(new SimpleDateFormat(ParameterConstants.DATETIME_FORMAT));
         // 设置时区
         JSON_MAPPER.setTimeZone(TimeZone.getTimeZone(ParameterConstants.TIME_ZONE_GMT8));
+        JSON_MAPPER.registerModule(new JavaTimeModule());
     }
 
 

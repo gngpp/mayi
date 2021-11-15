@@ -1,4 +1,4 @@
-package com.zf1976.mayi.auth.filter.provider;
+package com.zf1976.mayi.auth.oauth2.provider;
 
 import com.zf1976.mayi.common.encrypt.EncryptUtil;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -33,11 +33,17 @@ public class DaoAuthenticationEnhancerProvider extends AbstractUserDetailsAuthen
         setMessageSource();
     }
 
-    protected void setMessageSource(){
+    protected void setMessageSource() {
         ReloadableResourceBundleMessageSource localMessageSource = new ReloadableResourceBundleMessageSource();
         localMessageSource.setBasenames("messages_en");
         messages = new MessageSourceAccessor(localMessageSource);
+        this.checkStatus();
         this.setMessageSource(localMessageSource);
+    }
+
+    private void checkStatus() {
+        Assert.notNull(this.passwordEncoder, "passwordEncoder cannot been null.");
+        Assert.notNull(this.userDetailsService, "userDetailsService cannot benn null.");
     }
 
     @Override

@@ -34,10 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author mac
@@ -61,12 +58,14 @@ public class OAuthorizationRowMapperEnhancer implements RowMapper<OAuth2Authoriz
     }
 
     protected void setUserDetailsMixIn() {
+        this.objectMapper.addMixIn(Long.class, Object.class);
         this.objectMapper.addMixIn(AuthorizationUserDetails.class, Object.class);
         this.objectMapper.addMixIn(User.class, Object.class);
         this.objectMapper.addMixIn(Role.class, Object.class);
         this.objectMapper.addMixIn(Department.class, Object.class);
         this.objectMapper.addMixIn(Position.class, Object.class);
         this.objectMapper.addMixIn(GenderEnum.class, Object.class);
+        this.objectMapper.addMixIn(LinkedHashSet.class, Object.class);
     }
 
     @Override
@@ -185,7 +184,7 @@ public class OAuthorizationRowMapperEnhancer implements RowMapper<OAuth2Authoriz
 
     private Map<String, Object> parseMap(String data) {
         try {
-            return this.objectMapper.readValue(data, new TypeReference<Map<String, Object>>() {
+            return this.objectMapper.readValue(data, new TypeReference<>() {
             });
         } catch (Exception ex) {
             throw new IllegalArgumentException(ex.getMessage(), ex);

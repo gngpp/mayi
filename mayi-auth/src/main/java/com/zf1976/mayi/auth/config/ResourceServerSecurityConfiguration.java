@@ -1,7 +1,9 @@
-package com.zf1976.mayi.auth.config.oauth2;
+package com.zf1976.mayi.auth.config;
 
 import com.zf1976.mayi.auth.codec.JwtDecoderEnhancer;
 import com.zf1976.mayi.auth.enhance.codec.MD5PasswordEncoder;
+import com.zf1976.mayi.auth.filter.handler.access.Oauth2AccessDeniedHandler;
+import com.zf1976.mayi.auth.filter.handler.access.Oauth2AuthenticationEntryPoint;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -70,7 +72,7 @@ public class ResourceServerSecurityConfiguration {
     }
 
     /**
-     * 标准安全处理
+     * resource server configuration
      *
      * @param http http security
      * @return {@link SecurityFilterChain}
@@ -78,26 +80,24 @@ public class ResourceServerSecurityConfiguration {
      */
     @Bean
     @Order(2)
-    public SecurityFilterChain WebSecurityFilterChain(HttpSecurity http, OAuth2AuthorizationService authorizationService) throws Exception {
+    public SecurityFilterChain resourceServerSecurityFilterChain(HttpSecurity http, OAuth2AuthorizationService authorizationService) throws Exception {
 
-        // 认证处理
+        // authorization processing
         http.authorizeHttpRequests((authorize) -> authorize
-                            .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                            // 兼容旧版本接口
-                            .antMatchers("/oauth2/token_key",
-                                    "/oauth2/code"
-                                        ).permitAll()
-                            .antMatchers(properties.getIgnoreUri()).permitAll()
-                            .anyRequest().authenticated()
-                                  )
+                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    // compatible with old version interface
+                    .antMatchers("/oauth2/token_key", "/oauth2/code").permitAll()
+                    .antMatchers(properties.getIgnoreUri()).permitAll()
+                    .anyRequest().authenticated())
             .csrf(v -> v.ignoringRequestMatchers(new AntPathRequestMatcher("/api/**")))
             .cors()
             .and()
             .formLogin(Customizer.withDefaults())
             .oauth2ResourceServer(v -> {
                 v.jwt().decoder(new JwtDecoderEnhancer(this.jwtDecoder(), authorizationService));
-            })
-            .httpBasic().disable();
+                v.accessDeniedHandler(new Oauth2AccessDeniedHandler())
+                 .authenticationEntryPoint(new Oauth2AuthenticationEntryPoint());
+            });
         return http.build();
     }
 

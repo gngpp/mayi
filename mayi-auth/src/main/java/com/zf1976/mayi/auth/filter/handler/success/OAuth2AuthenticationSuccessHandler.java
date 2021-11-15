@@ -1,22 +1,23 @@
 package com.zf1976.mayi.auth.filter.handler.success;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.power.common.util.Base64Util;
-import com.zf1976.mayi.auth.SecurityContextHolder;
-import com.zf1976.mayi.auth.deprecate.LoginResponse;
 import com.zf1976.mayi.common.core.foundation.DataResult;
-import com.zf1976.mayi.common.encrypt.EncryptUtil;
+import com.zf1976.mayi.common.core.util.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.OAuth2RefreshToken;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.temporal.ChronoUnit;
+import java.util.Map;
 
 /**
  * @author ant
@@ -25,30 +26,47 @@ import java.io.IOException;
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final ObjectMapper jsonMapper = new ObjectMapper();
+
+    public OAuth2AuthenticationSuccessHandler() {
+
+    }
 
     /**
      * 登陆成功处理
      *
-     * @param httpServletRequest request
+     * @param httpServletRequest  request
      * @param httpServletResponse response
-     * @param authentication 认证对象
+     * @param authentication      认证对象
      * @throws IOException 向上抛异常
      */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException {
-        Assert.isInstanceOf(UserDetails.class, authentication.getDetails());
-        final UserDetails userDetails = (UserDetails) authentication.getDetails();
-        final String token = (String) authentication.getCredentials();
-        final LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setToken(token).setUser(userDetails);
-        // 原始content
-        String rawContent = jsonMapper.writeValueAsString(DataResult.success(loginResponse));
-        // 加密后内容
-        String result = EncryptUtil.encryptForAesByCbc(rawContent);
-        httpServletResponse.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-        jsonMapper.writeValue(httpServletResponse.getOutputStream(), Base64Util.encryptToString(result));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Assert.isInstanceOf(OAuth2AccessTokenAuthenticationToken.class, authentication);
+        OAuth2AccessTokenAuthenticationToken accessTokenAuthentication =
+                (OAuth2AccessTokenAuthenticationToken) authentication;
+
+        OAuth2AccessToken accessToken = accessTokenAuthentication.getAccessToken();
+        OAuth2RefreshToken refreshToken = accessTokenAuthentication.getRefreshToken();
+        Map<String, Object> additionalParameters = accessTokenAuthentication.getAdditionalParameters();
+
+        OAuth2AccessTokenResponse.Builder builder =
+                OAuth2AccessTokenResponse.withToken(accessToken.getTokenValue())
+                                         .tokenType(accessToken.getTokenType())
+                                         .scopes(accessToken.getScopes());
+        if (accessToken.getIssuedAt() != null && accessToken.getExpiresAt() != null) {
+            builder.expiresIn(ChronoUnit.SECONDS.between(accessToken.getIssuedAt(), accessToken.getExpiresAt()));
+        }
+        if (refreshToken != null) {
+            builder.refreshToken(refreshToken.getTokenValue());
+        }
+        if (!CollectionUtils.isEmpty(additionalParameters)) {
+            builder.additionalParameters(additionalParameters);
+        }
+        OAuth2AccessTokenResponse accessTokenResponse = builder.build();
+        final var dataResult = DataResult.success(accessTokenResponse);
+//        httpServletResponse.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+//        this.objectMapper.writeValue(httpServletResponse.getOutputStream(), dataResult);
+        JSONUtil.writeValue(httpServletResponse, dataResult);
     }
 
 }

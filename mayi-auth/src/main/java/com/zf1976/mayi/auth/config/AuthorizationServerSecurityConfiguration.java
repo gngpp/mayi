@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.zf1976.mayi.auth.config.oauth2;
+package com.zf1976.mayi.auth.config;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -22,24 +22,35 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.zf1976.mayi.auth.config.authorization.OAuthorizationRowMapperEnhancer;
+import com.zf1976.mayi.auth.filter.handler.success.OAuth2AuthenticationSuccessHandler;
+import com.zf1976.mayi.auth.oauth2.convert.OAuth2ResourceOwnerPasswordAuthenticationConverter;
+import com.zf1976.mayi.auth.oauth2.provider.DaoAuthenticationEnhancerProvider;
+import com.zf1976.mayi.auth.oauth2.provider.OAuth2ResourceOwnerPasswordAuthenticationProvider;
+import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
+import com.zf1976.mayi.auth.service.OAuth2UserDetailsService;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
-import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.*;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
@@ -48,13 +59,14 @@ import org.springframework.security.oauth2.server.authorization.web.authenticati
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2ClientCredentialsAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationConverter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.Assert;
 
 import java.security.KeyPair;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * OAuth Authorization Server Configuration.
@@ -70,15 +82,22 @@ import java.util.Arrays;
 @Configuration
 public class AuthorizationServerSecurityConfiguration {
 
+	private final Logger log = LoggerFactory.getLogger("[AuthorizationServerSecurityConfiguration]");
 	private final SecurityProperties properties;
 	private static final String CUSTOM_CONSENT_PAGE_URI = "/oauth2/consent";
 	private final JdbcOperations jdbcOperations;
 	private final PasswordEncoder passwordEncoder;
+	private final UserDetailsService userDetailsService;
 	private volatile RegisteredClientRepository registeredClientRepository;
+	private volatile OAuth2TokenCustomizer<JwtEncodingContext> jwtEncodingContextOAuth2TokenCustomizer;
 
-	public AuthorizationServerSecurityConfiguration(SecurityProperties properties, JdbcOperations jdbcOperations, PasswordEncoder passwordEncoder) {
+	public AuthorizationServerSecurityConfiguration(SecurityProperties properties,
+													JdbcOperations jdbcOperations,
+													OAuth2UserDetailsService oAuth2UserDetailsService,
+													PasswordEncoder passwordEncoder) {
 		this.properties = properties;
 		this.jdbcOperations = jdbcOperations;
+		this.userDetailsService = oAuth2UserDetailsService;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -93,6 +112,7 @@ public class AuthorizationServerSecurityConfiguration {
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+
 		OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =
 				new OAuth2AuthorizationServerConfigurer<>();
 
@@ -107,7 +127,9 @@ public class AuthorizationServerSecurityConfiguration {
 					new OAuth2AuthorizationCodeAuthenticationConverter(),
 					new OAuth2ClientCredentialsAuthenticationConverter(),
 					new OAuth2RefreshTokenAuthenticationConverter(),
-					new BasicAuthenticationConverter()));
+					new OAuth2ResourceOwnerPasswordAuthenticationConverter())
+			);
+			configurer.accessTokenResponseHandler(new OAuth2AuthenticationSuccessHandler());
 			configurer.accessTokenRequestConverter(delegatingAuthenticationConverter);
 		});
 		RequestMatcher endpointsMatcher = authorizationServerConfigurer
@@ -121,8 +143,33 @@ public class AuthorizationServerSecurityConfiguration {
 			// ignored oauth2 endpoint url
 			.csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
 			.apply(authorizationServerConfigurer);
-		return http.formLogin(Customizer.withDefaults()).build();
+		final var filterChain = http.formLogin(Customizer.withDefaults()).build();
+		// initialization is complete add password grant type
+		this.addCustomOAuth2ResourceOwnerPasswordAuthenticationProvider(http);
+		return filterChain;
 	}
+
+	private void addCustomOAuth2ResourceOwnerPasswordAuthenticationProvider(HttpSecurity http) {
+
+		AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
+		ProviderSettings providerSettings = http.getSharedObject(ProviderSettings.class);
+		OAuth2AuthorizationService authorizationService = http.getSharedObject(OAuth2AuthorizationService.class);
+		JwtEncoder jwtEncoder = http.getSharedObject(JwtEncoder.class);
+		OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer = this.jwtCustomizer();
+		OAuth2ResourceOwnerPasswordAuthenticationProvider resourceOwnerPasswordAuthenticationProvider =
+				new OAuth2ResourceOwnerPasswordAuthenticationProvider(authenticationManager, authorizationService, jwtEncoder);
+		if (jwtCustomizer != null) {
+			resourceOwnerPasswordAuthenticationProvider.setJwtCustomizer(jwtCustomizer);
+		}
+
+		resourceOwnerPasswordAuthenticationProvider.setProviderSettings(providerSettings);
+
+		// This will add new authentication provider in the list of existing authentication providers.
+		http.authenticationProvider(new DaoAuthenticationEnhancerProvider(this.passwordEncoder, this.userDetailsService));
+		http.authenticationProvider(resourceOwnerPasswordAuthenticationProvider);
+
+	}
+
 
 	@Bean
 	public RegisteredClientRepository registeredClientRepository() {
@@ -184,12 +231,46 @@ public class AuthorizationServerSecurityConfiguration {
 
 	/**
 	 * token 解码器
+	 *
 	 * @param keyPair 密钥对
 	 * @return {@link JwtDecoder}
 	 */
 	@Bean
 	public JwtDecoder jwtDecoder(KeyPair keyPair) {
 		return NimbusJwtDecoder.withPublicKey((RSAPublicKey) keyPair.getPublic()).build();
+	}
+
+
+	/**
+	 * Personalise JWT token
+	 */
+	@Bean
+	public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
+		if (this.jwtEncodingContextOAuth2TokenCustomizer == null) {
+			synchronized (this) {
+				if (this.jwtEncodingContextOAuth2TokenCustomizer == null) {
+					this.jwtEncodingContextOAuth2TokenCustomizer = context -> {
+						Authentication authentication = context.getPrincipal();
+						if (context.getTokenType().getValue().equals("access_token") && authentication instanceof UsernamePasswordAuthenticationToken) {
+							final var principal = authentication.getPrincipal();
+							Assert.isInstanceOf(AuthorizationUserDetails.class, principal);
+							AuthorizationUserDetails userDetails = (AuthorizationUserDetails) principal;
+							var authority = userDetails.getAuthorities()
+													   .stream()
+													   .map(GrantedAuthority::getAuthority)
+													   .collect(Collectors.toSet());
+							context.getClaims().claim("authorities", authority);
+							context.getClaims().claim("user_id", userDetails.getId());
+							if (log.isDebugEnabled()) {
+								log.info("login username: {}", userDetails.getUsername());
+								log.info("token authorities: {}", authority);
+							}
+						}
+					};
+				}
+			}
+		}
+		return this.jwtEncodingContextOAuth2TokenCustomizer;
 	}
 
 	/**
@@ -226,6 +307,12 @@ public class AuthorizationServerSecurityConfiguration {
 							   .issuer(this.properties.getTokenIssuer())
 							   .build();
 	}
+
+	/**
+	 * 坑
+	 * 1. /oauth2/introspect 端点令牌信息展示不全
+	 * 2. OAuth2ConfigurerUtils, 小玩意，共享对象
+	 */
 
 
 	/**
