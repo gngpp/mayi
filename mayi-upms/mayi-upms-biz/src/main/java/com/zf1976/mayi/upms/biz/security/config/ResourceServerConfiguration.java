@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
 /**
@@ -62,7 +61,7 @@ public class ResourceServerConfiguration extends WebSecurityConfigurerAdapter {
             .headers().frameOptions().disable()
             .and()
             // csrf intercepts all post requests by default, ignoring api
-            .csrf(v -> v.ignoringRequestMatchers(new AntPathRequestMatcher("/api/**", "/actuator/**")))
+            .csrf(v -> v.ignoringAntMatchers("/api/**", "/actuator/**"))
             .cors();
 
         // dynamic permission filtering
