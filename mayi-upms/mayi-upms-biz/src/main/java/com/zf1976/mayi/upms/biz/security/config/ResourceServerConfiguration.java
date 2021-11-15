@@ -62,7 +62,7 @@ public class ResourceServerConfiguration extends WebSecurityConfigurerAdapter {
             .headers().frameOptions().disable()
             .and()
             // csrf intercepts all post requests by default, ignoring api
-            .csrf(v -> v.ignoringRequestMatchers(new AntPathRequestMatcher("/api/**")))
+            .csrf(v -> v.ignoringRequestMatchers(new AntPathRequestMatcher("/api/**", "/actuator/**")))
             .cors();
 
         // dynamic permission filtering
