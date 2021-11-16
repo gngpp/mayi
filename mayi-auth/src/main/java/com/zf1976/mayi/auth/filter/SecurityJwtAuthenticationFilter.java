@@ -1,11 +1,11 @@
 package com.zf1976.mayi.auth.filter;
 
 import com.zf1976.mayi.auth.deprecate.JwtTokenProvider;
+import com.zf1976.mayi.auth.enums.AuthenticationState;
 import com.zf1976.mayi.auth.exception.ExpiredJwtException;
 import com.zf1976.mayi.auth.exception.IllegalAccessException;
 import com.zf1976.mayi.auth.exception.IllegalJwtException;
 import com.zf1976.mayi.common.core.util.SpringContextHolder;
-import com.zf1976.mayi.common.security.enums.AuthenticationState;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.common.security.support.session.Session;
 import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;

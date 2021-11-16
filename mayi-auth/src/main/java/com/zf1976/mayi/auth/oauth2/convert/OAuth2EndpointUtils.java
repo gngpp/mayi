@@ -31,6 +31,7 @@ public class OAuth2EndpointUtils {
 		return parameters;
 	}
 
+	@SuppressWarnings("SpellCheckingInspection")
 	public static boolean matchesPkceTokenRequest(HttpServletRequest request) {
 		return AuthorizationGrantType.AUTHORIZATION_CODE.getValue().equals(
 				request.getParameter(OAuth2ParameterNames.GRANT_TYPE)) &&

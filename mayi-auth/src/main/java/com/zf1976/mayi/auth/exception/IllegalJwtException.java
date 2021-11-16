@@ -1,6 +1,6 @@
 package com.zf1976.mayi.auth.exception;
 
-import com.zf1976.mayi.common.security.enums.AuthenticationState;
+import com.zf1976.mayi.auth.enums.AuthenticationState;
 import org.springframework.security.core.AuthenticationException;
 
 /**

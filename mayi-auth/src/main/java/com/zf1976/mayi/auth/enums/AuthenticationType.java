@@ -1,4 +1,4 @@
-package com.zf1976.mayi.common.security.enums;
+package com.zf1976.mayi.auth.enums;
 
 /**
  * @author mac

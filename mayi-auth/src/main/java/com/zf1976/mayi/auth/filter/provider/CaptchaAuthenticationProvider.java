@@ -1,9 +1,9 @@
 package com.zf1976.mayi.auth.filter.provider;
 
+import com.zf1976.mayi.auth.enums.AuthenticationState;
 import com.zf1976.mayi.auth.exception.CaptchaException;
 import com.zf1976.mayi.common.component.validate.service.CaptchaService;
 import com.zf1976.mayi.common.core.util.SpringContextHolder;
-import com.zf1976.mayi.common.security.enums.AuthenticationState;
 import com.zf1976.mayi.common.security.pojo.dto.LoginDTO;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

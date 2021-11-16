@@ -2,12 +2,12 @@ package com.zf1976.mayi.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.power.common.util.Base64Util;
+import com.zf1976.mayi.auth.enums.AuthenticationState;
 import com.zf1976.mayi.auth.exception.BadCredentialsException;
 import com.zf1976.mayi.auth.filter.handler.success.OAuth2AuthenticationFailureHandler;
 import com.zf1976.mayi.auth.filter.handler.success.OAuth2AuthenticationSuccessHandler;
 import com.zf1976.mayi.auth.filter.manager.AuthenticationProviderManager;
 import com.zf1976.mayi.common.encrypt.EncryptUtil;
-import com.zf1976.mayi.common.security.enums.AuthenticationState;
 import com.zf1976.mayi.common.security.pojo.dto.AuthenticationDTO;
 import com.zf1976.mayi.common.security.pojo.dto.LoginDTO;
 import org.slf4j.Logger;

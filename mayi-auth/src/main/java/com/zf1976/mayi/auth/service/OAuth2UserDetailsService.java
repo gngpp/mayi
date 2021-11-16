@@ -1,10 +1,10 @@
 package com.zf1976.mayi.auth.service;
 
+import com.zf1976.mayi.auth.enums.AuthenticationState;
 import com.zf1976.mayi.auth.exception.UserNotFountException;
 import com.zf1976.mayi.auth.feign.RemoteUserService;
 import com.zf1976.mayi.common.core.constants.SecurityConstants;
 import com.zf1976.mayi.common.core.foundation.DataResult;
-import com.zf1976.mayi.common.security.enums.AuthenticationState;
 import com.zf1976.mayi.upms.biz.pojo.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -33,9 +33,10 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("DuplicatedCode")
 public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements AuthenticationProvider {
 
-	private static final Logger LOGGER = LogManager.getLogger(OAuth2ResourceOwnerPasswordAuthenticationProvider.class);
+	private static final Logger LOGGER = LogManager.getLogger("OAuth2ResourceOwnerPasswordAuthenticationProvider");
 	private static final StringKeyGenerator DEFAULT_REFRESH_TOKEN_GENERATOR = new Base64StringKeyGenerator(Base64.getUrlEncoder().withoutPadding(), 96);
 
 	private final AuthenticationManager authenticationManager;

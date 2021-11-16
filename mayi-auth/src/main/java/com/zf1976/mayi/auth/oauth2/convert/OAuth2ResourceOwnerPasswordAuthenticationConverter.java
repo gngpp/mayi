@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("DuplicatedCode")
 public class OAuth2ResourceOwnerPasswordAuthenticationConverter implements AuthenticationConverter {
 
 	@Override
