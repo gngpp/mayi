@@ -12,7 +12,7 @@ import java.util.*;
  * @author mac
  * 2021/11/16 星期二 6:15 下午
  */
-public class OAuth2ResourceOwnerPasswordCodeAuthenticationToken extends AbstractAuthenticationToken {
+public class OAuth2ResourceOwnerCredentialsAuthenticationToken extends AbstractAuthenticationToken {
 
     private static final long serialVersionUID = -6067207203119450764L;
 
@@ -27,8 +27,8 @@ public class OAuth2ResourceOwnerPasswordCodeAuthenticationToken extends Abstract
      * @param clientPrincipal the authenticated client principal
      */
 
-    public OAuth2ResourceOwnerPasswordCodeAuthenticationToken(AuthorizationGrantType authorizationGrantType,
-                                                              Authentication clientPrincipal, @Nullable Set<String> scopes, @Nullable Map<String, Object> additionalParameters) {
+    public OAuth2ResourceOwnerCredentialsAuthenticationToken(AuthorizationGrantType authorizationGrantType,
+                                                             Authentication clientPrincipal, @Nullable Set<String> scopes, @Nullable Map<String, Object> additionalParameters) {
         super(Collections.emptyList());
         Assert.notNull(authorizationGrantType, "authorizationGrantType cannot be null");
         Assert.notNull(clientPrincipal, "clientPrincipal cannot be null");

@@ -1,7 +1,7 @@
 package com.zf1976.mayi.auth.oauth2.convert;
 
 import com.zf1976.mayi.auth.OAuth2ParameterNamesEnhancer;
-import com.zf1976.mayi.auth.oauth2.OAuth2ResourceOwnerPasswordCodeAuthenticationToken;
+import com.zf1976.mayi.auth.oauth2.OAuth2ResourceOwnerCredentialsAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * 2021/11/15 星期一 11:28 下午
  */
 @SuppressWarnings("DuplicatedCode")
-public class OAuth2ResourceOwnerPasswordCodeAuthenticationConverter implements AuthenticationConverter {
+public class OAuth2ResourceOwnerCredentialsAuthenticationConverter implements AuthenticationConverter {
 
     public static final AuthorizationGrantType PASSWORD_CODE = new AuthorizationGrantType("password_code");
 
@@ -106,6 +106,6 @@ public class OAuth2ResourceOwnerPasswordCodeAuthenticationConverter implements A
                         !e.getKey().equals(OAuth2ParameterNames.SCOPE))
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get(0)));
 
-        return new OAuth2ResourceOwnerPasswordCodeAuthenticationToken(PASSWORD_CODE, clientPrincipal, requestedScopes, additionalParameters);
+        return new OAuth2ResourceOwnerCredentialsAuthenticationToken(PASSWORD_CODE, clientPrincipal, requestedScopes, additionalParameters);
     }
 }

@@ -21,6 +21,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.zf1976.mayi.auth.Context;
 import com.zf1976.mayi.auth.config.authorization.OAuthorizationRowMapperEnhancer;
 import com.zf1976.mayi.auth.filter.handler.success.OAuth2AuthenticationSuccessHandler;
 import com.zf1976.mayi.auth.oauth2.convert.OAuth2ResourceOwnerPasswordAuthenticationConverter;
@@ -259,6 +260,7 @@ public class AuthorizationServerSecurityConfiguration {
 													   .stream()
 													   .map(GrantedAuthority::getAuthority)
 													   .collect(Collectors.toSet());
+							Context.setShareObject(AuthorizationUserDetails.class, userDetails);
 							context.getClaims().claim("authorities", authority);
 							context.getClaims().claim("user_id", userDetails.getId());
 							if (log.isDebugEnabled()) {

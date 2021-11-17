@@ -1,6 +1,6 @@
 package com.zf1976.mayi.auth.enhance;
 
-//import com.zf1976.mayi.auth.SecurityContextHolder;
+//import com.zf1976.mayi.auth.Context;
 //import com.zf1976.mayi.common.core.constants.AuthConstants;
 //import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 //import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -24,7 +24,7 @@ package com.zf1976.mayi.auth.enhance;
 //        Integer expiredIn = oAuth2AccessToken.getExpiresIn();
 //        Map<String, Object> additionalInformation = new LinkedHashMap<>();
 //        // 签发方
-//        additionalInformation.put(AuthConstants.ISSUER, SecurityContextHolder.getIssuer());
+//        additionalInformation.put(AuthConstants.ISSUER, Context.getIssuer());
 //        // 签发时间 如果时间为new Date(), 网关拿公钥 解析错误:An error occurred while trying to decode Jwt: expiresAt must be after issueAt
 //        additionalInformation.put(AuthConstants.IAT, System.currentTimeMillis() / 1000);
 //        // 客户端id

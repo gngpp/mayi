@@ -2,8 +2,8 @@ package com.zf1976.mayi.auth.oauth2.provider;
 
 import com.zf1976.mayi.auth.OAuth2ParameterNamesEnhancer;
 import com.zf1976.mayi.auth.oauth2.JwtUtils;
+import com.zf1976.mayi.auth.oauth2.OAuth2ResourceOwnerCredentialsAuthenticationToken;
 import com.zf1976.mayi.auth.oauth2.OAuth2ResourceOwnerPasswordAuthenticationToken;
-import com.zf1976.mayi.auth.oauth2.OAuth2ResourceOwnerPasswordCodeAuthenticationToken;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +40,10 @@ import java.util.stream.Collectors;
  * 2021/11/15 星期一 11:35 下午
  */
 @SuppressWarnings("DuplicatedCode")
-public class OAuth2ResourceOwnerPasswordCodeAuthenticationProvider implements AuthenticationProvider {
+public class OAuth2ResourceOwnerCredentialsAuthenticationProvider implements AuthenticationProvider {
 
     public static final AuthorizationGrantType PASSWORD_CODE = new AuthorizationGrantType("password_code");
-    private static final Logger LOGGER = LogManager.getLogger("OAuth2ResourceOwnerPasswordCodeAuthenticationProvider");
+    private static final Logger LOGGER = LogManager.getLogger("OAuth2ResourceOwnerCredentialsAuthenticationProvider");
     private static final StringKeyGenerator DEFAULT_REFRESH_TOKEN_GENERATOR = new Base64StringKeyGenerator(Base64.getUrlEncoder().withoutPadding(), 96);
 
     private final AuthenticationManager authenticationManager;
@@ -60,8 +60,8 @@ public class OAuth2ResourceOwnerPasswordCodeAuthenticationProvider implements Au
      * @param authorizationService the authorization service
      * @param jwtEncoder           the jwt encoder
      */
-    public OAuth2ResourceOwnerPasswordCodeAuthenticationProvider(AuthenticationManager authenticationManager, OAuth2AuthorizationService authorizationService,
-                                                                 JwtEncoder jwtEncoder) {
+    public OAuth2ResourceOwnerCredentialsAuthenticationProvider(AuthenticationManager authenticationManager, OAuth2AuthorizationService authorizationService,
+                                                                JwtEncoder jwtEncoder) {
         Assert.notNull(authorizationService, "authorizationService cannot be null");
         Assert.notNull(jwtEncoder, "jwtEncoder cannot be null");
         this.authenticationManager = authenticationManager;
@@ -82,7 +82,7 @@ public class OAuth2ResourceOwnerPasswordCodeAuthenticationProvider implements Au
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-        OAuth2ResourceOwnerPasswordCodeAuthenticationToken resourceOwnerPasswordAuthentication = (OAuth2ResourceOwnerPasswordCodeAuthenticationToken) authentication;
+        OAuth2ResourceOwnerCredentialsAuthenticationToken resourceOwnerPasswordAuthentication = (OAuth2ResourceOwnerCredentialsAuthenticationToken) authentication;
 
         OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(resourceOwnerPasswordAuthentication);
 

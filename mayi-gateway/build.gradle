@@ -11,15 +11,21 @@ configurations {
 
 dependencies {
     implementation project(':mayi-common:mayi-common-core')
-    implementation "org.springframework.cloud:spring-cloud-starter-gateway"
+    implementation "com.github.ben-manes.caffeine:caffeine:$caffeineVersion"
     implementation "org.springframework.security:spring-security-oauth2-resource-server"
     implementation "org.springframework.security:spring-security-oauth2-jose"
     implementation "org.springframework.security:spring-security-config"
     implementation "org.springframework.boot:spring-boot-starter-test"
     implementation "org.springframework.boot:spring-boot-starter-data-redis"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    // SpringCloud
+    implementation "org.springframework.cloud:spring-cloud-starter-gateway"
+    implementation "org.springframework.cloud:spring-cloud-loadbalancer"
     implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery"
     implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config"
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
+
 }
 
 dependencyManagement {

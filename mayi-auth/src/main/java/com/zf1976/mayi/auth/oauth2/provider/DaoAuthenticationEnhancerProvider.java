@@ -1,5 +1,6 @@
 package com.zf1976.mayi.auth.oauth2.provider;
 
+import com.zf1976.mayi.common.core.util.Base64Util;
 import com.zf1976.mayi.common.encrypt.EncryptUtil;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -62,7 +63,7 @@ public class DaoAuthenticationEnhancerProvider extends AbstractUserDetailsAuthen
             String rawPassword = userDetails.getPassword();
             String presentedPassword;
             try {
-                presentedPassword = EncryptUtil.decryptForRsaByPrivateKey(encryptPassword);
+                presentedPassword = EncryptUtil.decryptForRsaByPrivateKey(new String(Base64Util.decryptBASE64(encryptPassword)));
             } catch (Exception ignored) {
                 throw new BadCredentialsException("Bad credentials");
             }

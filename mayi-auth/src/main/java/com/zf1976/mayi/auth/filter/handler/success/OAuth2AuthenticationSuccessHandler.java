@@ -64,9 +64,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         }
         OAuth2AccessTokenResponse accessTokenResponse = builder.build();
         final var dataResult = DataResult.success(accessTokenResponse);
-//        httpServletResponse.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-//        this.objectMapper.writeValue(httpServletResponse.getOutputStream(), dataResult);
         JSONUtil.writeValue(httpServletResponse, dataResult);
     }
+
 
 }

@@ -1,12 +1,12 @@
-package com.zf1976.mayi.upms.biz.controller.system;
+package com.zf1976.mayi.upms.biz.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zf1976.mayi.common.core.foundation.DataResult;
+import com.zf1976.mayi.common.core.validate.ValidationInsertGroup;
+import com.zf1976.mayi.common.core.validate.ValidationUpdateGroup;
 import com.zf1976.mayi.upms.biz.pojo.dto.position.PositionDTO;
 import com.zf1976.mayi.upms.biz.pojo.query.PositionQueryParam;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
-import com.zf1976.mayi.common.core.validate.ValidationInsertGroup;
-import com.zf1976.mayi.common.core.validate.ValidationUpdateGroup;
 import com.zf1976.mayi.upms.biz.pojo.vo.job.PositionVO;
 import com.zf1976.mayi.upms.biz.service.SysPositionService;
 import org.springframework.validation.annotation.Validated;

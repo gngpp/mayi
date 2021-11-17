@@ -1,16 +1,16 @@
 package com.zf1976.mayi.auth.filter;
 
-import com.zf1976.mayi.auth.SecurityContextHolder;
+import com.zf1976.mayi.auth.Context;
+import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.common.core.util.JSONUtil;
-import com.zf1976.mayi.common.security.support.signature.exception.SignatureException;
 import com.zf1976.mayi.common.security.support.signature.SignatureAuthenticationStrategy;
-import com.zf1976.mayi.common.security.support.signature.enums.SignaturePattern;
+import com.zf1976.mayi.common.security.support.signature.SignatureState;
 import com.zf1976.mayi.common.security.support.signature.StandardSignature;
 import com.zf1976.mayi.common.security.support.signature.datasource.ClientDataSourceProvider;
+import com.zf1976.mayi.common.security.support.signature.enums.SignaturePattern;
+import com.zf1976.mayi.common.security.support.signature.exception.SignatureException;
 import com.zf1976.mayi.common.security.support.signature.impl.OpenSignatureAuthenticationStrategy;
 import com.zf1976.mayi.common.security.support.signature.impl.SecretSignatureAuthenticationStrategy;
-import com.zf1976.mayi.common.core.foundation.DataResult;
-import com.zf1976.mayi.common.security.support.signature.SignatureState;
 import org.springframework.lang.NonNull;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
@@ -83,14 +83,14 @@ public class SignatureAuthenticationFilter extends OncePerRequestFilter {
         String signaturePattern;
         signaturePattern = request.getHeader(StandardSignature.SIGN_PATTERN);
         if (signaturePattern == null) {
-            SecurityContextHolder.clearContext();
+            Context.clearContext();
             throw new SignatureException(SignatureState.NULL_PARAMS_DATA);
         }
         return SignaturePattern.valueOf(signaturePattern);
     }
 
     private void handlerException(HttpServletResponse response, SignatureException signatureException) {
-        SecurityContextHolder.clearContext();
+        Context.clearContext();
         response.setStatus(signatureException.getValue());
         JSONUtil.writeValue(response, DataResult.fail(signatureException.getValue(), signatureException.getReasonPhrase()));
     }

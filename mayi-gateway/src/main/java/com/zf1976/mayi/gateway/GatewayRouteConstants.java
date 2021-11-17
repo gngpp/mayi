@@ -15,7 +15,7 @@ public interface GatewayRouteConstants {
     /**
      * 认证中心路由
      */
-    String AUTH_ROUTE = "/oauth/**";
+    String AUTH_ROUTE = "/oauth2/**";
 
     /**
      * 自定义路由

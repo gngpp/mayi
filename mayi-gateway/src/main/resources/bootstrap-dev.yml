@@ -19,8 +19,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://127.0.0.1:9000/oauth/token_key
-          jwt-check-uri: http://127.0.0.1:9000/oauth/check_token
+          jwk-set-uri: http://127.0.0.1:9000/oauth2/token_key
+          jwt-check-uri: http://127.0.0.1:9000/oauth2/check_token
           issuer-uri: http://127.0.0.1:9000
 
   redis:

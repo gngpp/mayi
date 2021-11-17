@@ -59,13 +59,18 @@ public enum AuthenticationType {
      */
     ALL(PHONE_WITH_PASSWORD.value | PHONE_WITH_VC.value | EMAIL_WITH_PASSWORD.value | EMAIL_WITH_VC_PASSWORD.value | USERNAME_PHONE_OR_EMAIL__WITH_PASSWORD.value | USERNAME_WITH_PASSWORD.value, "所有方式");
 
-
     private final int value;
 
     AuthenticationType(int value, String description) {
         this.value = value;
     }
 
+    /**
+     * support binary
+     *
+     * @param value value
+     * @return true/false
+     */
     public boolean matchType(int value) {
         return ((value & this.value) == this.value);
     }

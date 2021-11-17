@@ -1,7 +1,7 @@
 package com.zf1976.mayi.auth.enhance;
 
 //import com.zf1976.mayi.auth.AuthorizationUserDetails;
-//import com.zf1976.mayi.auth.SecurityContextHolder;
+//import com.zf1976.mayi.auth.Context;
 //import com.zf1976.mayi.auth.serialize.JacksonSerializationStrategy;
 //import com.zf1976.mayi.common.core.constants.AuthGranterTypeConstants;
 //import com.zf1976.mayi.common.core.util.RequestUtil;
@@ -274,7 +274,7 @@ package com.zf1976.mayi.auth.enhance;
 //        // 保存认证成功细节
 //        authentication.setDetails(details);
 //        // 保存认证
-//        SecurityContextHolder.getContext()
+//        Context.getContext()
 //                             .setAuthentication(authentication);
 //        // 序列化Session
 //        byte[] serializeSession = this.jacksonSerialize(this.generationSession(token, authentication));

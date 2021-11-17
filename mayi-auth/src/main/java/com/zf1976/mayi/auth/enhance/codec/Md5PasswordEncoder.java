@@ -5,7 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ObjectUtils;
 
 @SuppressWarnings("all")
-public class MD5PasswordEncoder implements PasswordEncoder {
+public class Md5PasswordEncoder implements PasswordEncoder {
 
     private final MD5Encoder encoder = new MD5Encoder();
 
@@ -15,14 +15,17 @@ public class MD5PasswordEncoder implements PasswordEncoder {
     }
 
     /**
-     * 匹配
+     * 匹配,支持eq匹配
      *
-     * @param rawPassword raw
+     * @param rawPassword     raw
      * @param encodedPassword encode
      * @return
      */
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        if (ObjectUtils.nullSafeEquals(rawPassword, encodedPassword)) {
+            return true;
+        }
         String encode = this.encode(rawPassword);
         return ObjectUtils.nullSafeEquals(encodedPassword, encode);
     }

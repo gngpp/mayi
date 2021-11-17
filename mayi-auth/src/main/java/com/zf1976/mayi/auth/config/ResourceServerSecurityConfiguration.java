@@ -1,7 +1,7 @@
 package com.zf1976.mayi.auth.config;
 
 import com.zf1976.mayi.auth.codec.JwtDecoderEnhancer;
-import com.zf1976.mayi.auth.enhance.codec.MD5PasswordEncoder;
+import com.zf1976.mayi.auth.enhance.codec.Md5PasswordEncoder;
 import com.zf1976.mayi.auth.filter.handler.access.Oauth2AccessDeniedHandler;
 import com.zf1976.mayi.auth.filter.handler.access.Oauth2AuthenticationEntryPoint;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
@@ -37,7 +37,7 @@ public class ResourceServerSecurityConfiguration {
 
     private final SecurityProperties properties;
 
-    private final PasswordEncoder passwordEncoder = new MD5PasswordEncoder();
+    private final PasswordEncoder passwordEncoder = new Md5PasswordEncoder();
 
     private volatile KeyPair keyPair;
 
