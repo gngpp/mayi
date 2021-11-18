@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.common.core.validate.ValidationInsertGroup;
 import com.zf1976.mayi.common.core.validate.ValidationUpdateGroup;
-import com.zf1976.mayi.common.log.annotation.Log;
+import com.zf1976.mayi.upms.biz.annotation.Log;
 import com.zf1976.mayi.upms.biz.pojo.dto.role.RoleDTO;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.pojo.query.RoleQueryParam;
 import com.zf1976.mayi.upms.biz.pojo.vo.role.RoleVO;
 import com.zf1976.mayi.upms.biz.service.SysRoleService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,8 +52,8 @@ public class SysRoleController {
 
     @Log(description = "根据id查询角色级别")
     @GetMapping("/level")
-    public DataResult<Integer> getRoleLevel() {
-        return DataResult.success(service.selectRoleLevel());
+    public DataResult<Integer> getRoleLevel(@AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        return DataResult.success(service.selectRoleLevel(principal.getName()));
     }
 
     @Log(description = "根据id修改角色状态")

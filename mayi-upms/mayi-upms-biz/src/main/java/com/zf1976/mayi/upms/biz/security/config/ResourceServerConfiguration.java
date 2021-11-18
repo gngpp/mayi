@@ -2,6 +2,7 @@ package com.zf1976.mayi.upms.biz.security.config;
 
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.upms.biz.security.filter.DynamicSecurityFilter;
+import com.zf1976.mayi.upms.biz.security.oauth2.CustomizeNimbusOpaqueTokenIntrospector;
 import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 
@@ -50,8 +52,7 @@ public class ResourceServerConfiguration extends WebSecurityConfigurerAdapter {
                               )
             .oauth2ResourceServer(oauth2 -> oauth2
                             .opaqueToken((opaque) -> opaque
-                                            .introspectionUri(this.introspectionUri)
-                                            .introspectionClientCredentials(this.clientId, this.clientSecret)
+                                            .introspector(new CustomizeNimbusOpaqueTokenIntrospector(this.introspectionUri, this.clientId, this.clientSecret))
                                         )
                                  );
 

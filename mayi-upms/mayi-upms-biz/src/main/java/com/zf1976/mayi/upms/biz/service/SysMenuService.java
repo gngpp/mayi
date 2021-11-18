@@ -5,7 +5,6 @@ import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
 import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
 import com.zf1976.mayi.common.core.constants.Namespace;
-import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
 import com.zf1976.mayi.upms.biz.convert.SysMenuConvert;
 import com.zf1976.mayi.upms.biz.dao.SysMenuDao;
 import com.zf1976.mayi.upms.biz.dao.SysRoleDao;
@@ -17,6 +16,7 @@ import com.zf1976.mayi.upms.biz.pojo.query.MenuQueryParam;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.pojo.vo.menu.MenuBuildVO;
 import com.zf1976.mayi.upms.biz.pojo.vo.menu.MenuVO;
+import com.zf1976.mayi.upms.biz.security.Context;
 import com.zf1976.mayi.upms.biz.service.base.AbstractService;
 import com.zf1976.mayi.upms.biz.service.exception.MenuException;
 import com.zf1976.mayi.upms.biz.service.exception.enums.MenuState;
@@ -67,14 +67,12 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
     public Collection<MenuBuildVO> generatedMenu() {
         // 菜单
         List<SysMenu> menuList;
-        if (SessionManagement.isOwner()) {
+        if (Context.isOwner()) {
             // 管理员获取所有菜单
             menuList = super.selectList();
         } else {
-            // 用户id
-            final long sessionId = SessionManagement.getSessionId();
             // 获取用户所有角色id
-            final Set<Long> roleIds = sysRoleDao.selectListByUserId(sessionId)
+            final Set<Long> roleIds = sysRoleDao.selectListByUsername(Context.getUsername())
                                                 .stream()
                                                 .map(SysRole::getId)
                                                 .collect(Collectors.toSet());

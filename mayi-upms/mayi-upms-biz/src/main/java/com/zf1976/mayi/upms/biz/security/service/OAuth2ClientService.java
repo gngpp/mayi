@@ -11,8 +11,6 @@ import com.zf1976.mayi.common.core.constants.AuthGranterTypeConstants;
 import com.zf1976.mayi.common.core.constants.Namespace;
 import com.zf1976.mayi.common.core.validate.Validator;
 import com.zf1976.mayi.common.encrypt.EncryptUtil;
-import com.zf1976.mayi.common.security.support.session.Session;
-import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
 import com.zf1976.mayi.upms.biz.dao.ClientDetailsDao;
 import com.zf1976.mayi.upms.biz.pojo.dto.ClientDetailsDTO;
 import com.zf1976.mayi.upms.biz.pojo.po.ClientDetails;
@@ -281,13 +279,13 @@ public class OAuth2ClientService extends ServiceImpl<ClientDetailsDao, ClientDet
     @CacheEvict
     @Transactional
     public Void deleteClient(String clientId) {
-        final Session session = SessionManagement.getSession();
-        if (ObjectUtils.nullSafeEquals(clientId, session.getClientId())) {
-            throw new RuntimeException("Prohibit deleting the currently logged in client");
-        }
-        if (!super.removeById(clientId)) {
-            throw new RuntimeException(OAuth2ErrorCodes.INVALID_CLIENT);
-        }
+//        final Session session = SessionManagement.getSession();
+//        if (ObjectUtils.nullSafeEquals(clientId, session.getClientId())) {
+//            throw new RuntimeException("Prohibit deleting the currently logged in client");
+//        }
+//        if (!super.removeById(clientId)) {
+//            throw new RuntimeException(OAuth2ErrorCodes.INVALID_CLIENT);
+//        }
         return null;
     }
 
@@ -300,18 +298,18 @@ public class OAuth2ClientService extends ServiceImpl<ClientDetailsDao, ClientDet
     @CacheEvict
     @Transactional
     public Void deleteBatchClient(Set<String> clientIdList) {
-        if (CollectionUtils.isEmpty(clientIdList)) {
-            throw new RuntimeException(OAuth2ErrorCodes.TEMPORARILY_UNAVAILABLE);
-        }
-        final Session session = SessionManagement.getSession();
-        for (String clientId : clientIdList) {
-            if (ObjectUtils.nullSafeEquals(clientId, session.getClientId())) {
-                throw new RuntimeException("Prohibit deleting the currently logged in client");
-            }
-        }
-        if (!super.removeByIds(clientIdList)) {
-            throw new RuntimeException(OAuth2ErrorCodes.INVALID_CLIENT);
-        }
+//        if (CollectionUtils.isEmpty(clientIdList)) {
+//            throw new RuntimeException(OAuth2ErrorCodes.TEMPORARILY_UNAVAILABLE);
+//        }
+//        final Session session = SessionManagement.getSession();
+//        for (String clientId : clientIdList) {
+//            if (ObjectUtils.nullSafeEquals(clientId, session.getClientId())) {
+//                throw new RuntimeException("Prohibit deleting the currently logged in client");
+//            }
+//        }
+//        if (!super.removeByIds(clientIdList)) {
+//            throw new RuntimeException(OAuth2ErrorCodes.INVALID_CLIENT);
+//        }
         return null;
     }
 

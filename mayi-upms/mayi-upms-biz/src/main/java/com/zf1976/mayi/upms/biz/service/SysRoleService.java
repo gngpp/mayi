@@ -8,7 +8,6 @@ import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
 import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
 import com.zf1976.mayi.common.core.constants.Namespace;
-import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
 import com.zf1976.mayi.upms.biz.convert.SysRoleConvert;
 import com.zf1976.mayi.upms.biz.dao.SysDepartmentDao;
 import com.zf1976.mayi.upms.biz.dao.SysMenuDao;
@@ -23,6 +22,7 @@ import com.zf1976.mayi.upms.biz.pojo.po.SysRole;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.pojo.query.RoleQueryParam;
 import com.zf1976.mayi.upms.biz.pojo.vo.role.RoleVO;
+import com.zf1976.mayi.upms.biz.security.Context;
 import com.zf1976.mayi.upms.biz.service.base.AbstractService;
 import com.zf1976.mayi.upms.biz.service.exception.RoleException;
 import com.zf1976.mayi.upms.biz.service.exception.enums.RoleState;
@@ -107,12 +107,12 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      *
      * @return math
      */
-    @CachePut(dynamics = true)
-    public Integer selectRoleLevel() {
-        if (SessionManagement.isOwner()) {
+    @CachePut(dynamicsKey = "#username")
+    public Integer selectRoleLevel(String username) {
+        if (Context.isOwner()) {
             return -1;
         }
-        return super.baseMapper.selectListByUsername(SessionManagement.getCurrentUsername())
+        return super.baseMapper.selectListByUsername(username)
                                .stream()
                                .map(SysRole::getLevel)
                                .min(Integer::compareTo)

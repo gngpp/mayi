@@ -18,8 +18,6 @@ import com.zf1976.mayi.common.encrypt.MD5Encoder;
 import com.zf1976.mayi.common.encrypt.RsaUtil;
 import com.zf1976.mayi.common.encrypt.property.RsaProperties;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
-import com.zf1976.mayi.common.security.support.session.Session;
-import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
 import com.zf1976.mayi.upms.biz.convert.SysUserConvert;
 import com.zf1976.mayi.upms.biz.dao.*;
 import com.zf1976.mayi.upms.biz.feign.RemoteAuthClient;
@@ -39,6 +37,7 @@ import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.pojo.query.UserQueryParam;
 import com.zf1976.mayi.upms.biz.pojo.vo.user.UserVO;
 import com.zf1976.mayi.upms.biz.property.FileProperties;
+import com.zf1976.mayi.upms.biz.security.Context;
 import com.zf1976.mayi.upms.biz.service.base.AbstractService;
 import com.zf1976.mayi.upms.biz.service.exception.UserException;
 import com.zf1976.mayi.upms.biz.service.exception.enums.UserState;
@@ -93,9 +92,8 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         this.userConvert = SysUserConvert.INSTANCE;
     }
 
-    public User findUser() {
-        String currentUsername = SessionManagement.getCurrentUsername();
-        return this.findUserByUsername(currentUsername);
+    public User findUser(String username) {
+        return this.findUserByUsername(username);
     }
 
     @CachePut(key = "#username")
@@ -183,7 +181,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         String markerAdmin = securityProperties.getOwner();
         if (username.equals(markerAdmin)) {
             // 分配认证超级管理员角色
-            authorities.add(SecurityConstants.ROLE + markerAdmin);
+            authorities.add(SecurityConstants.ROLE.concat(markerAdmin));
             return authorities;
         }
         return roles.stream()
@@ -219,19 +217,19 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      * @param query request page
      * @return /
      */
-    @CachePut(key = "#query", dynamics = true)
+    @CachePut(key = "#query", dynamicsKey = "#username")
     @Transactional(readOnly = true)
-    public IPage<UserVO> selectUserPage(Query<UserQueryParam> query) {
+    public IPage<UserVO> selectUserPage(Query<UserQueryParam> query, String username) {
         final IPage<SysUser> sourcePage;
         // 非super admin 过滤数据权限
-        if (SessionManagement.isOwner()) {
+        if (Context.isOwner()) {
             sourcePage = super.queryWrapper()
                               .chainQuery(query)
                               .selectPage();
 
         } else {
             // 用户可观察数据范围
-            Set<Long> dataPermission = this.findUserByUsername(SessionManagement.getCurrentUsername()).getDataPermissions();
+            Set<Long> dataPermission = this.findUserByUsername(username).getDataPermissions();
             List<Long> userIds = super.baseMapper.selectIdsByDepartmentIds(dataPermission);
             sourcePage = super.queryWrapper()
                               .chainQuery(query, () -> {
@@ -326,15 +324,14 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                                    .oneOpt()
                                    .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
 
-            Long sessionId = SessionManagement.getSessionId();
+            String currentUsername = Context.getUsername();
             // 禁止操作oneself,当前session ID与操作ID相等，说明操作到是当前用户
-            Validator.of(sessionId)
-                     .withValidated(sId -> !sId.equals(id),
+            Validator.of(currentUsername)
+                     .withValidated(username -> !username.equals(sysUser.getUsername()),
                              () -> new UserException(UserState.USER_OPT_DISABLE_ONESELF_ERROR));
             // 禁止禁用管理员
             Validator.of(sysUser)
-                     .withValidated(user -> !user.getUsername()
-                                                 .equals(this.securityProperties.getOwner()),
+                     .withValidated(user -> !user.getUsername().equals(this.securityProperties.getOwner()),
                              () -> new UserException(UserState.USER_OPT_DISABLE_ONESELF_ERROR));
             // 设置状态
             sysUser.setEnabled(enabled);
@@ -354,7 +351,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         public Void updateAvatar (MultipartFile multipartFile){
             final SysUser sysUser = super.lambdaQuery()
                                          .select(SysUser::getId, SysUser::getAvatarName)
-                                         .eq(SysUser::getId, SessionManagement.getSessionId())
+                                         .eq(SysUser::getUsername, Context.getUsername())
                                          .one();
             String filename = null;
             try {
@@ -399,7 +396,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         public Void updatePassword (UpdatePasswordDTO dto){
             final SysUser sysUser = super.lambdaQuery()
                                          .select(SysUser::getId, SysUser::getPassword)
-                                         .eq(SysUser::getId, SessionManagement.getSessionId())
+                                         .eq(SysUser::getUsername, Context.getUsername())
                                          .oneOpt()
                                          .orElseThrow(() -> new BusinessException(BusinessMsgState.CODE_NOT_FOUNT));
             String rawPassword;
@@ -434,7 +431,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
             // 更新实体
             super.savaOrUpdate(sysUser);
             // 强制用户重新登陆
-            SessionManagement.removeSession();
+//            SessionManagement.removeSession();
             return null;
         }
 
@@ -458,7 +455,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
             // 查询用户
             var sysUser = super.lambdaQuery()
                                .select(SysUser::getId, SysUser::getPassword, SysUser::getEmail)
-                               .eq(SysUser::getId, SessionManagement.getSessionId())
+                               .eq(SysUser::getUsername, Context.getUsername())
                                .oneOpt()
                                .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
             if (validateService.validateVerifyCode(dto.getEmail(), code)) {
@@ -570,17 +567,17 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                                    .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
             // 禁用
             if (!dto.getEnabled()) {
-                Long sessionId = SessionManagement.getSessionId();
+                String currentUsername = Context.getUsername();
                 // 禁止禁用oneself,禁止操作当前登录的用户
-                Validator.of(sessionId)
-                         .withValidated(id -> !id.equals(sysUser.getId()),
+                Validator.of(currentUsername)
+                         .withValidated(username -> !username.equals(sysUser.getUsername()),
                                  () -> new UserException(UserState.USER_OPT_DISABLE_ONESELF_ERROR));
                 // 禁止禁用管理员
                 Validator.of(dto.getUsername())
                          .withValidated(username -> !username.equals(this.securityProperties.getOwner()),
                                  () -> new UserException(UserState.USER_OPT_ERROR));
                 // 踢出当前被禁用用户
-                SessionManagement.removeSession(sysUser.getId());
+//                SessionManagement.removeSession(sysUser.getId());
             }
             // 验证用户名，是否已存在
             super.lambdaQuery()
@@ -657,9 +654,9 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         @Transactional
         public Void deleteUser (Set < Long > ids) {
             // 超级管理员
-            if (SessionManagement.isOwner()) {
+            if (Context.isOwner()) {
                 SysUser sysUser = super.lambdaQuery()
-                                       .eq(SysUser::getUsername, SessionManagement.getCurrentUsername())
+                                       .eq(SysUser::getUsername, Context.getUsername())
                                        .oneOpt()
                                        .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
                 // 禁止删除超级管理员账号
@@ -673,8 +670,8 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                 super.baseMapper.deletePositionRelationById(id);
                 try {
                     // 登出用户
-                    final Session session = SessionManagement.getSession(id);
-                    this.securityClient.logout(session.getToken());
+//                    final Session session = SessionManagement.getSession(id);
+//                    this.securityClient.logout(session.getToken());
                 } catch (Exception e) {
                     log.info(e.getMessage(), e.getCause());
                 }

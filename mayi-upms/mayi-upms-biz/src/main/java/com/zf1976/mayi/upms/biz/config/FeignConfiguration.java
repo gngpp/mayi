@@ -1,7 +1,6 @@
 package com.zf1976.mayi.upms.biz.config;
 
-import com.zf1976.mayi.common.security.support.session.Session;
-import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
+import com.zf1976.mayi.common.core.util.RequestUtil;
 import feign.RequestInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +21,8 @@ public class FeignConfiguration {
         return requestTemplate -> {
             final Collection<String> tokenHeader = requestTemplate.headers().get(HttpHeaders.AUTHORIZATION);
             if (CollectionUtils.isEmpty(tokenHeader)) {
-                final Session currentSession = SessionManagement.getSession();
-                requestTemplate.header("Authorization", "Bearer " + currentSession.getToken());
+                String header = RequestUtil.getRequest().getHeader(HttpHeaders.AUTHORIZATION);
+                requestTemplate.header("Authorization", header);
             }
         };
     }

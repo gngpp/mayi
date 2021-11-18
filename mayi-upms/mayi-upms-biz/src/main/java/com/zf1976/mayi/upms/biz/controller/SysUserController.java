@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.common.core.validate.ValidationInsertGroup;
 import com.zf1976.mayi.common.core.validate.ValidationUpdateGroup;
-import com.zf1976.mayi.common.log.annotation.Log;
+import com.zf1976.mayi.upms.biz.annotation.Log;
 import com.zf1976.mayi.upms.biz.mail.ValidateEmailService;
 import com.zf1976.mayi.upms.biz.pojo.User;
 import com.zf1976.mayi.upms.biz.pojo.dto.user.UpdateEmailDTO;
@@ -16,6 +16,8 @@ import com.zf1976.mayi.upms.biz.pojo.query.UserQueryParam;
 import com.zf1976.mayi.upms.biz.pojo.vo.user.UserVO;
 import com.zf1976.mayi.upms.biz.service.SysUserService;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,8 +42,9 @@ public class SysUserController {
 
     @Log(description = "分页查询用户")
     @PostMapping("/page")
-    public DataResult<IPage<UserVO>> selectUserPage(@RequestBody Query<UserQueryParam> query) {
-        return DataResult.success(service.selectUserPage(query));
+    public DataResult<IPage<UserVO>> selectUserPage(@RequestBody Query<UserQueryParam> query,
+                                                    @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        return DataResult.success(service.selectUserPage(query, principal.getName()));
     }
 
     @Log(description = "添加用户")
@@ -106,7 +109,7 @@ public class SysUserController {
     }
 
     @PostMapping("/info")
-    public DataResult<User> getUser() {
-        return DataResult.success(this.service.findUser());
+    public DataResult<User> getUserInfo(@AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        return DataResult.success(this.service.findUser(principal.getName()));
     }
 }

@@ -1,6 +1,6 @@
 package com.zf1976.mayi.upms.biz.controller;
 
-import com.zf1976.mayi.common.log.annotation.Log;
+import com.zf1976.mayi.upms.biz.annotation.Log;
 import com.zf1976.mayi.upms.biz.dao.SysUserDao;
 import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.springframework.beans.factory.annotation.Autowired;

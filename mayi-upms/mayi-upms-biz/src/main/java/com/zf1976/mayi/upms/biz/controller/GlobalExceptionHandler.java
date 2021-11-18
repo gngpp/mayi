@@ -2,7 +2,6 @@ package com.zf1976.mayi.upms.biz.controller;
 
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessException;
-import com.zf1976.mayi.common.security.support.session.exception.SessionException;
 import com.zf1976.mayi.upms.biz.security.backup.exception.SQLBackupException;
 import com.zf1976.mayi.upms.biz.security.exception.SecurityException;
 import com.zf1976.mayi.upms.biz.service.exception.SysBaseException;
@@ -55,7 +54,7 @@ public class GlobalExceptionHandler {
     /**
      * 安全管理异常拦截处理
      *
-     * @param exception
+     * @param exception 异常
      * @return {@link DataResult}
      * @date 2021-05-12 08:53:14
      */
@@ -111,19 +110,6 @@ public class GlobalExceptionHandler {
         }
         return DataResult.fail(exception.getValue(), message);
     }
-
-    /**
-     * 会话状态异常
-     *
-     * @param exception 会话异常
-     * @return {@link DataResult}
-     */
-    @ExceptionHandler(SessionException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    DataResult handleSessionException(SessionException exception) {
-        return DataResult.fail(exception);
-    }
-
 
     /**
      * 数据库备份异常

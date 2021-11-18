@@ -28,11 +28,11 @@ public @interface CachePut {
     String key() default "";
 
     /**
-     * 动态命名空间缓存 根据用户分组
+     * 动态命名空间缓存
      *
      * @return /
      */
-    boolean dynamics() default false;
+    String dynamicsKey() default "";
 
     /**
      * 命名空间超时时间 - 单位:分钟

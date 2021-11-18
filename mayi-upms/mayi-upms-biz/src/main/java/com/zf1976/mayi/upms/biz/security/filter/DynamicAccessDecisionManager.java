@@ -1,6 +1,6 @@
 package com.zf1976.mayi.upms.biz.security.filter;
 
-import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
+import com.zf1976.mayi.upms.biz.security.Context;
 import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
@@ -29,6 +29,7 @@ public class DynamicAccessDecisionManager implements AccessDecisionManager {
 
     private final DynamicDataSourceService dynamicDataSourceService;
     private final AntPathMatcher pathMatcher;
+    private static final String SUPER_ADMIN = "ROLE_admin";
 
     public DynamicAccessDecisionManager(DynamicDataSourceService dynamicDataSourceService) {
         this.dynamicDataSourceService = dynamicDataSourceService;
@@ -37,8 +38,7 @@ public class DynamicAccessDecisionManager implements AccessDecisionManager {
 
     @Override
     public void decide(Authentication authentication, Object target, Collection<ConfigAttribute> collection) throws AccessDeniedException, InsufficientAuthenticationException {
-        // 资源所有者放行
-        if (SessionManagement.isOwner()) {
+        if (Context.isOwner()) {
             return;
         }
         // 过滤调用

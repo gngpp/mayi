@@ -10,7 +10,6 @@ import com.zf1976.mayi.common.component.cache.impl.GuavaCacheProvider;
 import com.zf1976.mayi.common.component.cache.impl.RedisCacheProvider;
 import com.zf1976.mayi.common.component.property.GuavaCacheProperties;
 import com.zf1976.mayi.common.core.util.StringUtil;
-import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -125,8 +124,9 @@ public class CacheAsideAspect extends AbstractCacheAsideLock {
         String namespace = classAnnotation == null ? annotation.namespace() : classAnnotation.namespace();
         // Cache Key
         String cacheKey = this.extractCacheKey(method, joinPoint.getArgs(), annotation.key());
-        if (annotation.dynamics()) {
-            cacheKey = cacheKey.concat(SessionManagement.getCurrentUsername());
+        if (annotation.dynamicsKey() != null) {
+            String dynamicsKey = this.extractCacheKey(method, joinPoint.getArgs(), annotation.dynamicsKey());
+            cacheKey = cacheKey.concat(dynamicsKey);
         }
         boolean lockCondition = false;
         // DB data is being updated

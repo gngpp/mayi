@@ -1,13 +1,8 @@
 package com.zf1976.mayi.auth;
 
-import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
-import com.zf1976.mayi.common.core.util.RequestUtil;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
-import com.zf1976.mayi.common.security.support.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
@@ -47,22 +42,9 @@ public class Context extends SecurityContextHolder {
         return ObjectUtils.nullSafeEquals(Context.securityProperties.getOwner(), username);
     }
 
-    public static void generatorSession(RegisteredClient registeredClient, OAuth2AccessToken oAuth2AccessToken) {
-        final var authorizationUserDetails = getShareObject(AuthorizationUserDetails.class);
-        final var session = Session.SessionBuilder.newBuilder()
-                                                  .id(authorizationUserDetails.getId())
-                                                  .username(authorizationUserDetails.getUsername())
-                                                  .clientId(registeredClient.getClientId())
-                                                  .ip(RequestUtil.getIpAddress())
-                                                  .browser(RequestUtil.getUserAgent())
-                                                  .operatingSystemType(RequestUtil.getOpsSystemType())
-                                                  .ipRegion(RequestUtil.getIpRegion())
-                                                  .token(oAuth2AccessToken.getTokenValue())
-                                                  .loginTime(oAuth2AccessToken.getIssuedAt())
-                                                  .expiredTime(oAuth2AccessToken.getExpiresAt())
-                                                  .owner(isOwner(authorizationUserDetails.getUsername()))
-                                                  .build();
-
+    public static boolean isOwner() {
+        String name = getContext().getAuthentication().getName();
+        return ObjectUtils.nullSafeEquals(Context.securityProperties.getOwner(), name);
     }
 
     @Autowired

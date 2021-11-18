@@ -1,7 +1,7 @@
 package com.zf1976.mayi.auth.config.evaluator;
 
-import com.zf1976.mayi.auth.deprecate.JwtTokenProvider;
-import com.zf1976.mayi.common.security.support.session.manager.SessionManagement;
+import com.zf1976.mayi.auth.Context;
+import com.zf1976.mayi.auth.JwtTokenProvider;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,7 +20,7 @@ import java.util.Arrays;
 public class SecurityPermissionEvaluator implements PermissionEvaluator {
 
     public boolean hasPrivilege(Authentication authentication, String... permission) {
-        if (SessionManagement.isOwner()) {
+        if (Context.isOwner()) {
             return true;
         } else {
             return AuthorityUtils.authorityListToSet(authentication.getAuthorities())

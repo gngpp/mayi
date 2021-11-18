@@ -1,10 +1,10 @@
 package com.zf1976.mayi.gateway.filter;
 
 import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.shaded.json.JSONArray;
 import com.zf1976.mayi.common.core.constants.AuthConstants;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.common.core.util.JSONUtil;
-import net.minidev.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -74,12 +74,15 @@ public class OAuth2TokenAuthenticationFilter implements WebFilter {
         try {
             String token = this.token(request);
             // 无token放行
-            if (StringUtils.isEmpty(token)) {
+            if (token == null || "".equals(token)) {
                 return webFilterChain.filter(serverWebExchange);
             }
-            if (!this.checkToken(token)) {
-                BearerTokenError bearerTokenError = this.bearerTokenError();
-                throw new OAuth2AuthenticationException(bearerTokenError);
+            Boolean owner = isOwner(token);
+            if (!isOwner(token)) {
+                if (!this.checkToken(token)) {
+                    BearerTokenError bearerTokenError = this.bearerTokenError();
+                    throw new OAuth2AuthenticationException(bearerTokenError);
+                }
             }
             serverWebExchange.getAttributes().put(AuthConstants.OWNER, isOwner(token));
         } catch (AuthenticationException e) {
