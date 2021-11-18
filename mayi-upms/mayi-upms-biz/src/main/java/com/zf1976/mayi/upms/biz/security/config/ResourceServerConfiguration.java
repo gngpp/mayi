@@ -48,7 +48,7 @@ public class ResourceServerConfiguration extends WebSecurityConfigurerAdapter {
                             .mvcMatchers(this.securityProperties.getIgnoreUri()).permitAll()
                             .anyRequest().authenticated()
                               )
-            .oauth2ResourceServer((oauth2) -> oauth2
+            .oauth2ResourceServer(oauth2 -> oauth2
                             .opaqueToken((opaque) -> opaque
                                             .introspectionUri(this.introspectionUri)
                                             .introspectionClientCredentials(this.clientId, this.clientSecret)

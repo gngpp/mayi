@@ -141,8 +141,7 @@ public final class SessionManagement {
      * @return timestamp
      */
     public static Long getExpiredTime(Long sessionId) {
-        return getSession(sessionId).getExpiredTime()
-                                    .getTime();
+        return getSession(sessionId).getExpiredTime().toEpochMilli();
     }
 
     /**
@@ -151,8 +150,7 @@ public final class SessionManagement {
      * @return {@link Long}
      */
     public static Long getExpiredTime() {
-        return getSession().getExpiredTime()
-                           .getTime();
+        return getSession().getExpiredTime().toEpochMilli();
     }
 
     /**

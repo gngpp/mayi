@@ -261,8 +261,8 @@ public class AuthorizationServerSecurityConfiguration {
 													   .map(GrantedAuthority::getAuthority)
 													   .collect(Collectors.toSet());
 							Context.setShareObject(AuthorizationUserDetails.class, userDetails);
-							context.getClaims().claim("authorities", authority);
 							context.getClaims().claim("user_id", userDetails.getId());
+							context.getClaims().claim("authorities", authority);
 							if (log.isDebugEnabled()) {
 								log.info("login username: {}", userDetails.getUsername());
 								log.info("token authorities: {}", authority);

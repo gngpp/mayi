@@ -111,7 +111,7 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements Authen
 
 			JoseHeader.Builder headersBuilder = JwtUtils.headers();
 			JwtClaimsSet.Builder claimsBuilder = JwtUtils.accessTokenClaims(
-					registeredClient, issuer, clientPrincipal.getName(), authorizedScopes);
+					registeredClient, issuer, usernamePasswordAuthentication.getName(), authorizedScopes);
 
 			JwtEncodingContext context = JwtEncodingContext.with(headersBuilder, claimsBuilder)
 														   .registeredClient(registeredClient)
@@ -141,7 +141,7 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements Authen
 			}
 
 			OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)
-																				  .principalName(clientPrincipal.getName())
+																				  .principalName(usernamePasswordAuthentication.getName())
 																				  .authorizationGrantType(AuthorizationGrantType.PASSWORD)
 																				  .token(accessToken,
 																						  (metadata) ->
