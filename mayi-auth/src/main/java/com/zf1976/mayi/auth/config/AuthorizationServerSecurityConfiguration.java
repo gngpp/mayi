@@ -22,7 +22,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.zf1976.mayi.auth.Context;
-import com.zf1976.mayi.auth.config.authorization.OAuthorizationRowMapperEnhancer;
+import com.zf1976.mayi.auth.oauth2.authorization.OAuthorizationRowMapperEnhancer;
 import com.zf1976.mayi.auth.filter.handler.success.OAuth2AuthenticationSuccessHandler;
 import com.zf1976.mayi.auth.oauth2.convert.OAuth2ResourceOwnerPasswordAuthenticationConverter;
 import com.zf1976.mayi.auth.oauth2.provider.DaoAuthenticationEnhancerProvider;

@@ -27,7 +27,7 @@ public class JwtDecoderEnhancer implements JwtDecoder {
 
     @Override
     public Jwt decode(String token) throws JwtException {
-        final var decode = jwtDecoder.decode(token);
+        final var decode = this.jwtDecoder.decode(token);
         final var oAuth2Authorization = authorizationService.findByToken(token, null);
         if (oAuth2Authorization == null) {
             throw new BadJwtException("invalid token");

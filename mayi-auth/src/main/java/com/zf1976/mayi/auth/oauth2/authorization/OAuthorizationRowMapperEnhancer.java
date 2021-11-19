@@ -1,4 +1,4 @@
-package com.zf1976.mayi.auth.config.authorization;
+package com.zf1976.mayi.auth.oauth2.authorization;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.Module;

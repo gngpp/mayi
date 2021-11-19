@@ -1,7 +1,7 @@
 package com.zf1976.mayi.auth.config;
 
 import com.zf1976.mayi.auth.codec.JwtDecoderEnhancer;
-import com.zf1976.mayi.auth.enhance.codec.Md5PasswordEncoder;
+import com.zf1976.mayi.auth.codec.Md5PasswordEncoder;
 import com.zf1976.mayi.auth.filter.handler.access.Oauth2AccessDeniedHandler;
 import com.zf1976.mayi.auth.filter.handler.access.Oauth2AuthenticationEntryPoint;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
