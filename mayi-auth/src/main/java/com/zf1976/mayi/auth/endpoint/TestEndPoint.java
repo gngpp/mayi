@@ -1,10 +1,24 @@
 package com.zf1976.mayi.auth.endpoint;
 
+import com.zf1976.mayi.auth.oauth2.repository.CustomizeJdbcRegisteredClientRepository;
 import com.zf1976.mayi.auth.oauth2.repository.CustomizeRegisteredClientRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.zf1976.mayi.auth.oauth2.repository.Page;
+import com.zf1976.mayi.auth.pojo.*;
+import com.zf1976.mayi.auth.pojo.vo.RegisteredClientVO;
+import com.zf1976.mayi.auth.service.OAuth2RegisteredClientService;
+import com.zf1976.mayi.common.core.foundation.DataResult;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.config.TokenSettings;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author mac
@@ -14,10 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/test")
 public class TestEndPoint {
 
-    CustomizeRegisteredClientRepository customizeRegisteredClientRepository;
+    private final CustomizeRegisteredClientRepository customizeRegisteredClientRepository;
 
-    public TestEndPoint(CustomizeRegisteredClientRepository customizeRegisteredClientRepository) {
-        this.customizeRegisteredClientRepository = customizeRegisteredClientRepository;
+    private final OAuth2RegisteredClientService oAuth2RegisteredClientService;
+
+    public TestEndPoint(JdbcOperations jdbcOperations, OAuth2RegisteredClientService oAuth2RegisteredClientService) {
+        this.customizeRegisteredClientRepository = new CustomizeJdbcRegisteredClientRepository(jdbcOperations);
+        this.oAuth2RegisteredClientService = oAuth2RegisteredClientService;
     }
 
     @PostMapping("/messages")
@@ -25,8 +42,14 @@ public class TestEndPoint {
         return new String[]{"Message 1", "Message 2", "Message 3"};
     }
 
-    @GetMapping("/client")
-    public Object client(){
-        return this.customizeRegisteredClientRepository.findClientList(1, 5);
+    @PostMapping("/client")
+    public DataResult<Page<RegisteredClientVO>> client(@RequestBody Page<?> registeredClientPage){
+        return DataResult.success(this.oAuth2RegisteredClientService.findList(registeredClientPage));
     }
+
+    @GetMapping("/testTransaction")
+    public void testTransaction(@RequestParam String clientId) {
+        this.oAuth2RegisteredClientService.removeByClientId(clientId);
+    }
+
 }

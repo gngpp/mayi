@@ -171,7 +171,6 @@ public class AuthorizationServerSecurityConfiguration {
 
 	}
 
-
 	@Bean
 	public RegisteredClientRepository registeredClientRepository() {
 

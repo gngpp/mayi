@@ -4,7 +4,6 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
-import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.TokenIntrospectionResponse;
 import com.nimbusds.oauth2.sdk.TokenIntrospectionSuccessResponse;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
@@ -28,8 +27,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URL;
+import java.text.ParseException;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"unused", "SpellCheckingInspection"})
 public class CustomizeNimbusOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
@@ -159,11 +160,16 @@ public class CustomizeNimbusOpaqueTokenIntrospector implements OpaqueTokenIntros
         }
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         try {
-            JSONArray jsonArray = (JSONArray) JWTParser.parse(token).getJWTClaimsSet().getClaims().get("authorities");
-            for (Object authority : jsonArray) {
-                authorities.add(new SimpleGrantedAuthority(authority.toString()));
-            }
-        } catch (java.text.ParseException e) {
+            JSONArray jsonArray = (JSONArray) JWTParser.parse(token)
+                                                       .getJWTClaimsSet()
+                                                       .getClaims()
+                                                       .get("authorities");
+            Set<SimpleGrantedAuthority> simpleGrantedAuthoritySet = jsonArray.stream()
+                                                           .map(Object::toString)
+                                                           .map(SimpleGrantedAuthority::new)
+                                                           .collect(Collectors.toSet());
+            authorities.addAll(simpleGrantedAuthoritySet);
+        } catch (ParseException e) {
             logger.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }

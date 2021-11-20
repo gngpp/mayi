@@ -1,13 +1,9 @@
+//file:noinspection GroovyAssignabilityCheck
 plugins {
     id 'org.springframework.boot' version "${springbootVersion}"
     id 'io.spring.dependency-management' version "${springDependencyManagerVersion}"
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
 
 dependencies {
     implementation project(':mayi-common:mayi-common-core')

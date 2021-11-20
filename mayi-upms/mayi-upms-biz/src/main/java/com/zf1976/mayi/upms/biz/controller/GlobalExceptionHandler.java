@@ -90,7 +90,7 @@ public class GlobalExceptionHandler {
                                    .stream()
                                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
                                    .collect(Collectors.joining(","));
-        return DataResult.fail(messages);
+        return DataResult.fail(HttpStatus.BAD_REQUEST.value(), messages);
     }
 
     /**

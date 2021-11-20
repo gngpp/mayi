@@ -40,9 +40,38 @@ public interface CustomizeRegisteredClientRepository extends RegisteredClientRep
     RegisteredClient findByClientId(String clientId);
 
     /**
+     * id
+     *
+     * @param id id
+     */
+    void removeById(String id);
+
+    /**
+     * client id
+     *
+     * @param clientId clientId
+     */
+    void removeByClientId(String clientId);
+
+    /**
+     * remove client by client id list
+     *
+     * @param clientIdList clientId list
+     */
+    void removeByClientIdList(List<String> clientIdList);
+
+    /**
+     * remove client by id list
+     *
+     * @param idList id list
+     */
+    void removeByIdList(List<String> idList);
+
+    /**
      * find client list
      *
      * @return the {@link List<RegisteredClient>}
      */
-    CustomizeJdbcRegisteredClientRepository.Page<List<RegisteredClient>> findClientList(int page, int size);
+    Page<RegisteredClient> findClientList(Page<?> page);
+
 }

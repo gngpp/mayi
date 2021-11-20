@@ -1,20 +1,19 @@
 package com.zf1976.mayi.auth.oauth2.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author ant
  * Create by Ant on 2021/11/19 00:34
  */
-@Component
+@SuppressWarnings("SameParameterValue")
 public class CustomizeJdbcRegisteredClientRepository implements CustomizeRegisteredClientRepository {
 
     private static final String TABLE_NAME = "oauth2_registered_client";
@@ -30,13 +29,14 @@ public class CustomizeJdbcRegisteredClientRepository implements CustomizeRegiste
             + "scopes, "
             + "client_settings,"
             + "token_settings";
-    public static final String COUNT = "SELECT COUNT(*) FROM " + TABLE_NAME;
+    private static final String COUNT_SQL = "SELECT COUNT(*) FROM " + TABLE_NAME;
     private static final String LOAD_REGISTERED_CLIENT_SQL = "SELECT " + COLUMN_NAMES + " FROM " + TABLE_NAME;
+    private static final String DELETE_REGISTERED_CLIENT_SQL = "DELETE FROM " + TABLE_NAME + " WHERE";
     private final RegisteredClientRepository registeredClientRepository;
     private final JdbcOperations jdbcOperations;
+
     private final RowMapper<RegisteredClient> registeredClientRowMapper = new JdbcRegisteredClientRepository.RegisteredClientRowMapper();
 
-    @Autowired
     public CustomizeJdbcRegisteredClientRepository(JdbcOperations jdbcOperations) {
         this(jdbcOperations, new JdbcRegisteredClientRepository(jdbcOperations));
     }
@@ -80,30 +80,61 @@ public class CustomizeJdbcRegisteredClientRepository implements CustomizeRegiste
         return this.registeredClientRepository.findByClientId(clientId);
     }
 
+    @Override
+    public void removeById(String id) {
+        this.deleteBy(" id = ?", id);
+    }
+
+    @Override
+    public void removeByClientId(String clientId) {
+        this.deleteBy(" client_id = ?", clientId);
+    }
+
+    @Override
+    public void removeByClientIdList(List<String> clientIdList) {
+        if (clientIdList.size() > 1) {
+            String filter = "client_id IN (" + "?,".repeat(Math.max(0, clientIdList.size() - 1)) + "?)";
+            this.deleteBy(filter, clientIdList.toArray());
+        } else {
+            if (!clientIdList.isEmpty()) {
+                this.removeByClientId(clientIdList.get(0));
+            }
+        }
+    }
+
+    @Override
+    public void removeByIdList(List<String> idList) {
+        if (idList.size() > 1) {
+            String filter = "id IN (" + "?,".repeat(Math.max(0, idList.size() - 1)) + "?)";
+            this.deleteBy(filter, idList.toArray());
+        } else {
+            if (!idList.isEmpty()) {
+                this.removeByClientId(idList.get(0));
+            }
+        }
+    }
+
     /**
      * find client list
      *
      * @param page page
-     * @param size size
-     * @return the {@link Page<List<RegisteredClient>>}
+     * @return the {@link Page<RegisteredClient>}
      */
     @Override
-    public Page<List<RegisteredClient>> findClientList(int page, int size) {
-        if (page <= 0 || size <= 0) {
-            return new PageBuilder<List<RegisteredClient>>().build();
+    public Page<RegisteredClient> findClientList(Page<?> page) {
+        if (page.getPage() <= 0 || page.getSize() <= 0) {
+            return Page.from(page);
         }
-        final var totalRecord = this.jdbcOperations.queryForObject(COUNT, Integer.class);
+        final var totalRecord = this.jdbcOperations.queryForObject(COUNT_SQL, Integer.class);
         if (totalRecord == null || totalRecord == 0) {
-            return new PageBuilder<List<RegisteredClient>>().build();
+            return Page.from(page);
         }
-        final var registeredClientList = this.findBy("LIMIT ?,?", (page - 1) * size, size);
-        final var totalPage = (totalRecord + page - 1) / size;
-        return new PageBuilder<List<RegisteredClient>>()
-                .totalRecord(totalRecord)
-                .totalPage(totalPage)
-                .size(size)
-                .record(registeredClientList)
-                .build();
+        var registeredClientList = this.findBy(" LIMIT ?,?", (page.getPage() - 1) * page.getSize(), page.getSize());
+        final var totalPage = (totalRecord + page.getSize() - 1) / page.getSize();
+        return Page.<RegisteredClient>from(page)
+                   .setTotalPage(totalPage)
+                   .setTotalRecord(totalRecord)
+                   .setRecords(registeredClientList);
     }
 
     private List<RegisteredClient> findBy(String filter, Object... args) {
@@ -111,127 +142,7 @@ public class CustomizeJdbcRegisteredClientRepository implements CustomizeRegiste
                 LOAD_REGISTERED_CLIENT_SQL + filter, this.registeredClientRowMapper, args);
     }
 
-    public static class Page<T> {
-
-        private int totalPage;
-
-        private int totalRecord;
-
-        private int page;
-
-        private int size;
-
-        T record;
-
-        public Page() {
-
-        }
-
-        public Page(PageBuilder<T> recordBuilder) {
-            this.totalPage = recordBuilder.totalPage;
-            this.totalRecord = recordBuilder.totalRecord;
-            this.page = recordBuilder.page;
-            this.size = recordBuilder.size;
-            this.record = recordBuilder.t;
-        }
-
-        public int getTotalRecord() {
-            return totalRecord;
-        }
-
-        public int getPage() {
-            return page;
-        }
-
-        public int getSize() {
-            return size;
-        }
-
-        public T getRecord() {
-            return record;
-        }
-
-        public Page<T> setRecord(T record) {
-            this.record = record;
-            return this;
-        }
-
-        public Page<T> setTotalRecord(int totalRecord) {
-            this.totalRecord = totalRecord;
-            return this;
-        }
-
-        public Page<T> setPage(int page) {
-            this.page = page;
-            return this;
-        }
-
-        public Page<T> setSize(int size) {
-            this.size = size;
-            return this;
-        }
-
-        public int getTotalPage() {
-            return totalPage;
-        }
-
-        public Page<T> setTotalPage(int totalPage) {
-            this.totalPage = totalPage;
-            return this;
-        }
-
-        @Override
-        public String toString() {
-            return "Page{" +
-                    "totalPage=" + totalPage +
-                    ", totalRecord=" + totalRecord +
-                    ", page=" + page +
-                    ", size=" + size +
-                    ", record=" + record +
-                    '}';
-        }
-    }
-
-    public static class PageBuilder<T> {
-
-        private int totalPage;
-
-        private int totalRecord;
-
-        private int page;
-
-        private int size;
-
-        private T t;
-
-        public PageBuilder<T> totalPage(int totalPage) {
-            this.totalPage = totalPage;
-            return this;
-        }
-
-        public PageBuilder<T> totalRecord(int totalRecord){
-            this.totalRecord = totalRecord;
-            return this;
-        }
-
-        public PageBuilder<T> page(int page) {
-            this.page = page;
-            return this;
-        }
-
-        public PageBuilder<T> size(int size) {
-            this.size = size;
-            return this;
-        }
-
-        public PageBuilder<T> record(T t) {
-            this.t = t;
-            return this;
-        }
-
-        public Page<T> build() {
-            return new Page<>(this);
-        }
-
+    private void deleteBy(String filter, Object... args) {
+        this.jdbcOperations.update(DELETE_REGISTERED_CLIENT_SQL + filter, args);
     }
 }

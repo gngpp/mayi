@@ -22,10 +22,12 @@ public class Query<T extends AbstractQueryParam> implements Serializable {
      * 每页最大数
      */
     public static final int MAX_SIZE = 1000;
+
     /**
      * 每页最小数
      */
     public static final int MIN_SIZE = 5;
+
     /**
      * 最小页
      */
