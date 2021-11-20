@@ -55,7 +55,7 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      * @return dict list
      */
     @CachePut(key = "#query")
-    public IPage<DictVO> selectDictPage(Query<DictQueryParam> query) {
+    public IPage<DictVO> findByQuery(Query<DictQueryParam> query) {
         IPage<SysDict> sourcePage = super.queryWrapper()
                                          .chainQuery(query)
                                          .selectPage();
@@ -70,7 +70,7 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      */
     @CacheEvict
     @Transactional
-    public Void saveDict(DictDTO dto) {
+    public Void saveOne(DictDTO dto) {
         // 确认字典名是否存在
         super.lambdaQuery()
              .eq(SysDict::getDictName, dto.getDictName())
@@ -91,7 +91,7 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      */
     @CacheEvict
     @Transactional
-    public Void updateDict(DictDTO dto) {
+    public Void updateOne(DictDTO dto) {
 
         // 查询字典实体
         SysDict sysDict = super.lambdaQuery()
@@ -122,7 +122,7 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      */
     @CacheEvict
     @Transactional
-    public Void deleteDictList(Set<Long> ids) {
+    public Void deleteByIds(Set<Long> ids) {
         super.deleteByIds(ids);
         return null;
     }
@@ -134,7 +134,7 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      * @return /
      */
     @Transactional(readOnly = true)
-    public Void downloadDictExcel(Query<DictQueryParam> query, HttpServletResponse response) {
+    public Void downloadExcel(Query<DictQueryParam> query, HttpServletResponse response) {
         List<SysDict> records = super.queryWrapper()
                                      .chainQuery(query)
                                      .selectList();

@@ -172,7 +172,7 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
      * @return page
      */
     @CachePut(key = "#page")
-    public IPage<MenuVO> selectMenuPage(Query<MenuQueryParam> page) {
+    public IPage<MenuVO> findByQuery(Query<MenuQueryParam> page) {
         final IPage<SysMenu> sourcePage = super.queryWrapper()
                                                .chainQuery(page)
                                                .selectPage();
@@ -229,7 +229,7 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
      */
     @CachePut(key = "#id")
     @Transactional(readOnly = true)
-    public IPage<MenuVO> selectMenuVertex(Long id) {
+    public IPage<MenuVO> findVertexById(Long id) {
         super.lambdaQuery()
              .eq(SysMenu::getId, id)
              .oneOpt().orElseThrow(() -> new MenuException(MenuState.MENU_NOT_FOUND));
@@ -258,7 +258,7 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
      */
     @CacheEvict
     @Transactional
-    public Void saveMenu(MenuDTO dto) {
+    public Void saveOne(MenuDTO dto) {
         // 是否存在匹配菜单类型
         Optional.ofNullable(MenuTypeEnum.match(dto.getType()))
                 .orElseThrow(() -> new MenuException(MenuState.MENU_OPT_ERROR));
@@ -294,7 +294,7 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
      */
     @CacheEvict
     @Transactional
-    public Void updateMenu(MenuDTO dto) {
+    public Void updateOne(MenuDTO dto) {
         // 是否存在匹配菜单类型
         Optional.ofNullable(MenuTypeEnum.match(dto.getType()))
                 .orElseThrow(() -> new MenuException(MenuState.MENU_OPT_ERROR));
@@ -370,7 +370,7 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
      */
     @CacheEvict
     @Transactional
-    public Void deleteMenuList(Set<Long> ids){
+    public Void deleteByIds(Set<Long> ids){
         final Set<Long> treeIds = this.collectCurrentMenuTreeIds(ids, new CopyOnWriteArraySet<>());
         if (!CollectionUtils.isEmpty(treeIds)) {
             // 删除menu

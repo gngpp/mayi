@@ -92,13 +92,9 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         this.userConvert = SysUserConvert.INSTANCE;
     }
 
-    public User findUser(String username) {
-        return this.findUserByUsername(username);
-    }
-
     @CachePut(key = "#username")
     @Transactional(readOnly = true)
-    public User findUserByUsername(String username) {
+    public User findByUsername(String username) {
         // 初步验证用户是否存在
         SysUser sysUser = super.baseMapper.selectOneByUsername(username);
         if (sysUser == null) {
@@ -219,7 +215,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      */
     @CachePut(key = "#query", dynamicsKey = "#username")
     @Transactional(readOnly = true)
-    public IPage<UserVO> selectUserPage(Query<UserQueryParam> query, String username) {
+    public IPage<UserVO> findByQuery(Query<UserQueryParam> query, String username) {
         final IPage<SysUser> sourcePage;
         // 非super admin 过滤数据权限
         if (Context.isOwner()) {
@@ -229,7 +225,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
 
         } else {
             // 用户可观察数据范围
-            Set<Long> dataPermission = this.findUserByUsername(username).getDataPermissions();
+            Set<Long> dataPermission = this.findByUsername(username).getDataPermissions();
             List<Long> userIds = super.baseMapper.selectIdsByDepartmentIds(dataPermission);
             sourcePage = super.queryWrapper()
                               .chainQuery(query, () -> {
@@ -287,7 +283,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @return role id
          */
         @Transactional(readOnly = true)
-        public Set<Long> selectUserRoleIds (Long id){
+        public Set<Long> findRoleById(Long id){
             return this.roleDao.selectListByUserId(id)
                                .stream()
                                .map(SysRole::getId)
@@ -301,7 +297,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @return position id
          */
         @Transactional(readOnly = true)
-        public Set<Long> selectUserPositionIds(Long id){
+        public Set<Long> findPositionById(Long id){
             return this.positionDao.selectListByUserId(id)
                                    .stream()
                                    .filter(SysPosition::getEnabled)
@@ -318,7 +314,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          */
         @CacheEvict
         @Transactional
-        public Void updateUserStatus (Long id, Boolean enabled){
+        public Void updateByIdAndEnabled(Long id, Boolean enabled){
             SysUser sysUser = super.lambdaQuery()
                                    .eq(SysUser::getId, id)
                                    .oneOpt()
@@ -490,7 +486,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          */
         @CacheEvict
         @Transactional
-        public Void updateInformation (UpdateInfoDTO dto){
+        public Void updateInfo(UpdateInfoDTO dto){
             // 查询当前用户是否存在
             SysUser sysUser = super.lambdaQuery()
                                    .eq(SysUser::getId, dto.getId())
@@ -516,7 +512,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          */
         @CacheEvict
         @Transactional
-        public Void saveUser (UserDTO dto){
+        public Void saveOne(UserDTO dto){
             this.validateUsername(dto.getUsername());
             this.validatePhone(dto.getPhone());
             super.lambdaQuery()
@@ -558,7 +554,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          */
         @CacheEvict
         @Transactional
-        public Void updateUser (UserDTO dto){
+        public Void updateOne(UserDTO dto){
             this.validatePhone(dto.getPhone());
             // 查询用户是否存在
             SysUser sysUser = super.lambdaQuery()
@@ -652,7 +648,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          */
         @CacheEvict
         @Transactional
-        public Void deleteUser (Set < Long > ids) {
+        public Void deleteByIds(Set < Long > ids) {
             // 超级管理员
             if (Context.isOwner()) {
                 SysUser sysUser = super.lambdaQuery()

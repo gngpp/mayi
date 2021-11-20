@@ -44,28 +44,22 @@ public interface CustomizeRegisteredClientRepository extends RegisteredClientRep
      *
      * @param id id
      */
-    void removeById(String id);
+    void deleteById(String id);
 
     /**
      * client id
      *
      * @param clientId clientId
      */
-    void removeByClientId(String clientId);
+    void deleteByClientId(String clientId);
 
-    /**
-     * remove client by client id list
-     *
-     * @param clientIdList clientId list
-     */
-    void removeByClientIdList(List<String> clientIdList);
 
     /**
      * remove client by id list
      *
-     * @param idList id list
+     * @param ids id list
      */
-    void removeByIdList(List<String> idList);
+    void deleteByIds(List<String> ids);
 
     /**
      * find client list

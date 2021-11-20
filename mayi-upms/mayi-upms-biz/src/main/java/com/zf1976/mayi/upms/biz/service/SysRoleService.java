@@ -70,7 +70,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * @return /
      */
     @CachePut(key = "selectAllRole")
-    public IPage<RoleVO> selectAllRole() {
+    public IPage<RoleVO> findAll() {
         IPage<SysRole> page = super.lambdaQuery()
                                    .select(SysRole::getId, SysRole::getName)
                                    .page(new Page<>(1, 9999));
@@ -85,7 +85,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      */
     @CachePut(key = "#query")
     @Transactional(readOnly = true)
-    public IPage<RoleVO> selectRolePage(Query<RoleQueryParam> query) {
+    public IPage<RoleVO> findByQuery(Query<RoleQueryParam> query) {
         IPage<SysRole> sourcePage = this.queryWrapper()
                                         .chainQuery(query)
                                         .selectPage();
@@ -108,7 +108,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * @return math
      */
     @CachePut(dynamicsKey = "#username")
-    public Integer selectRoleLevel(String username) {
+    public Integer findByUsernameForLevel(String username) {
         if (Context.isOwner()) {
             return -1;
         }
@@ -128,7 +128,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      */
     @CacheEvict
     @Transactional
-    public Void updateRoleStatus(Long id, Boolean enabled) {
+    public Void updateByIdAndEnabled(Long id, Boolean enabled) {
         if (!enabled) {
             // 存在用户关联不允许禁用当前角色
             if (super.baseMapper.selectUserDependsOnById(id) > 0) {
@@ -151,7 +151,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * @return role
      */
     @Transactional(readOnly = true)
-    public RoleVO selectRole(Long id) {
+    public RoleVO findById(Long id) {
         final SysRole sysRole = super.lambdaQuery()
                                      .eq(SysRole::getId, id)
                                      .oneOpt().orElseThrow(() -> new RoleException(RoleState.ROLE_NOT_FOUND));
@@ -196,7 +196,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      */
     @CacheEvict
     @Transactional
-    public Void savaRole(RoleDTO dto) {
+    public Void saveOne(RoleDTO dto) {
         // 范围消息
         DataPermissionEnum permissionEnum = Optional.ofNullable(dto.getDataScope())
                                                     .orElseThrow(() -> new RoleException(RoleState.ROLE_OPT_ERROR));
@@ -229,7 +229,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      */
     @CacheEvict
     @Transactional
-    public Void updateRole(RoleDTO dto) {
+    public Void updateOne(RoleDTO dto) {
         // 范围消息
         DataPermissionEnum permissionEnum = Optional.ofNullable(dto.getDataScope())
                 .orElseThrow(() -> new RoleException(RoleState.ROLE_OPT_ERROR));
@@ -295,7 +295,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      */
     @CacheEvict
     @Transactional
-    public Void deleteRole(Set<Long> ids) {
+    public Void deleteByIds(Set<Long> ids) {
         ids.forEach(id -> {
             if (super.baseMapper.selectUserDependsOnById(id) > 0) {
                 throw new RoleException(RoleState.ROLE_DEPENDS_ERROR);

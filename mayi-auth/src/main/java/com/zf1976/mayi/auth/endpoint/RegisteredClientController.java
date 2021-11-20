@@ -1,6 +1,8 @@
 package com.zf1976.mayi.auth.endpoint;
 
+import com.zf1976.mayi.auth.oauth2.repository.Page;
 import com.zf1976.mayi.auth.pojo.dto.RegisteredClientDTO;
+import com.zf1976.mayi.auth.pojo.vo.RegisteredClientVO;
 import com.zf1976.mayi.auth.service.OAuth2RegisteredClientService;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.common.core.validate.ValidationInsertGroup;
@@ -17,6 +19,11 @@ public class RegisteredClientController {
 
     public RegisteredClientController(OAuth2RegisteredClientService oAuth2RegisteredClientService) {
         this.oAuth2RegisteredClientService = oAuth2RegisteredClientService;
+    }
+
+    @PostMapping("/page")
+    public DataResult<Page<RegisteredClientVO>> findByPage(@RequestBody Page<?> page) {
+        return DataResult.success(this.oAuth2RegisteredClientService.findList(page));
     }
 
     @PostMapping("/save")

@@ -54,7 +54,7 @@ public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysD
      */
     @CachePut(key = "#query")
     @Transactional(readOnly = true)
-    public IPage<DictDetailVO> selectDictDetailPage(Query<DictDetailQueryParam> query) {
+    public IPage<DictDetailVO> findByQuery(Query<DictDetailQueryParam> query) {
         DictDetailQueryParam param = query.getQuery();
         Assert.notNull(param, BusinessMsgState.PARAM_ILLEGAL::getReasonPhrase);
         LambdaQueryChainWrapper<SysDictDetail> lambdaQuery = super.lambdaQuery();
@@ -80,7 +80,7 @@ public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysD
      */
     @CacheEvict
     @Transactional
-    public Void saveDictDetail(DictDetailDTO dto) {
+    public Void saveOne(DictDetailDTO dto) {
         SysDictDetail sysDictDetail = convert.toEntity(dto);
         super.savaOrUpdate(sysDictDetail);
         return null;
@@ -94,7 +94,7 @@ public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysD
      */
     @CacheEvict
     @Transactional
-    public Void updateDictDetail(DictDetailDTO dto) {
+    public Void updateOne(DictDetailDTO dto) {
         // 查询字典细节实体
         SysDictDetail sysDictDetail = super.lambdaQuery()
                                            .eq(SysDictDetail::getId, dto.getId())
@@ -116,7 +116,7 @@ public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysD
      */
     @CacheEvict
     @Transactional
-    public Void deleteDictDetail(Long id) {
+    public Void deleteById(Long id) {
         if (!super.removeById(id)) {
             throw new DictException(DictState.DICT_NOT_FOUND);
         }

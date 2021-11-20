@@ -31,28 +31,28 @@ public class SysPositionController {
     }
 
     @PostMapping("/page")
-    public DataResult<IPage<PositionVO>> selectPositionPage(@RequestBody Query<PositionQueryParam> query) {
-        return DataResult.success(service.selectPositionPage(query));
+    public DataResult<IPage<PositionVO>> findByQuery(@RequestBody Query<PositionQueryParam> query) {
+        return DataResult.success(service.findByQuery(query));
     }
 
     @PostMapping("/save")
-    public DataResult<Void> savePosition(@RequestBody @Validated(ValidationInsertGroup.class) PositionDTO dto) {
-        return DataResult.success(service.savePosition(dto));
+    public DataResult<Void> saveOne(@RequestBody @Validated(ValidationInsertGroup.class) PositionDTO dto) {
+        return DataResult.success(service.saveOne(dto));
     }
 
     @PutMapping("/update")
-    public DataResult<Void> updatePosition(@RequestBody @Validated(ValidationUpdateGroup.class) PositionDTO dto) {
-        return DataResult.success(service.updatePosition(dto));
+    public DataResult<Void> updateOne(@RequestBody @Validated(ValidationUpdateGroup.class) PositionDTO dto) {
+        return DataResult.success(service.updateOne(dto));
     }
 
     @DeleteMapping("/delete")
-    public DataResult<Void> deletePositionList(@RequestBody @NotNull Set<Long> ids) {
-        return DataResult.success(service.deletePosition(ids));
+    public DataResult<Void> deleteByIds(@RequestBody @NotNull Set<Long> ids) {
+        return DataResult.success(service.deleteByIds(ids));
     }
 
     @PostMapping("/download")
-    public DataResult<Void> downloadPositionExcel(@RequestBody Query<PositionQueryParam> requestPage,
-                                                  HttpServletResponse response) {
-        return DataResult.success(service.downloadPositionExcel(requestPage, response));
+    public DataResult<Void> downloadExcel(@RequestBody Query<PositionQueryParam> requestPage,
+                                          HttpServletResponse response) {
+        return DataResult.success(service.downloadExcel(requestPage, response));
     }
 }

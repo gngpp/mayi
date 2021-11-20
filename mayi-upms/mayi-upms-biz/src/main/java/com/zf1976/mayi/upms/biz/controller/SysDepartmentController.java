@@ -30,33 +30,32 @@ public class SysDepartmentController {
     }
 
     @PostMapping("/page")
-    public DataResult<IPage<DepartmentVO>> selectDepartmentPage(@RequestBody Query<DeptQueryParam> query) {
-        return DataResult.success(service.selectDepartmentPage(query));
+    public DataResult<IPage<DepartmentVO>> findByQuery(@RequestBody Query<DeptQueryParam> query) {
+        return DataResult.success(service.findByQuery(query));
     }
 
     @PostMapping("/vertex/{id}")
-    public DataResult<IPage<DepartmentVO>> departmentVertex(@PathVariable Long id) {
-        return DataResult.success(service.selectDepartmentVertex(id));
+    public DataResult<IPage<DepartmentVO>> findVertexById(@PathVariable Long id) {
+        return DataResult.success(service.findVertexById(id));
     }
 
     @PostMapping("/save")
-    public DataResult<Void> saveDepartment(@RequestBody @Validated({ValidationInsertGroup.class}) DepartmentDTO dto) {
-        return DataResult.success(service.savaDepartment(dto));
+    public DataResult<Void> saveOne(@RequestBody @Validated({ValidationInsertGroup.class}) DepartmentDTO dto) {
+        return DataResult.success(service.savaOne(dto));
     }
 
     @PutMapping("/update")
-    public DataResult<Void> updateDepartment(@RequestBody @Validated(ValidationUpdateGroup.class) DepartmentDTO dto) {
-        return DataResult.success(service.updateDepartment(dto));
+    public DataResult<Void> updateOne(@RequestBody @Validated(ValidationUpdateGroup.class) DepartmentDTO dto) {
+        return DataResult.success(service.updateOne(dto));
     }
 
     @DeleteMapping("/delete")
-    public DataResult<Void> deleteDepartmentList(@RequestBody Set<Long> ids) {
-        return DataResult.success(service.deleteDepartmentList(ids));
+    public DataResult<Void> deleteByIds(@RequestBody Set<Long> ids) {
+        return DataResult.success(service.deleteByIds(ids));
     }
 
     @PostMapping("/download")
-    public DataResult<Void> downloadDepartmentExcel(@RequestBody Query<DeptQueryParam> requestPage,
-                                                    HttpServletResponse response) {
-        return DataResult.success(service.downloadExcelDept(requestPage, response));
+    public DataResult<Void> downloadExcel(@RequestBody Query<DeptQueryParam> requestPage, HttpServletResponse response) {
+        return DataResult.success(service.downloadExcel(requestPage, response));
     }
 }

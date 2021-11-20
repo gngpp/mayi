@@ -42,45 +42,45 @@ public class SysUserController {
 
     @Log(description = "分页查询用户")
     @PostMapping("/page")
-    public DataResult<IPage<UserVO>> selectUserPage(@RequestBody Query<UserQueryParam> query,
-                                                    @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
-        return DataResult.success(service.selectUserPage(query, principal.getName()));
+    public DataResult<IPage<UserVO>> findByQuery(@RequestBody Query<UserQueryParam> query,
+                                                 @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        return DataResult.success(service.findByQuery(query, principal.getName()));
     }
 
     @Log(description = "添加用户")
     @PostMapping("/save")
-    public DataResult<Void> saveUser(@RequestBody @Validated(ValidationInsertGroup.class) UserDTO dto) {
-        return DataResult.success(service.saveUser(dto));
+    public DataResult<Void> saveOne(@RequestBody @Validated(ValidationInsertGroup.class) UserDTO dto) {
+        return DataResult.success(service.saveOne(dto));
     }
 
     @Log(description = "更新用户")
     @PutMapping("/update")
-    public DataResult<Void> updateUser(@RequestBody @Validated(ValidationUpdateGroup.class) UserDTO dto) {
-        return DataResult.success(service.updateUser(dto));
+    public DataResult<Void> updateOne(@RequestBody @Validated(ValidationUpdateGroup.class) UserDTO dto) {
+        return DataResult.success(service.updateOne(dto));
     }
 
     @Log(description = "删除用户")
     @DeleteMapping("/delete")
-    public DataResult<Void> deleteUser(@RequestBody Set<Long> ids) {
-        return DataResult.success(service.deleteUser(ids));
+    public DataResult<Void> deleteByIds(@RequestBody Set<Long> ids) {
+        return DataResult.success(service.deleteByIds(ids));
     }
 
     @Log(description = "获取用户职位")
     @PostMapping("/position/{id}")
-    public DataResult<Set<Long>> getUserPositionIds(@PathVariable Long id) {
-        return DataResult.success(service.selectUserPositionIds(id));
+    public DataResult<Set<Long>> findPositionById(@PathVariable Long id) {
+        return DataResult.success(service.findPositionById(id));
     }
 
     @Log(description = "获取用户角色")
     @PostMapping("/role/{id}")
-    public DataResult<Set<Long>> getUserRoleIds(@PathVariable Long id) {
-        return DataResult.success(service.selectUserRoleIds(id));
+    public DataResult<Set<Long>> findRoleById(@PathVariable Long id) {
+        return DataResult.success(service.findRoleById(id));
     }
 
     @Log(description = "修改用户状态")
     @PatchMapping("/update/status")
-    public DataResult<Void> setUserStatus(@RequestParam @NotNull Long id, @RequestParam @NotNull Boolean enabled) {
-        return DataResult.success(service.updateUserStatus(id, enabled));
+    public DataResult<Void> updateByIdAndEnabled(@RequestParam @NotNull Long id, @RequestParam @NotNull Boolean enabled) {
+        return DataResult.success(service.updateByIdAndEnabled(id, enabled));
     }
 
     @PostMapping("/update/avatar")
@@ -89,7 +89,7 @@ public class SysUserController {
     }
 
     @PatchMapping("/update/password")
-    public DataResult<Void> updatePass(@RequestBody @Validated UpdatePasswordDTO dto) {
+    public DataResult<Void> updatePassword(@RequestBody @Validated UpdatePasswordDTO dto) {
         return DataResult.success(service.updatePassword(dto));
     }
 
@@ -99,17 +99,17 @@ public class SysUserController {
     }
 
     @GetMapping("/email/reset")
-    public DataResult<Void> getEmailVerifyCode(@RequestParam String email) {
+    public DataResult<Void> sendEmailVerifyCode(@RequestParam String email) {
         return DataResult.success(this.validateService.sendVerifyCode(email));
     }
 
     @PatchMapping("/update/info")
     public DataResult<Void> updateInfo(@RequestBody @Validated UpdateInfoDTO dto) {
-        return DataResult.success(service.updateInformation(dto));
+        return DataResult.success(service.updateInfo(dto));
     }
 
     @PostMapping("/info")
-    public DataResult<User> getUserInfo(@AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
-        return DataResult.success(this.service.findUser(principal.getName()));
+    public DataResult<User> findByUsername(@AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        return DataResult.success(this.service.findByUsername(principal.getName()));
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.security.oauth2.server.authorization.client.JdbcRegis
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,12 +80,12 @@ public class CustomizeJdbcRegisteredClientRepository implements CustomizeRegiste
     }
 
     @Override
-    public void removeById(String id) {
+    public void deleteById(String id) {
         this.deleteBy(" id = ?", id);
     }
 
     @Override
-    public void removeByClientId(String clientId) {
+    public void deleteByClientId(String clientId) {
         this.deleteBy(" client_id = ?", clientId);
     }
 
@@ -97,19 +96,19 @@ public class CustomizeJdbcRegisteredClientRepository implements CustomizeRegiste
             this.deleteBy(filter, clientIdList.toArray());
         } else {
             if (!clientIdList.isEmpty()) {
-                this.removeByClientId(clientIdList.get(0));
+                this.deleteByClientId(clientIdList.get(0));
             }
         }
     }
 
     @Override
-    public void removeByIdList(List<String> idList) {
-        if (idList.size() > 1) {
-            String filter = "id IN (" + "?,".repeat(Math.max(0, idList.size() - 1)) + "?)";
-            this.deleteBy(filter, idList.toArray());
+    public void deleteByIds(List<String> ids) {
+        if (ids.size() > 1) {
+            String filter = "id IN (" + "?,".repeat(Math.max(0, ids.size() - 1)) + "?)";
+            this.deleteBy(filter, ids.toArray());
         } else {
-            if (!idList.isEmpty()) {
-                this.removeByClientId(idList.get(0));
+            if (!ids.isEmpty()) {
+                this.deleteByClientId(ids.get(0));
             }
         }
     }

@@ -30,28 +30,28 @@ public class SysDictController {
     }
 
     @PostMapping("/page")
-    public DataResult<IPage<DictVO>> selectDictPage(@RequestBody Query<DictQueryParam> query) {
-        return DataResult.success(service.selectDictPage(query));
+    public DataResult<IPage<DictVO>> findByQuery(@RequestBody Query<DictQueryParam> query) {
+        return DataResult.success(service.findByQuery(query));
     }
 
     @PostMapping("/save")
-    public DataResult<Void> saveDict(@RequestBody @Validated({ValidationInsertGroup.class}) DictDTO dto) {
-        return DataResult.success(service.saveDict(dto));
+    public DataResult<Void> saveOne(@RequestBody @Validated({ValidationInsertGroup.class}) DictDTO dto) {
+        return DataResult.success(service.saveOne(dto));
     }
 
     @PutMapping("/update")
-    public DataResult<Void> updateDict(@RequestBody @Validated(ValidationUpdateGroup.class) DictDTO dto) {
-        return DataResult.success(service.updateDict(dto));
+    public DataResult<Void> updateOne(@RequestBody @Validated(ValidationUpdateGroup.class) DictDTO dto) {
+        return DataResult.success(service.updateOne(dto));
     }
 
     @DeleteMapping("/delete")
-    public DataResult<Void> deleteDictList(@RequestBody Set<Long> ids) {
-        return DataResult.success(service.deleteDictList(ids));
+    public DataResult<Void> deleteByIds(@RequestBody Set<Long> ids) {
+        return DataResult.success(service.deleteByIds(ids));
     }
 
     @PostMapping("/download")
-    public DataResult<Void> downloadDictExcel(@RequestBody Query<DictQueryParam> requestPage, HttpServletResponse response) {
-        return DataResult.success(service.downloadDictExcel(requestPage, response));
+    public DataResult<Void> downloadExcel(@RequestBody Query<DictQueryParam> requestPage, HttpServletResponse response) {
+        return DataResult.success(service.downloadExcel(requestPage, response));
     }
 
 }

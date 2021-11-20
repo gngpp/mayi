@@ -54,7 +54,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      * @return dept list page
      */
     @CachePut(key = "#page")
-    public IPage<DepartmentVO> selectDepartmentPage(Query<DeptQueryParam> page) {
+    public IPage<DepartmentVO> findByQuery(Query<DeptQueryParam> page) {
         IPage<SysDepartment> sourcePage = super.queryWrapper()
                                                .chainQuery(page)
                                                .selectPage();
@@ -69,7 +69,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      */
     @CachePut(key = "#id")
     @Transactional(readOnly = true)
-    public IPage<DepartmentVO> selectDepartmentVertex(Long id) {
+    public IPage<DepartmentVO> findVertexById(Long id) {
         // 查询部门是否存在
         super.lambdaQuery()
              .eq(SysDepartment::getId, id)
@@ -168,7 +168,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      */
     @CacheEvict
     @Transactional
-    public Void savaDepartment(DepartmentDTO dto) {
+    public Void savaOne(DepartmentDTO dto) {
         // 确认部门是否存在
         super.lambdaQuery()
              .eq(SysDepartment::getName, dto.getName())
@@ -189,7 +189,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      */
     @CacheEvict
     @Transactional
-    public Void updateDepartment(DepartmentDTO dto) {
+    public Void updateOne(DepartmentDTO dto) {
         // 查询部门
         SysDepartment department = super.lambdaQuery()
                                            .eq(SysDepartment::getId, dto.getId())
@@ -255,7 +255,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      */
     @CacheEvict
     @Transactional
-    public Void deleteDepartmentList(Set<Long> ids) {
+    public Void deleteByIds(Set<Long> ids) {
         final Set<Long> treeIds = this.collectCurrentDepartmentTreeIds(ids, new HashSet<>());
         if (!CollectionUtils.isEmpty(treeIds)) {
             treeIds.forEach(id -> {
@@ -383,7 +383,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      * @param response    response
      */
     @Transactional(readOnly = true)
-    public Void downloadExcelDept(Query<DeptQueryParam> query, HttpServletResponse response) {
+    public Void downloadExcel(Query<DeptQueryParam> query, HttpServletResponse response) {
         List<SysDepartment> departmentList = super.queryWrapper()
                                                   .chainQuery(query)
                                                   .selectList();

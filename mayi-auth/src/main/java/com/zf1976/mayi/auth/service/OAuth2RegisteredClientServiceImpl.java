@@ -110,35 +110,22 @@ public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClient
 
     @Override
     @Transactional
-    public Void removeById(String id) {
+    public Void deleteById(String id) {
         Assert.notNull(id, "client primaryKey cannot been null.");
-        this.clientRepository.removeById(id);
+        this.clientRepository.deleteById(id);
         return null;
     }
 
     @Override
     @Transactional
-    public Void removeByClientId(String clientId) {
-        Assert.notNull(clientId, "client id cannot been null.");
-        this.clientRepository.removeByClientId(clientId);
+    public Void deleteByIds(Set<String> ids) {
+        this.clientRepository.deleteByIds(new ArrayList<>(ids));
         return null;
     }
 
-    @Override
-    @Transactional
-    public Void removeByIdList(Set<String> idList) {
-        this.clientRepository.removeByIdList(new ArrayList<>(idList));
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public Void removeByClientIdList(Set<String> clientIdList) {
-        this.clientRepository.removeByClientIdList(new ArrayList<>(clientIdList));
-        return null;
-    }
 
     protected void insertRegisteredClient(RegisteredClientDTO registeredClientDTO) {
+        // validate client_id
         if (this.clientRepository.findByClientId(registeredClientDTO.getClientId()) != null) {
             throw new ClientException("client id: " + registeredClientDTO.getClientId() + " exist.");
         }
@@ -205,6 +192,9 @@ public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClient
                  // 校验认证模式
                  .withValidated(data -> this.validateGrantType(data.getAuthorizationGrantTypes()),
                          () -> new ClientException("The certification model does not meet the requirements"))
+                 // 校验客户端认证方法
+                 .withValidated(data -> this.validateClientAuthenticationMethod(data.getClientAuthenticationMethods()),
+                         () -> new ClientException("The client authentication model does not meet the requirements"))
                  // 校验签名算法
                 .withValidated(data -> this.validateSignAlg(data.getTokenSettings().getIdTokenSignatureAlgorithm()),
                         () -> new ClientException("The signature algorithm does not meet the requirements"));

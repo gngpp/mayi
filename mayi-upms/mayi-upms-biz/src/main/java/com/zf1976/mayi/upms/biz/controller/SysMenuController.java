@@ -31,32 +31,32 @@ public class SysMenuController {
     }
 
     @GetMapping("/build")
-    public DataResult<Collection<MenuBuildVO>> buildMenuRoute() {
+    public DataResult<Collection<MenuBuildVO>> findAll() {
         return DataResult.success(service.generatedMenu());
     }
 
     @PostMapping("/page")
-    public DataResult<IPage<MenuVO>> selectMenuPage(@RequestBody Query<MenuQueryParam> query) {
-        return DataResult.success(service.selectMenuPage(query));
+    public DataResult<IPage<MenuVO>> findByQuery(@RequestBody Query<MenuQueryParam> query) {
+        return DataResult.success(service.findByQuery(query));
     }
 
     @PostMapping("/vertex/{id}")
-    public DataResult<IPage<MenuVO>> menuVertex(@PathVariable @NotNull Long id) {
-        return DataResult.success(service.selectMenuVertex(id));
+    public DataResult<IPage<MenuVO>> findVertexById(@PathVariable @NotNull Long id) {
+        return DataResult.success(service.findVertexById(id));
     }
 
     @PostMapping("/save")
-    public DataResult<Void> saveMenu(@RequestBody @Validated(ValidationInsertGroup.class) MenuDTO dto) {
-        return DataResult.success(service.saveMenu(dto));
+    public DataResult<Void> saveOne(@RequestBody @Validated(ValidationInsertGroup.class) MenuDTO dto) {
+        return DataResult.success(service.saveOne(dto));
     }
 
     @PutMapping("/update")
-    public DataResult<Void> updateMenu(@RequestBody @Validated(ValidationUpdateGroup.class) MenuDTO dto) {
-        return DataResult.success(service.updateMenu(dto));
+    public DataResult<Void> updateOne(@RequestBody @Validated(ValidationUpdateGroup.class) MenuDTO dto) {
+        return DataResult.success(service.updateOne(dto));
     }
 
     @DeleteMapping("/delete")
-    public DataResult<Void> deleteMenu(@RequestBody Set<Long> ids) {
-        return DataResult.success(service.deleteMenuList(ids));
+    public DataResult<Void> deleteByIds(@RequestBody Set<Long> ids) {
+        return DataResult.success(service.deleteByIds(ids));
     }
 }

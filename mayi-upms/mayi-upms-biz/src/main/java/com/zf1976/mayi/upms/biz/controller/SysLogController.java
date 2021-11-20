@@ -26,27 +26,27 @@ public class SysLogController {
     }
 
     @PostMapping("/page")
-    public DataResult<IPage<AbstractLogVO>> selectLogPage(@RequestBody Query<LogQueryParam> requestPage) {
-        return DataResult.success(service.selectLogPage(requestPage));
+    public DataResult<IPage<AbstractLogVO>> findByQuery(@RequestBody Query<LogQueryParam> requestPage) {
+        return DataResult.success(service.findByQuery(requestPage));
     }
 
     @PostMapping("/users/page")
-    public DataResult<IPage<AbstractLogVO>> selectUserLogPage(@RequestBody Query<LogQueryParam> requestPage) {
-        return DataResult.success(service.selectUserLogPage(requestPage));
+    public DataResult<IPage<AbstractLogVO>> findByQueryForUser(@RequestBody Query<LogQueryParam> requestPage) {
+        return DataResult.success(service.findByQueryForUser(requestPage));
     }
 
     @DeleteMapping("/delete")
-    public DataResult<Optional<Void>> deleteLog(@RequestBody Set<Long> ids) {
-        return DataResult.success(service.deleteLog(ids));
+    public DataResult<Optional<Void>> deleteByIds(@RequestBody Set<Long> ids) {
+        return DataResult.success(service.deleteByIds(ids));
     }
 
     @DeleteMapping("/delete/error")
-    public DataResult<Optional<Void>> deleteErrorLog() {
-        return DataResult.success(service.deleteErrorLog());
+    public DataResult<Optional<Void>> deleteError() {
+        return DataResult.success(service.deleteError());
     }
 
     @DeleteMapping("/delete/info")
-    public DataResult<Optional<Void>> deleteInfoLog() {
-        return DataResult.success(service.deleteInfoLog());
+    public DataResult<Optional<Void>> deleteInfo() {
+        return DataResult.success(service.deleteInfo());
     }
 }

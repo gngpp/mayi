@@ -47,7 +47,7 @@ public class SysPositionService extends AbstractService<SysPositionDao, SysPosit
      * @return job list
      */
     @CachePut(key = "#query")
-    public IPage<PositionVO> selectPositionPage(Query<PositionQueryParam> query) {
+    public IPage<PositionVO> findByQuery(Query<PositionQueryParam> query) {
         IPage<SysPosition> sourcePage = this.queryWrapper()
                                             .chainQuery(query)
                                             .selectPage();
@@ -62,7 +62,7 @@ public class SysPositionService extends AbstractService<SysPositionDao, SysPosit
      */
     @CacheEvict
     @Transactional
-    public Void savePosition(PositionDTO dto) {
+    public Void saveOne(PositionDTO dto) {
         // 确认职位名是否已经存在
         super.lambdaQuery()
              .eq(SysPosition::getName, dto.getName())
@@ -83,7 +83,7 @@ public class SysPositionService extends AbstractService<SysPositionDao, SysPosit
      */
     @CacheEvict
     @Transactional
-    public Void updatePosition(PositionDTO dto) {
+    public Void updateOne(PositionDTO dto) {
         // 查询更新岗位是否存在
         final SysPosition sysPosition = super.lambdaQuery()
                                              .eq(SysPosition::getId, dto.getId())
@@ -113,7 +113,7 @@ public class SysPositionService extends AbstractService<SysPositionDao, SysPosit
      */
     @CacheEvict
     @Transactional
-    public Void deletePosition(Set<Long> ids) {
+    public Void deleteByIds(Set<Long> ids) {
         super.deleteByIds(ids);
         super.baseMapper.deleteRelationByIds(ids);
         return null;
@@ -126,7 +126,7 @@ public class SysPositionService extends AbstractService<SysPositionDao, SysPosit
      * @param response response
      * @return /
      */
-    public Void downloadPositionExcel(Query<PositionQueryParam> query, HttpServletResponse response) {
+    public Void downloadExcel(Query<PositionQueryParam> query, HttpServletResponse response) {
         List<SysPosition> records = super.queryWrapper()
                                          .chainQuery(query)
                                          .selectList();

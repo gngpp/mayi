@@ -27,23 +27,23 @@ public class SysDictDetailController {
     }
 
     @PostMapping("/page")
-    public DataResult<IPage<DictDetailVO>> selectDictDetailPage(@RequestBody Query<DictDetailQueryParam> query) {
-        return DataResult.success(service.selectDictDetailPage(query));
+    public DataResult<IPage<DictDetailVO>> findByQuery(@RequestBody Query<DictDetailQueryParam> query) {
+        return DataResult.success(service.findByQuery(query));
     }
 
     @PostMapping("/save")
-    public DataResult<Void> saveDictDetail(@RequestBody @Validated(ValidationInsertGroup.class) DictDetailDTO dto) {
-        return DataResult.success(service.saveDictDetail(dto));
+    public DataResult<Void> saveOne(@RequestBody @Validated(ValidationInsertGroup.class) DictDetailDTO dto) {
+        return DataResult.success(service.saveOne(dto));
     }
 
     @PutMapping("/update")
-    public DataResult<Void> updateDictDetail(@RequestBody @Validated(ValidationUpdateGroup.class) DictDetailDTO dto) {
-        return DataResult.success(service.updateDictDetail(dto));
+    public DataResult<Void> updateOne(@RequestBody @Validated(ValidationUpdateGroup.class) DictDetailDTO dto) {
+        return DataResult.success(service.updateOne(dto));
     }
 
     @DeleteMapping("/delete/{id}")
-    public DataResult<Void> deleteDictDetail(@PathVariable Long id) {
-        return DataResult.success(service.deleteDictDetail(id));
+    public DataResult<Void> deleteById(@PathVariable Long id) {
+        return DataResult.success(service.deleteById(id));
     }
 
 

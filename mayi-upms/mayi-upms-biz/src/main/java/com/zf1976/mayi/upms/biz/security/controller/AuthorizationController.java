@@ -27,6 +27,6 @@ public class AuthorizationController {
     @Inner
     @PostMapping("/{username}")
     public DataResult<User> getUser(@PathVariable("username")String username) {
-        return DataResult.success(this.userService.findUserByUsername(username));
+        return DataResult.success(this.userService.findByUsername(username));
     }
 }

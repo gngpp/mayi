@@ -34,7 +34,7 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
 
     private final SysLogConvert convert = SysLogConvert.INSTANCE;
 
-    public IPage<AbstractLogVO> selectUserLogPage(Query<LogQueryParam> query) {
+    public IPage<AbstractLogVO> findByQueryForUser(Query<LogQueryParam> query) {
         LogQueryParam param = query.getQuery();
         Assert.notNull(param, BusinessMsgState.PARAM_ILLEGAL::getReasonPhrase);
         // 查询分页对象
@@ -45,7 +45,7 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
         return this.mapPage(sourcePage,convert::toUserLogVo);
     }
 
-    public IPage<AbstractLogVO> selectLogPage(Query<LogQueryParam> query) {
+    public IPage<AbstractLogVO> findByQuery(Query<LogQueryParam> query) {
         LogQueryParam param = query.getQuery();
         Assert.notNull(param, BusinessMsgState.PARAM_ILLEGAL::getReasonPhrase);
         if (param.getLogType() == null) {
@@ -133,7 +133,7 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
      * @param ids ids
      * @return /
      */
-    public Optional<Void> deleteLog(Set<Long> ids) {
+    public Optional<Void> deleteByIds(Set<Long> ids) {
         if (!super.removeByIds(ids)) {
             throw new BusinessException(BusinessMsgState.OPT_ERROR);
         }
@@ -145,7 +145,7 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
      *
      * @return /
      */
-    public Optional<Void> deleteErrorLog() {
+    public Optional<Void> deleteError() {
         LambdaQueryWrapper<SysLog> wrapper = new LambdaQueryWrapper<SysLog>()
                 .eq(SysLog::getLogType, LogType.ERROR);
         if (!super.remove(wrapper)) {
@@ -159,7 +159,7 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
      *
      * @return /
      */
-    public Optional<Void> deleteInfoLog() {
+    public Optional<Void> deleteInfo() {
         LambdaQueryWrapper<SysLog> wrapper = new LambdaQueryWrapper<SysLog>()
                 .ne(SysLog::getLogType, LogType.ERROR);
         if (!super.remove(wrapper)) {

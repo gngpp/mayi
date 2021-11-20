@@ -8,6 +8,7 @@ import com.zf1976.mayi.common.core.validate.ValidationInsertGroup;
 import com.zf1976.mayi.common.core.validate.ValidationUpdateGroup;
 import org.springframework.security.oauth2.core.Version;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.io.Serializable;
@@ -46,9 +47,11 @@ public class RegisteredClientDTO implements Serializable {
     private Set<String> scopes;
 
     @NotNull(message = "clientSettings cannot been null.")
+    @Valid
     private ClientSettingsConvert clientSettings;
 
     @NotNull(message = "tokenSettings cannot been null.")
+    @Valid
     private TokenSettingsConvert tokenSettings;
 
     public RegisteredClientDTO() {

@@ -16,12 +16,8 @@ public interface OAuth2RegisteredClientService {
 
     Page<RegisteredClientVO> findList(Page<?> page);
 
-    Void removeById(String id);
+    Void deleteById(String id);
 
-    Void removeByClientId(String clientId);
-
-    Void removeByIdList(Set<String> idList);
-
-    Void removeByClientIdList(Set<String> clientIdList);
+    Void deleteByIds(Set<String> ids);
 
 }

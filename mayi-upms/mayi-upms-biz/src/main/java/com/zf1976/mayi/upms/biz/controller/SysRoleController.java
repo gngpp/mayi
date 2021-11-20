@@ -34,49 +34,49 @@ public class SysRoleController {
 
     @Log(description = "根据所有角色")
     @GetMapping("/all")
-    public DataResult<IPage<RoleVO>> selectAllRole() {
-        return DataResult.success(this.service.selectAllRole());
+    public DataResult<IPage<RoleVO>> findAll() {
+        return DataResult.success(this.service.findAll());
     }
 
     @Log(description = "分页查询角色")
     @PostMapping("/page")
-    public DataResult<IPage<RoleVO>> selectRolePage(@RequestBody Query<RoleQueryParam> query) {
-        return DataResult.success(service.selectRolePage(query));
+    public DataResult<IPage<RoleVO>> findByQuery(@RequestBody Query<RoleQueryParam> query) {
+        return DataResult.success(service.findByQuery(query));
     }
 
     @Log(description = "根据id查询角色")
     @PostMapping("/{id}")
-    public DataResult<RoleVO> selectRole(@PathVariable("id") @NotNull Long id) {
-        return DataResult.success(service.selectRole(id));
+    public DataResult<RoleVO> findById(@PathVariable("id") @NotNull Long id) {
+        return DataResult.success(service.findById(id));
     }
 
     @Log(description = "根据id查询角色级别")
     @GetMapping("/level")
-    public DataResult<Integer> getRoleLevel(@AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
-        return DataResult.success(service.selectRoleLevel(principal.getName()));
+    public DataResult<Integer> findByUsernameForLevel(@AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        return DataResult.success(service.findByUsernameForLevel(principal.getName()));
     }
 
     @Log(description = "根据id修改角色状态")
     @PatchMapping("/status")
-    public DataResult<Void> setRoleStatus(@RequestParam @NotNull Long id, @RequestParam @NotNull Boolean enabled) {
-        return DataResult.success(service.updateRoleStatus(id, enabled));
+    public DataResult<Void> updateByIdAndEnabled(@RequestParam @NotNull Long id, @RequestParam @NotNull Boolean enabled) {
+        return DataResult.success(service.updateByIdAndEnabled(id, enabled));
     }
 
     @Log(description = "新增角色")
     @PostMapping("/save")
-    public DataResult<Void> saveRole(@RequestBody @Validated(ValidationInsertGroup.class) RoleDTO dto) {
-        return DataResult.success(service.savaRole(dto));
+    public DataResult<Void> saveOne(@RequestBody @Validated(ValidationInsertGroup.class) RoleDTO dto) {
+        return DataResult.success(service.saveOne(dto));
     }
 
     @Log(description = "更新角色")
     @PutMapping("/update")
-    public DataResult<Void> updateRole(@RequestBody @Validated(ValidationUpdateGroup.class) RoleDTO dto) {
-        return DataResult.success(service.updateRole(dto));
+    public DataResult<Void> updateOne(@RequestBody @Validated(ValidationUpdateGroup.class) RoleDTO dto) {
+        return DataResult.success(service.updateOne(dto));
     }
 
     @Log(description = "删除角色")
     @DeleteMapping("/delete")
-    public DataResult<Void> deleteRole(@RequestBody Set<Long> ids) {
-        return DataResult.success(service.deleteRole(ids));
+    public DataResult<Void> deleteByIds(@RequestBody Set<Long> ids) {
+        return DataResult.success(service.deleteByIds(ids));
     }
 }
