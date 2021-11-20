@@ -263,6 +263,7 @@ public class MySQLBackupStrategy implements SQLBackupStrategy {
             }
             try {
                 st.executeBatch();
+                connection.commit();
             } catch (SQLException e) {
                 // 执行失败回滚
                 connection.rollback();
