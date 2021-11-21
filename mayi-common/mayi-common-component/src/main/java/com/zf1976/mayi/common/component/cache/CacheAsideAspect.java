@@ -42,10 +42,7 @@ import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.DigestUtils;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.util.*;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -147,7 +144,7 @@ public class CacheAsideAspect extends AbstractCacheAsideLock {
         String namespace = classAnnotation == null ? annotation.namespace() : classAnnotation.namespace();
         // Cache Key
         String cacheKey = this.extractCacheKey(method, joinPoint.getArgs(), annotation.key());
-        if (annotation.dynamicsKey() != null) {
+        if (StringUtils.hasLength(annotation.dynamicsKey())) {
             String dynamicsKey = this.extractCacheKey(method, joinPoint.getArgs(), annotation.dynamicsKey());
             cacheKey = cacheKey.concat(dynamicsKey);
         }
@@ -161,9 +158,14 @@ public class CacheAsideAspect extends AbstractCacheAsideLock {
             }
         }
         try {
-            Object proceed = joinPoint.proceed();
             return this.cacheProviderMap.get(annotation.implement())
-                                        .getValueAndSupplier(namespace, cacheKey, annotation.expired(), () -> proceed);
+                                        .getValueAndSupplier(namespace, cacheKey, annotation.expired(), () -> {
+                                            try {
+                                                return joinPoint.proceed();
+                                            } catch (Throwable e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                        });
         } finally {
             if (lockCondition) {
                 lock.unlock();

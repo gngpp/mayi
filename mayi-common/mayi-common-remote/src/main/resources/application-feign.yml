@@ -5,3 +5,5 @@ feign:
       enabled: true
   client:
     default-to-properties: true
+  httpclient:
+    connection-timeout: 5000
