@@ -164,11 +164,13 @@ public class CustomizeNimbusOpaqueTokenIntrospector implements OpaqueTokenIntros
                                                        .getJWTClaimsSet()
                                                        .getClaims()
                                                        .get("authorities");
-            Set<SimpleGrantedAuthority> simpleGrantedAuthoritySet = jsonArray.stream()
-                                                           .map(Object::toString)
-                                                           .map(SimpleGrantedAuthority::new)
-                                                           .collect(Collectors.toSet());
-            authorities.addAll(simpleGrantedAuthoritySet);
+            if (jsonArray != null) {
+                Set<SimpleGrantedAuthority> simpleGrantedAuthoritySet = jsonArray.stream()
+                                                                                 .map(Object::toString)
+                                                                                 .map(SimpleGrantedAuthority::new)
+                                                                                 .collect(Collectors.toSet());
+                authorities.addAll(simpleGrantedAuthoritySet);
+            }
         } catch (ParseException e) {
             logger.error(e.getMessage(), e);
             throw new RuntimeException(e);

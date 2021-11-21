@@ -72,11 +72,3 @@ api-encrypt:
 auth:
   enable-signature: true
   model: false
-
-feign:
-  httpclient:
-    connection-timeout: 50000
-    connection-timer-repeat: 3000
-  compression:
-    response:
-      useGzipDecoder: true

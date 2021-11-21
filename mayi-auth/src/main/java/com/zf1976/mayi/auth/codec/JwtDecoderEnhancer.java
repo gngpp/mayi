@@ -38,5 +38,4 @@ public class JwtDecoderEnhancer implements JwtDecoder {
         return decode;
     }
 
-
 }

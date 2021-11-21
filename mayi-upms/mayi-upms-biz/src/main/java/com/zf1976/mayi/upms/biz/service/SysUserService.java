@@ -184,7 +184,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                     .flatMap(role -> permissionDao.selectPermissionsByRoleId(role.getId())
                                                   .stream()
                                                   .map(Permission::getValue)
-                                                  .filter(p -> !StringUtils.isEmpty(p))
+                                                  .filter(StringUtils::hasLength)
                             )
                     .collect(Collectors.toSet());
     }

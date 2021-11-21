@@ -5,7 +5,6 @@ package com.zf1976.mayi.auth.pojo;
 
 import org.springframework.security.oauth2.core.Version;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 

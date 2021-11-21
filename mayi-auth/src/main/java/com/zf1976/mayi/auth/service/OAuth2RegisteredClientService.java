@@ -20,4 +20,7 @@ public interface OAuth2RegisteredClientService {
 
     Void deleteByIds(Set<String> ids);
 
+    Void deleteByClientId(String clientId);
+
+    Void deleteByClientIds(Set<String> clientIds);
 }

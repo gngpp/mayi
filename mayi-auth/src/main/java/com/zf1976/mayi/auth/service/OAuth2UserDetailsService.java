@@ -10,10 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
@@ -34,16 +36,16 @@ public class OAuth2UserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        DataResult<User> userDataResult;
+        DataResult<User> dataResult;
         try {
-            userDataResult = this.remoteUserService.getUser(username, SecurityConstants.FROM_IN);
+            dataResult = this.remoteUserService.getUser(username, SecurityConstants.FROM_IN);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new AuthenticationServiceException("authorization server error.");
+            log.debug(e.getMessage(), e);
+            throw new InternalAuthenticationServiceException("authorization server error.");
         }
-        User user = userDataResult.getData();
+        User user = dataResult.getData();
         if (user == null) {
-            throw new UserNotFountException(AuthenticationState.USER_NOT_FOUNT);
+            throw new UsernameNotFoundException(AuthenticationState.USER_NOT_FOUNT.getReasonPhrase());
         }
         final var permissions = String.join(",", user.getPermissions());
         return AuthorizationUserDetails.builder()

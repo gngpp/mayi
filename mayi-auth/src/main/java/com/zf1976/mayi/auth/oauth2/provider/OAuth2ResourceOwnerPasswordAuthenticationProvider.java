@@ -97,7 +97,8 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements Authen
 			// Default to configured scopes
 			Set<String> authorizedScopes = registeredClient.getScopes();
 			if (!CollectionUtils.isEmpty(resourceOwnerPasswordAuthentication.getScopes())) {
-				Set<String> unauthorizedScopes = resourceOwnerPasswordAuthentication.getScopes().stream()
+				Set<String> unauthorizedScopes = resourceOwnerPasswordAuthentication.getScopes()
+																					.stream()
 																					.filter(requestedScope -> !registeredClient.getScopes().contains(requestedScope))
 																					.collect(Collectors.toSet());
 				if (!CollectionUtils.isEmpty(unauthorizedScopes)) {
@@ -175,7 +176,7 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements Authen
 			return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken, refreshToken, tokenAdditionalParameters);
 
 		} catch (Exception ex) {
-			LOGGER.error("problem in authenticate", ex);
+			LOGGER.debug("problem in authenticate", ex);
 			throw new OAuth2AuthenticationException(new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR), ex);
 		}
 

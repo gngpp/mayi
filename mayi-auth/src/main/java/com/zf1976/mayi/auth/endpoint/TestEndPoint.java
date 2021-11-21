@@ -48,8 +48,8 @@ public class TestEndPoint {
     }
 
     @GetMapping("/testTransaction")
-    public void testTransaction(@RequestParam String clientId) {
-        this.oAuth2RegisteredClientService.removeByClientId(clientId);
+    public DataResult<Void> testTransaction(@RequestParam String clientId) {
+        return DataResult.success(this.oAuth2RegisteredClientService.deleteById(clientId));
     }
 
 }

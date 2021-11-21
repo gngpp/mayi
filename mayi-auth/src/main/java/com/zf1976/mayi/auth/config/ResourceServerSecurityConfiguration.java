@@ -19,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.rsa.crypto.KeyStoreKeyFactory;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -94,7 +96,9 @@ public class ResourceServerSecurityConfiguration {
             .and()
             .formLogin(Customizer.withDefaults())
             .oauth2ResourceServer(v -> {
-                v.jwt().decoder(new JwtDecoderEnhancer(this.jwtDecoder(), authorizationService));
+                v.jwt()
+                 .jwtAuthenticationConverter(this.customizeJwtAuthenticationConverter())
+                 .decoder(new JwtDecoderEnhancer(this.jwtDecoder(), authorizationService));
                 v.accessDeniedHandler(new Oauth2AccessDeniedHandler())
                  .authenticationEntryPoint(new Oauth2AuthenticationEntryPoint());
             });
@@ -105,6 +109,14 @@ public class ResourceServerSecurityConfiguration {
         final var keyPair = this.keyPair();
         final var aPublic = (RSAPublicKey) keyPair.getPublic();
         return NimbusJwtDecoder.withPublicKey(aPublic).build();
+    }
+
+    JwtAuthenticationConverter customizeJwtAuthenticationConverter() {
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
     }
 
 }

@@ -62,6 +62,13 @@ public interface CustomizeRegisteredClientRepository extends RegisteredClientRep
     void deleteByIds(List<String> ids);
 
     /**
+     * remove client by client_id list
+     *
+     * @param ids client id list
+     */
+    void deleteByClientIds(List<String> ids);
+
+    /**
      * find client list
      *
      * @return the {@link List<RegisteredClient>}

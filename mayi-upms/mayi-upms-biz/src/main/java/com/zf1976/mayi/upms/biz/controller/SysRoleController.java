@@ -46,7 +46,7 @@ public class SysRoleController {
 
     @Log(description = "根据id查询角色")
     @PostMapping("/{id}")
-    public DataResult<RoleVO> findById(@PathVariable("id") @NotNull Long id) {
+    public DataResult<RoleVO> findById(@PathVariable @NotNull Long id) {
         return DataResult.success(service.findById(id));
     }
 
@@ -58,7 +58,8 @@ public class SysRoleController {
 
     @Log(description = "根据id修改角色状态")
     @PatchMapping("/status")
-    public DataResult<Void> updateByIdAndEnabled(@RequestParam @NotNull Long id, @RequestParam @NotNull Boolean enabled) {
+    public DataResult<Void> updateByIdAndEnabled(@RequestParam @NotNull Long id,
+                                                 @RequestParam @NotNull Boolean enabled) {
         return DataResult.success(service.updateByIdAndEnabled(id, enabled));
     }
 

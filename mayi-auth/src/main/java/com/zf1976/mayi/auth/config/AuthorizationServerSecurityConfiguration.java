@@ -25,7 +25,7 @@ import com.zf1976.mayi.auth.Context;
 import com.zf1976.mayi.auth.oauth2.authorization.OAuthorizationRowMapperEnhancer;
 import com.zf1976.mayi.auth.filter.handler.success.OAuth2AuthenticationSuccessHandler;
 import com.zf1976.mayi.auth.oauth2.convert.OAuth2ResourceOwnerPasswordAuthenticationConverter;
-import com.zf1976.mayi.auth.oauth2.provider.DaoAuthenticationEnhancerProvider;
+import com.zf1976.mayi.auth.oauth2.provider.CustomizeDaoAuthenticationProvider;
 import com.zf1976.mayi.auth.oauth2.provider.OAuth2ResourceOwnerPasswordAuthenticationProvider;
 import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
 import com.zf1976.mayi.auth.service.OAuth2UserDetailsService;
@@ -166,7 +166,7 @@ public class AuthorizationServerSecurityConfiguration {
 		resourceOwnerPasswordAuthenticationProvider.setProviderSettings(providerSettings);
 
 		// This will add new authentication provider in the list of existing authentication providers.
-		http.authenticationProvider(new DaoAuthenticationEnhancerProvider(this.passwordEncoder, this.userDetailsService));
+		http.authenticationProvider(new CustomizeDaoAuthenticationProvider(this.passwordEncoder, this.userDetailsService));
 		http.authenticationProvider(resourceOwnerPasswordAuthenticationProvider);
 
 	}
@@ -244,6 +244,7 @@ public class AuthorizationServerSecurityConfiguration {
 	/**
 	 * Personalise JWT token
 	 */
+	@SuppressWarnings("unchecked")
 	@Bean
 	public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
 		if (this.jwtEncodingContextOAuth2TokenCustomizer == null) {
@@ -259,9 +260,10 @@ public class AuthorizationServerSecurityConfiguration {
 													   .stream()
 													   .map(GrantedAuthority::getAuthority)
 													   .collect(Collectors.toSet());
-							Context.setShareObject(AuthorizationUserDetails.class, userDetails);
+
 							context.getClaims().claim("user_id", userDetails.getId());
 							context.getClaims().claim("authorities", authority);
+							Context.setShareObject(AuthorizationUserDetails.class, userDetails);
 							if (log.isDebugEnabled()) {
 								log.info("login username: {}", userDetails.getUsername());
 								log.info("token authorities: {}", authority);

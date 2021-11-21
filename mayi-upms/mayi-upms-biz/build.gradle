@@ -16,6 +16,7 @@ dependencies {
     implementation project(':mayi-common:mayi-common-security')
     implementation project(':mayi-common:mayi-common-component')
     implementation project(':mayi-common:mayi-common-datasource')
+    implementation project(':mayi-common:mayi-common-remote')
 
     implementation('cn.hutool:hutool-poi:5.4.5')
     implementation('org.apache.poi:poi-ooxml:4.1.2')

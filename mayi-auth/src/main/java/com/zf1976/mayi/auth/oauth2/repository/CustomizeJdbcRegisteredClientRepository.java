@@ -90,21 +90,21 @@ public class CustomizeJdbcRegisteredClientRepository implements CustomizeRegiste
     }
 
     @Override
-    public void removeByClientIdList(List<String> clientIdList) {
-        if (clientIdList.size() > 1) {
-            String filter = "client_id IN (" + "?,".repeat(Math.max(0, clientIdList.size() - 1)) + "?)";
-            this.deleteBy(filter, clientIdList.toArray());
+    public void deleteByIds(List<String> ids) {
+        if (ids.size() > 1) {
+            String filter = "id IN (" + "?,".repeat(Math.max(0, ids.size() - 1)) + "?)";
+            this.deleteBy(filter, ids.toArray());
         } else {
-            if (!clientIdList.isEmpty()) {
-                this.deleteByClientId(clientIdList.get(0));
+            if (!ids.isEmpty()) {
+                this.deleteByClientId(ids.get(0));
             }
         }
     }
 
     @Override
-    public void deleteByIds(List<String> ids) {
+    public void deleteByClientIds(List<String> ids) {
         if (ids.size() > 1) {
-            String filter = "id IN (" + "?,".repeat(Math.max(0, ids.size() - 1)) + "?)";
+            String filter = "client_id IN (" + "?,".repeat(Math.max(0, ids.size() - 1)) + "?)";
             this.deleteBy(filter, ids.toArray());
         } else {
             if (!ids.isEmpty()) {

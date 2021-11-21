@@ -17,16 +17,16 @@ import org.springframework.util.Assert;
 
 /**
  * 默认 {@link org.springframework.security.authentication.dao.DaoAuthenticationProvider} 不支持密码加密
- * 同时兼容 此为增强 {@link DaoAuthenticationEnhancerProvider}
+ * 同时兼容 此为增强 {@link CustomizeDaoAuthenticationProvider}
  * @author mac
  * @date 2021/2/19
  **/
-public class DaoAuthenticationEnhancerProvider extends AbstractUserDetailsAuthenticationProvider {
+public class CustomizeDaoAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
     private PasswordEncoder passwordEncoder;
     private UserDetailsService userDetailsService;
     private volatile String userNotFoundEncodedPassword;
 
-    public DaoAuthenticationEnhancerProvider(PasswordEncoder passwordEncoder,
+    public CustomizeDaoAuthenticationProvider(PasswordEncoder passwordEncoder,
                                               UserDetailsService userDetailsService) {
         this.passwordEncoder = passwordEncoder;
         this.userDetailsService = userDetailsService;
@@ -113,12 +113,12 @@ public class DaoAuthenticationEnhancerProvider extends AbstractUserDetailsAuthen
         return passwordEncoder;
     }
 
-    public DaoAuthenticationEnhancerProvider setPasswordEncoder(PasswordEncoder passwordEncoder) {
+    public CustomizeDaoAuthenticationProvider setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
         return this;
     }
 
-    public DaoAuthenticationEnhancerProvider setUserDetailsService(UserDetailsService userDetailsService) {
+    public CustomizeDaoAuthenticationProvider setUserDetailsService(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
         return this;
     }

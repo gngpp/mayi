@@ -119,7 +119,24 @@ public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClient
     @Override
     @Transactional
     public Void deleteByIds(Set<String> ids) {
+        Assert.notNull(ids, "client id list cannot benn null.");
         this.clientRepository.deleteByIds(new ArrayList<>(ids));
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public Void deleteByClientId(String clientId) {
+        Assert.notNull(clientId, "clientId cannot been null.");
+        this.clientRepository.deleteByClientId(clientId);
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public Void deleteByClientIds(Set<String> clientIds) {
+        Assert.notNull(clientIds, "clientId list cannot benn null.");
+        this.clientRepository.deleteByClientIds(new ArrayList<>(clientIds));
         return null;
     }
 
@@ -308,6 +325,7 @@ public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClient
                                .clientSecretExpiresAt(Instant.ofEpochMilli(registeredClientDTO.getClientSecretExpiresAt()))
                                .clientAuthenticationMethods(v -> v.addAll(clientAuthenticationMethods))
                                .authorizationGrantTypes(v -> v.addAll(authorizationGrantTypes))
+                               .scopes(v -> v.addAll(registeredClientDTO.getScopes()))
                                .clientSettings(clientSettings)
                                .tokenSettings(tokenSettings)
                                .build();

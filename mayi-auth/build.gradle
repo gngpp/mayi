@@ -20,6 +20,7 @@ dependencies {
     implementation project(':mayi-common:mayi-common-encrypt')
     implementation project(':mayi-common:mayi-common-component')
     implementation project(':mayi-common:mayi-common-security')
+    implementation project(':mayi-common:mayi-common-remote')
 
     // miscellaneous
     implementation "io.jsonwebtoken:jjwt-api:$jwtVersion"
