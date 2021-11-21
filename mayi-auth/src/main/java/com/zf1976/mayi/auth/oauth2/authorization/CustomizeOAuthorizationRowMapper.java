@@ -63,12 +63,12 @@ import java.util.*;
  * @author mac
  * 2021/11/13 星期六 1:29 下午
  */
-public class OAuthorizationRowMapperEnhancer implements RowMapper<OAuth2Authorization> {
+public class CustomizeOAuthorizationRowMapper implements RowMapper<OAuth2Authorization> {
     private final RegisteredClientRepository registeredClientRepository;
     private LobHandler lobHandler = new DefaultLobHandler();
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public OAuthorizationRowMapperEnhancer(RegisteredClientRepository registeredClientRepository) {
+    public CustomizeOAuthorizationRowMapper(RegisteredClientRepository registeredClientRepository) {
         Assert.notNull(registeredClientRepository, "registeredClientRepository cannot be null");
         this.registeredClientRepository = registeredClientRepository;
 

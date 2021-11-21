@@ -27,6 +27,7 @@ import com.zf1976.mayi.auth.codec.JwtDecoderEnhancer;
 import com.zf1976.mayi.auth.codec.Md5PasswordEncoder;
 import com.zf1976.mayi.auth.filter.handler.access.Oauth2AccessDeniedHandler;
 import com.zf1976.mayi.auth.filter.handler.access.Oauth2AuthenticationEntryPoint;
+import com.zf1976.mayi.auth.oauth2.authorization.CustomizeJwtGrantedAuthoritiesConverter;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +44,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.rsa.crypto.KeyStoreKeyFactory;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -136,7 +136,7 @@ public class ResourceServerSecurityConfiguration {
 
     JwtAuthenticationConverter customizeJwtAuthenticationConverter() {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        CustomizeJwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new CustomizeJwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return jwtAuthenticationConverter;

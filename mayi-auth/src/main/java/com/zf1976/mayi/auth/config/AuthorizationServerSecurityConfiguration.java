@@ -28,13 +28,11 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import com.zf1976.mayi.auth.Context;
-import com.zf1976.mayi.auth.oauth2.authorization.OAuthorizationRowMapperEnhancer;
-import com.zf1976.mayi.auth.filter.handler.success.OAuth2AuthenticationSuccessHandler;
+import com.zf1976.mayi.auth.oauth2.authorization.CustomizeOAuthorizationRowMapper;
+import com.zf1976.mayi.auth.oauth2.authorization.OAuth2JwtTokenCustomizer;
 import com.zf1976.mayi.auth.oauth2.convert.OAuth2ResourceOwnerPasswordAuthenticationConverter;
 import com.zf1976.mayi.auth.oauth2.provider.CustomizeDaoAuthenticationProvider;
 import com.zf1976.mayi.auth.oauth2.provider.OAuth2ResourceOwnerPasswordAuthenticationProvider;
-import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
 import com.zf1976.mayi.auth.service.OAuth2UserDetailsService;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import org.slf4j.Logger;
@@ -46,13 +44,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -68,13 +63,11 @@ import org.springframework.security.oauth2.server.authorization.web.authenticati
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.Assert;
 
 import java.security.KeyPair;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * OAuth Authorization Server Configuration.
@@ -137,7 +130,6 @@ public class AuthorizationServerSecurityConfiguration {
 					new OAuth2RefreshTokenAuthenticationConverter(),
 					new OAuth2ResourceOwnerPasswordAuthenticationConverter())
 			);
-			configurer.accessTokenResponseHandler(new OAuth2AuthenticationSuccessHandler());
 			configurer.accessTokenRequestConverter(delegatingAuthenticationConverter);
 		});
 		RequestMatcher endpointsMatcher = authorizationServerConfigurer
@@ -221,7 +213,7 @@ public class AuthorizationServerSecurityConfiguration {
 	@DependsOn({"jdbcTemplate", "registeredClientRepository"})
 	public OAuth2AuthorizationService auth2AuthorizationService(JdbcOperations jdbcOperations, RegisteredClientRepository registeredClientRepository) {
 		final var jdbcOAuth2AuthorizationService = new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
-		jdbcOAuth2AuthorizationService.setAuthorizationRowMapper(new OAuthorizationRowMapperEnhancer(registeredClientRepository));
+		jdbcOAuth2AuthorizationService.setAuthorizationRowMapper(new CustomizeOAuthorizationRowMapper(registeredClientRepository));
 		return jdbcOAuth2AuthorizationService;
 	}
 
@@ -257,26 +249,7 @@ public class AuthorizationServerSecurityConfiguration {
 		if (this.jwtEncodingContextOAuth2TokenCustomizer == null) {
 			synchronized (this) {
 				if (this.jwtEncodingContextOAuth2TokenCustomizer == null) {
-					this.jwtEncodingContextOAuth2TokenCustomizer = context -> {
-						Authentication authentication = context.getPrincipal();
-						if (context.getTokenType().getValue().equals("access_token") && authentication instanceof UsernamePasswordAuthenticationToken) {
-							final var principal = authentication.getPrincipal();
-							Assert.isInstanceOf(AuthorizationUserDetails.class, principal);
-							AuthorizationUserDetails userDetails = (AuthorizationUserDetails) principal;
-							var authority = userDetails.getAuthorities()
-													   .stream()
-													   .map(GrantedAuthority::getAuthority)
-													   .collect(Collectors.toSet());
-
-							context.getClaims().claim("user_id", userDetails.getId());
-							context.getClaims().claim("authorities", authority);
-							Context.setShareObject(AuthorizationUserDetails.class, userDetails);
-							if (log.isDebugEnabled()) {
-								log.info("login username: {}", userDetails.getUsername());
-								log.info("token authorities: {}", authority);
-							}
-						}
-					};
+					this.jwtEncodingContextOAuth2TokenCustomizer = new OAuth2JwtTokenCustomizer();
 				}
 			}
 		}

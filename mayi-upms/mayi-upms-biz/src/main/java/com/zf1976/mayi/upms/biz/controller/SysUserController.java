@@ -39,6 +39,7 @@ import com.zf1976.mayi.upms.biz.pojo.query.UserQueryParam;
 import com.zf1976.mayi.upms.biz.pojo.vo.user.UserVO;
 import com.zf1976.mayi.upms.biz.service.SysUserService;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -107,31 +108,37 @@ public class SysUserController {
     }
 
     @PostMapping("/update/avatar")
+    @PreAuthorize("hasAnyAuthority('all','write')")
     public DataResult<Void> updateAvatar(@RequestParam("avatar") MultipartFile multipartFile) {
         return DataResult.success(service.updateAvatar(multipartFile));
     }
 
     @PatchMapping("/update/password")
+    @PreAuthorize("hasAnyAuthority('all','write')")
     public DataResult<Void> updatePassword(@RequestBody @Validated UpdatePasswordDTO dto) {
         return DataResult.success(service.updatePassword(dto));
     }
 
     @PatchMapping("/update/email/{code}")
+    @PreAuthorize("hasAnyAuthority('all','write')")
     public DataResult<Void> updateEmail(@PathVariable String code, @RequestBody @Validated UpdateEmailDTO dto) {
         return DataResult.success(service.updateEmail(code, dto));
     }
 
     @GetMapping("/email/reset")
+    @PreAuthorize("hasAnyAuthority('all','read')")
     public DataResult<Void> sendEmailVerifyCode(@RequestParam String email) {
         return DataResult.success(this.validateService.sendVerifyCode(email));
     }
 
     @PatchMapping("/update/info")
+    @PreAuthorize("hasAnyAuthority('all','write')")
     public DataResult<Void> updateInfo(@RequestBody @Validated UpdateInfoDTO dto) {
         return DataResult.success(service.updateInfo(dto));
     }
 
     @PostMapping("/info")
+    @PreAuthorize("hasAnyAuthority('all','read')")
     public DataResult<User> findByUsername(@AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
         return DataResult.success(this.service.findByUsername(principal.getName()));
     }

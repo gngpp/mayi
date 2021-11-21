@@ -23,15 +23,12 @@
 
 package com.zf1976.mayi.upms.biz.security.oauth2;
 
-import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.shaded.json.JSONArray;
-import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.oauth2.sdk.TokenIntrospectionResponse;
 import com.nimbusds.oauth2.sdk.TokenIntrospectionSuccessResponse;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.Audience;
-import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.convert.converter.Converter;
@@ -39,7 +36,6 @@ import org.springframework.http.*;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.introspection.*;
 import org.springframework.util.Assert;
@@ -55,6 +51,9 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * 支持获取authorities属性权限
+ */
 @SuppressWarnings({"unused", "SpellCheckingInspection"})
 public class CustomizeNimbusOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     private final Log logger = LogFactory.getLog(getClass());
@@ -141,8 +140,7 @@ public class CustomizeNimbusOpaqueTokenIntrospector implements OpaqueTokenIntros
     private ResponseEntity<String> makeRequest(RequestEntity<?> requestEntity) {
         try {
             return this.restOperations.exchange(requestEntity, String.class);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new OAuth2IntrospectionException(ex.getMessage(), ex);
         }
     }
@@ -161,8 +159,7 @@ public class CustomizeNimbusOpaqueTokenIntrospector implements OpaqueTokenIntros
     private TokenIntrospectionResponse parseNimbusResponse(HTTPResponse response) {
         try {
             return TokenIntrospectionResponse.parse(response);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new OAuth2IntrospectionException(ex.getMessage(), ex);
         }
     }
@@ -195,7 +192,7 @@ public class CustomizeNimbusOpaqueTokenIntrospector implements OpaqueTokenIntros
                 authorities.addAll(simpleGrantedAuthoritySet);
             }
         } catch (ParseException e) {
-            logger.error(e.getMessage(), e);
+            logger.debug(e.getMessage(), e);
             throw new RuntimeException(e);
         }
 
@@ -228,7 +225,7 @@ public class CustomizeNimbusOpaqueTokenIntrospector implements OpaqueTokenIntros
             List<String> scopes = Collections.unmodifiableList(response.getScope().toStringList());
             claims.put(OAuth2IntrospectionClaimNames.SCOPE, scopes);
             for (String scope : scopes) {
-                String authorityPrefix = "ROLE_";
+                String authorityPrefix = "";
                 authorities.add(new SimpleGrantedAuthority(authorityPrefix + scope));
             }
         }
@@ -238,8 +235,7 @@ public class CustomizeNimbusOpaqueTokenIntrospector implements OpaqueTokenIntros
     private URL issuer(String uri) {
         try {
             return new URL(uri);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new OAuth2IntrospectionException(
                     "Invalid " + OAuth2IntrospectionClaimNames.ISSUER + " value: " + uri);
         }
