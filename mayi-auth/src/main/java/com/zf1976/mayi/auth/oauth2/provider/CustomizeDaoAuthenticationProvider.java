@@ -86,9 +86,10 @@ public class CustomizeDaoAuthenticationProvider extends AbstractUserDetailsAuthe
             String rawPassword = userDetails.getPassword();
             String presentedPassword;
             try {
+                // support rsa coder
                 presentedPassword = EncryptUtil.decryptForRsaByPrivateKey(new String(Base64Util.decryptBASE64(encryptPassword)));
             } catch (Exception ignored) {
-                throw new BadCredentialsException("Bad credentials");
+                presentedPassword = encryptPassword;
             }
             if (!this.passwordEncoder.matches(presentedPassword, rawPassword)) {
                 this.logger.debug("Authentication failed: password does not match stored value");
