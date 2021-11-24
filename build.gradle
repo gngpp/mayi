@@ -22,9 +22,6 @@
  */
 
 //file:noinspection GroovyAssignabilityCheck
-import java.nio.file.Files
-
-//file:noinspection GroovyAssignabilityCheck
 
 configurations.all() {
     Configuration configuration ->({
