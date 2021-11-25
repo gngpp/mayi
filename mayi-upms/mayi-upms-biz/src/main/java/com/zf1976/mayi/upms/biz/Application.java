@@ -40,7 +40,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 @MapperScan(value = "com.zf1976", annotationClass = Repository.class)
 @EnableDiscoveryClient
 @EnableAsync
-@EnableWebSocket
 @EnableFeignClients(basePackages = "com.zf1976")
 public class Application {
 

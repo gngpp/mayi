@@ -244,7 +244,6 @@ public class AuthorizationServerSecurityConfiguration {
 	/**
 	 * Personalise JWT token
 	 */
-	@SuppressWarnings("unchecked")
 	@Bean
 	public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
 		if (this.jwtEncodingContextOAuth2TokenCustomizer == null) {
