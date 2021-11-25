@@ -23,8 +23,6 @@
 
 package com.zf1976.mayi.auth.pojo.dto;
 
-import com.zf1976.mayi.auth.pojo.AuthorizationGrantTypesConvert;
-import com.zf1976.mayi.auth.pojo.ClientAuthenticationMethodsConvert;
 import com.zf1976.mayi.auth.pojo.ClientSettingsConvert;
 import com.zf1976.mayi.auth.pojo.TokenSettingsConvert;
 import com.zf1976.mayi.common.core.validate.ValidationInsertGroup;
@@ -58,10 +56,10 @@ public class RegisteredClientDTO implements Serializable {
     private String clientName;
 
     @NotNull(message = "ClientAuthenticationMethodsConvert cannot been null.")
-    private Set<ClientAuthenticationMethodsConvert> clientAuthenticationMethods;
+    private Set<String> clientAuthenticationMethods;
 
     @NotNull(message = "AuthorizationGrantTypesConvert cannot been null.")
-    private Set<AuthorizationGrantTypesConvert> authorizationGrantTypes;
+    private Set<String> authorizationGrantTypes;
 
     @NotNull(message = "redirectUris cannot been null.")
     private Set<String> redirectUris;
@@ -125,20 +123,20 @@ public class RegisteredClientDTO implements Serializable {
         return this;
     }
 
-    public Set<ClientAuthenticationMethodsConvert> getClientAuthenticationMethods() {
+    public Set<String> getClientAuthenticationMethods() {
         return clientAuthenticationMethods;
     }
 
-    public RegisteredClientDTO setClientAuthenticationMethods(Set<ClientAuthenticationMethodsConvert> clientAuthenticationMethods) {
+    public RegisteredClientDTO setClientAuthenticationMethods(Set<String> clientAuthenticationMethods) {
         this.clientAuthenticationMethods = clientAuthenticationMethods;
         return this;
     }
 
-    public Set<AuthorizationGrantTypesConvert> getAuthorizationGrantTypes() {
+    public Set<String> getAuthorizationGrantTypes() {
         return authorizationGrantTypes;
     }
 
-    public RegisteredClientDTO setAuthorizationGrantTypes(Set<AuthorizationGrantTypesConvert> authorizationGrantTypes) {
+    public RegisteredClientDTO setAuthorizationGrantTypes(Set<String> authorizationGrantTypes) {
         this.authorizationGrantTypes = authorizationGrantTypes;
         return this;
     }

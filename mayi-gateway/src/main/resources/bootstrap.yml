@@ -24,7 +24,7 @@ spring:
         - id: mayi-auth
           uri: lb://mayi-auth
           predicates:
-            - Path=/oauth2/**, /security/**
+            - Path=/oauth2/**
         # 后台
         - id: mayi-upms-biz
           uri: lb://mayi-upms-biz
