@@ -32,10 +32,6 @@ configurations {
     compile.exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
 }
 
-ext {
-    jwtVersion = "0.11.1"
-}
-
 dependencies {
     // sub projects
     implementation project(':mayi-upms:mayi-upms-api')

@@ -38,10 +38,10 @@ public class ClientSettingsConvert implements Serializable {
     private static final long serialVersionUID = Version.SERIAL_VERSION_UID;
 
     @NotNull(message = "requireProofKey cannot been null.")
-    private boolean requireProofKey;
+    private Boolean requireProofKey;
 
     @NotNull(message = "requireAuthorizationConsent cannot been null.")
-    private boolean requireAuthorizationConsent;
+    private Boolean requireAuthorizationConsent;
 
     public ClientSettingsConvert() {
     }

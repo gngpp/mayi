@@ -38,7 +38,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/security/clients")
+@RequestMapping("/oauth2/security/client")
 public class RegisteredClientController {
 
     private final OAuth2RegisteredClientService oAuth2RegisteredClientService;
@@ -88,6 +88,21 @@ public class RegisteredClientController {
     @PreAuthorize("hasRole('admin')")
     public DataResult<Void> deleteByClientIds(@RequestBody Set<String> clientIds) {
         return DataResult.success(this.oAuth2RegisteredClientService.deleteByClientIds(clientIds));
+    }
+
+    @GetMapping("/alg")
+    public DataResult<Set<String>> loadTokenSignatureAlgorithm() {
+        return DataResult.success(this.oAuth2RegisteredClientService.loadTokenSignatureAlgorithm());
+    }
+
+    @GetMapping("/grants")
+    public DataResult<Set<String>> loadAuthorizationGrantTypes() {
+        return DataResult.success(this.oAuth2RegisteredClientService.loadAuthorizationGrantTypes());
+    }
+
+    @GetMapping("/authentication_methods")
+    public DataResult<Set<String>> loadClientAuthenticationMethods() {
+        return DataResult.success(this.oAuth2RegisteredClientService.loadClientAuthenticationMethods());
     }
 
 }

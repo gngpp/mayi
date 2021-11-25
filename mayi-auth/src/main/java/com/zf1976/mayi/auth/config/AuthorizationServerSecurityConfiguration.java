@@ -33,6 +33,7 @@ import com.zf1976.mayi.auth.oauth2.authorization.OAuth2JwtTokenCustomizer;
 import com.zf1976.mayi.auth.oauth2.convert.OAuth2ResourceOwnerPasswordAuthenticationConverter;
 import com.zf1976.mayi.auth.oauth2.provider.CustomizeDaoAuthenticationProvider;
 import com.zf1976.mayi.auth.oauth2.provider.OAuth2ResourceOwnerPasswordAuthenticationProvider;
+import com.zf1976.mayi.auth.oauth2.repository.CustomizeJdbcRegisteredClientRepository;
 import com.zf1976.mayi.auth.service.OAuth2UserDetailsService;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import org.slf4j.Logger;
@@ -176,13 +177,13 @@ public class AuthorizationServerSecurityConfiguration {
 		if (this.registeredClientRepository == null) {
 			synchronized (this) {
 				if (this.registeredClientRepository == null) {
-					this.registeredClientRepository = new JdbcRegisteredClientRepository(this.jdbcOperations);
 					final var registeredClientParametersMapper = new JdbcRegisteredClientRepository.RegisteredClientParametersMapper();
 					registeredClientParametersMapper
 							.setPasswordEncoder(this.passwordEncoder);
 					// init
 					final var jdbcRegisteredClientRepository = new JdbcRegisteredClientRepository(this.jdbcOperations);
 					jdbcRegisteredClientRepository.setRegisteredClientParametersMapper(registeredClientParametersMapper);
+					this.registeredClientRepository = new CustomizeJdbcRegisteredClientRepository(jdbcOperations, jdbcRegisteredClientRepository);
 				}
 			}
 		}
@@ -243,7 +244,6 @@ public class AuthorizationServerSecurityConfiguration {
 	/**
 	 * Personalise JWT token
 	 */
-	@SuppressWarnings("unchecked")
 	@Bean
 	public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
 		if (this.jwtEncodingContextOAuth2TokenCustomizer == null) {

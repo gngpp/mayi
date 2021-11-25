@@ -23,7 +23,7 @@
 
 package com.zf1976.mayi.auth.oauth2.convert;
 
-import com.zf1976.mayi.auth.OAuth2ParameterNamesEnhancer;
+import com.zf1976.mayi.auth.CustomizeOAuth2ParameterNames;
 import com.zf1976.mayi.auth.oauth2.OAuth2ResourceOwnerCredentialsAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -97,20 +97,20 @@ public class OAuth2ResourceOwnerCredentialsAuthenticationConverter implements Au
         }
 
         // uuid (REQUIRED)
-        String uuid = parameters.getFirst(OAuth2ParameterNamesEnhancer.UUID);
-        if (!StringUtils.hasText(uuid) || parameters.get(OAuth2ParameterNamesEnhancer.UUID).size() != 1) {
+        String uuid = parameters.getFirst(CustomizeOAuth2ParameterNames.UUID);
+        if (!StringUtils.hasText(uuid) || parameters.get(CustomizeOAuth2ParameterNames.UUID).size() != 1) {
             OAuth2EndpointUtils.throwError(
                     OAuth2ErrorCodes.INVALID_REQUEST,
-                    OAuth2ParameterNamesEnhancer.UUID,
+                    CustomizeOAuth2ParameterNames.UUID,
                     OAuth2EndpointUtils.ACCESS_TOKEN_REQUEST_ERROR_URI);
         }
 
         // security_code (REQUIRED)
-        String securityCode = parameters.getFirst(OAuth2ParameterNamesEnhancer.SECURITY_CODE);
-        if (!StringUtils.hasText(securityCode) || parameters.get(OAuth2ParameterNamesEnhancer.SECURITY_CODE).size() != 1) {
+        String securityCode = parameters.getFirst(CustomizeOAuth2ParameterNames.SECURITY_CODE);
+        if (!StringUtils.hasText(securityCode) || parameters.get(CustomizeOAuth2ParameterNames.SECURITY_CODE).size() != 1) {
             OAuth2EndpointUtils.throwError(
                     OAuth2ErrorCodes.INVALID_REQUEST,
-                    OAuth2ParameterNamesEnhancer.SECURITY_CODE,
+                    CustomizeOAuth2ParameterNames.SECURITY_CODE,
                     OAuth2EndpointUtils.ACCESS_TOKEN_REQUEST_ERROR_URI);
         }
 

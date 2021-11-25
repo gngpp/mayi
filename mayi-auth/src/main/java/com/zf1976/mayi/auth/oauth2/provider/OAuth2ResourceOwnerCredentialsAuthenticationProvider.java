@@ -23,7 +23,7 @@
 
 package com.zf1976.mayi.auth.oauth2.provider;
 
-import com.zf1976.mayi.auth.OAuth2ParameterNamesEnhancer;
+import com.zf1976.mayi.auth.CustomizeOAuth2ParameterNames;
 import com.zf1976.mayi.auth.oauth2.JwtUtils;
 import com.zf1976.mayi.auth.oauth2.OAuth2ResourceOwnerCredentialsAuthenticationToken;
 import com.zf1976.mayi.auth.oauth2.OAuth2ResourceOwnerPasswordAuthenticationToken;
@@ -118,8 +118,8 @@ public class OAuth2ResourceOwnerCredentialsAuthenticationProvider implements Aut
         Map<String, Object> additionalParameters = resourceOwnerPasswordAuthentication.getAdditionalParameters();
         String username = (String) additionalParameters.get(OAuth2ParameterNames.USERNAME);
         String password = (String) additionalParameters.get(OAuth2ParameterNames.PASSWORD);
-        String uuid = (String) additionalParameters.get(OAuth2ParameterNamesEnhancer.UUID);
-        String securityCode = (String) additionalParameters.get(OAuth2ParameterNamesEnhancer.SECURITY_CODE);
+        String uuid = (String) additionalParameters.get(CustomizeOAuth2ParameterNames.UUID);
+        String securityCode = (String) additionalParameters.get(CustomizeOAuth2ParameterNames.SECURITY_CODE);
 
         try {
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, password);

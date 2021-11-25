@@ -32,11 +32,13 @@ import com.zf1976.mayi.auth.pojo.dto.RegisteredClientDTO;
 import com.zf1976.mayi.auth.pojo.vo.RegisteredClientVO;
 import com.zf1976.mayi.common.core.util.UUIDUtil;
 import com.zf1976.mayi.common.core.validate.Validator;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.config.TokenSettings;
 import org.springframework.stereotype.Service;
@@ -94,8 +96,8 @@ public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClient
 
     private final CustomizeRegisteredClientRepository clientRepository;
 
-    public OAuth2RegisteredClientServiceImpl(JdbcOperations jdbcOperations) {
-        this.clientRepository = new CustomizeJdbcRegisteredClientRepository(jdbcOperations);
+    public OAuth2RegisteredClientServiceImpl(@Qualifier(value = "registeredClientRepository") RegisteredClientRepository registeredClientRepository) {
+        this.clientRepository = (CustomizeRegisteredClientRepository) registeredClientRepository;
     }
 
     @Override
@@ -163,6 +165,20 @@ public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClient
         return null;
     }
 
+    @Override
+    public Set<String> loadTokenSignatureAlgorithm() {
+        return this.signatureAlg;
+    }
+
+    @Override
+    public Set<String> loadAuthorizationGrantTypes() {
+        return this.authorizationGrantTypeSet;
+    }
+
+    @Override
+    public Set<String> loadClientAuthenticationMethods() {
+        return this.clientAuthenticationMethodSet;
+    }
 
     protected void insertRegisteredClient(RegisteredClientDTO registeredClientDTO) {
         // validate client_id
@@ -292,10 +308,8 @@ public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClient
      *
      * @param grantTypesConverts 授权类型转换集合
      */
-    private boolean validateGrantType(Set<AuthorizationGrantTypesConvert> grantTypesConverts) {
-        return grantTypesConverts.stream()
-                                 .map(AuthorizationGrantTypesConvert::getValue)
-                                 .allMatch(this.authorizationGrantTypeSet::contains);
+    private boolean validateGrantType(Set<String> grantTypesConverts) {
+        return this.authorizationGrantTypeSet.containsAll(grantTypesConverts);
     }
 
     /**
@@ -303,11 +317,9 @@ public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClient
      *
      * @param authenticationMethodsConverts 客户端认证方法转换集合
      */
-    private boolean validateClientAuthenticationMethod(Set<ClientAuthenticationMethodsConvert> authenticationMethodsConverts) {
+    private boolean validateClientAuthenticationMethod(Set<String> authenticationMethodsConverts) {
 
-        return authenticationMethodsConverts.stream()
-                                            .map(ClientAuthenticationMethodsConvert::getValue)
-                                            .allMatch(this.clientAuthenticationMethodSet::contains);
+        return this.clientAuthenticationMethodSet.containsAll(authenticationMethodsConverts);
     }
 
     private RegisteredClient toEntity(RegisteredClientDTO registeredClientDTO) {
@@ -318,12 +330,10 @@ public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClient
 
         Set<AuthorizationGrantType> authorizationGrantTypes = registeredClientDTO.getAuthorizationGrantTypes()
                                                                 .stream()
-                                                                .map(AuthorizationGrantTypesConvert::getValue)
                                                                 .map(AuthorizationGrantType::new)
                                                                 .collect(Collectors.toSet());
         Set<ClientAuthenticationMethod> clientAuthenticationMethods = registeredClientDTO.getClientAuthenticationMethods()
                                                                     .stream()
-                                                                    .map(ClientAuthenticationMethodsConvert::getValue)
                                                                     .map(ClientAuthenticationMethod::new)
                                                                     .collect(Collectors.toSet());
         ClientSettingsConvert clientSettingsConvert = registeredClientDTO.getClientSettings();
@@ -348,6 +358,7 @@ public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClient
                                .clientSecretExpiresAt(Instant.ofEpochMilli(registeredClientDTO.getClientSecretExpiresAt()))
                                .clientAuthenticationMethods(v -> v.addAll(clientAuthenticationMethods))
                                .authorizationGrantTypes(v -> v.addAll(authorizationGrantTypes))
+                               .redirectUris(v -> v.addAll(registeredClientDTO.getRedirectUris()))
                                .scopes(v -> v.addAll(registeredClientDTO.getScopes()))
                                .clientSettings(clientSettings)
                                .tokenSettings(tokenSettings)
@@ -361,16 +372,14 @@ public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClient
             return new RegisteredClientVO();
         }
 
-        Set<AuthorizationGrantTypesConvert> grantTypesConvertList = registeredClient.getAuthorizationGrantTypes()
+        Set<String> grantTypesConvertList = registeredClient.getAuthorizationGrantTypes()
                                                                                     .stream()
                                                                                     .map(AuthorizationGrantType::getValue)
-                                                                                    .map(AuthorizationGrantTypesConvert::new)
                                                                                     .collect(Collectors.toSet());
 
-        Set<ClientAuthenticationMethodsConvert> authenticationMethodsConverts = registeredClient.getClientAuthenticationMethods()
+        Set<String> authenticationMethodsConverts = registeredClient.getClientAuthenticationMethods()
                                                                                                 .stream()
                                                                                                 .map(ClientAuthenticationMethod::getValue)
-                                                                                                .map(ClientAuthenticationMethodsConvert::new)
                                                                                                 .collect(Collectors.toSet());
 
         ClientSettings clientSettings = registeredClient.getClientSettings();

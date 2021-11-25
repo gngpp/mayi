@@ -23,6 +23,7 @@
 
 package com.zf1976.mayi.auth.endpoint;
 
+import com.zf1976.mayi.auth.exception.ClientException;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -81,5 +82,16 @@ public class GlobalExceptionHandler {
                                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
                                    .collect(Collectors.joining(", "));
         return DataResult.fail(HttpStatus.BAD_REQUEST.value(), messages);
+    }
+
+    /**
+     *
+     * @param exception 异常
+     * @return {@link DataResult}
+     */
+    @ExceptionHandler(ClientException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    DataResult clientExceptionHandler(Exception exception) {
+        return DataResult.fail(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
 }

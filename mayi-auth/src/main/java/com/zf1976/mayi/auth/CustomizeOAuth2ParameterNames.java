@@ -21,42 +21,18 @@
  *
  */
 
-package com.zf1976.mayi.auth.pojo;
+package com.zf1976.mayi.auth;
 
-import org.springframework.security.oauth2.core.Version;
-
-import java.io.Serializable;
+import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 
 /**
- * Auto-generated: 2021-11-19 19:11:19
- *
- * @author bejson.com (i@bejson.com)
+ * @author mac
+ * 2021/11/15 星期一 11:53 下午
  */
-public class AuthorizationGrantTypesConvert implements Serializable {
+public interface CustomizeOAuth2ParameterNames extends OAuth2ParameterNames {
 
-    private static final long serialVersionUID = Version.SERIAL_VERSION_UID;
+    String SECURITY_CODE = "security_code";
 
-    private String value;
+    String UUID = "uuid";
 
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public AuthorizationGrantTypesConvert() {
-    }
-
-    public AuthorizationGrantTypesConvert(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return "AuthorizationGrantTypes{" +
-                "value='" + value + '\'' +
-                '}';
-    }
 }

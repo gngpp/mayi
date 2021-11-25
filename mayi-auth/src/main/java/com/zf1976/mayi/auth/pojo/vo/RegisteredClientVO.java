@@ -22,8 +22,6 @@
  */
 
 package com.zf1976.mayi.auth.pojo.vo;
-import com.zf1976.mayi.auth.pojo.AuthorizationGrantTypesConvert;
-import com.zf1976.mayi.auth.pojo.ClientAuthenticationMethodsConvert;
 import com.zf1976.mayi.auth.pojo.ClientSettingsConvert;
 import com.zf1976.mayi.auth.pojo.TokenSettingsConvert;
 import org.springframework.security.oauth2.core.Version;
@@ -45,8 +43,8 @@ public class RegisteredClientVO implements Serializable {
     private Long clientSecretExpiresAt;
     private String clientSecret;
     private String clientName;
-    private Set<ClientAuthenticationMethodsConvert> clientAuthenticationMethods;
-    private Set<AuthorizationGrantTypesConvert> authorizationGrantTypes;
+    private Set<String> clientAuthenticationMethods;
+    private Set<String> authorizationGrantTypes;
     private Set<String> redirectUris;
     private Set<String> scopes;
     private ClientSettingsConvert clientSettings;
@@ -106,20 +104,20 @@ public class RegisteredClientVO implements Serializable {
         return this;
     }
 
-    public Set<ClientAuthenticationMethodsConvert> getClientAuthenticationMethods() {
+    public Set<String> getClientAuthenticationMethods() {
         return clientAuthenticationMethods;
     }
 
-    public RegisteredClientVO setClientAuthenticationMethods(Set<ClientAuthenticationMethodsConvert> clientAuthenticationMethods) {
+    public RegisteredClientVO setClientAuthenticationMethods(Set<String> clientAuthenticationMethods) {
         this.clientAuthenticationMethods = clientAuthenticationMethods;
         return this;
     }
 
-    public Set<AuthorizationGrantTypesConvert> getAuthorizationGrantTypes() {
+    public Set<String> getAuthorizationGrantTypes() {
         return authorizationGrantTypes;
     }
 
-    public RegisteredClientVO setAuthorizationGrantTypes(Set<AuthorizationGrantTypesConvert> authorizationGrantTypes) {
+    public RegisteredClientVO setAuthorizationGrantTypes(Set<String> authorizationGrantTypes) {
         this.authorizationGrantTypes = authorizationGrantTypes;
         return this;
     }
@@ -162,7 +160,7 @@ public class RegisteredClientVO implements Serializable {
 
     @Override
     public String toString() {
-        return "RegisteredClientConvert{" +
+        return "RegisteredClientVO{" +
                 "id='" + id + '\'' +
                 ", clientId='" + clientId + '\'' +
                 ", clientIdIssuedAt=" + clientIdIssuedAt +

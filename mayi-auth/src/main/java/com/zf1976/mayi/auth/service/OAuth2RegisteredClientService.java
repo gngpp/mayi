@@ -46,4 +46,11 @@ public interface OAuth2RegisteredClientService {
     Void deleteByClientId(String clientId);
 
     Void deleteByClientIds(Set<String> clientIds);
+
+    Set<String> loadTokenSignatureAlgorithm();
+
+    Set<String> loadAuthorizationGrantTypes();
+
+    Set<String> loadClientAuthenticationMethods();
+
 }
