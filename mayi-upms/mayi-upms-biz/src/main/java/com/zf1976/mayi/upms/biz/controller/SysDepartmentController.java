@@ -36,6 +36,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 /**
@@ -58,7 +59,7 @@ public class SysDepartmentController {
     }
 
     @PostMapping("/vertex/{id}")
-    public DataResult<IPage<DepartmentVO>> findVertexById(@PathVariable Long id) {
+    public DataResult<IPage<DepartmentVO>> findVertexById(@PathVariable @NotNull Long id) {
         return DataResult.success(service.findVertexById(id));
     }
 
@@ -73,12 +74,12 @@ public class SysDepartmentController {
     }
 
     @DeleteMapping("/delete")
-    public DataResult<Void> deleteByIds(@RequestBody Set<Long> ids) {
+    public DataResult<Void> deleteByIds(@RequestBody @NotNull Set<Long> ids) {
         return DataResult.success(service.deleteByIds(ids));
     }
 
     @PostMapping("/download")
-    public DataResult<Void> downloadExcel(@RequestBody Query<DeptQueryParam> requestPage, HttpServletResponse response) {
-        return DataResult.success(service.downloadExcel(requestPage, response));
+    public DataResult<Void> downloadExcel(@RequestBody Query<DeptQueryParam> query, HttpServletResponse response) {
+        return DataResult.success(service.downloadExcel(query, response));
     }
 }

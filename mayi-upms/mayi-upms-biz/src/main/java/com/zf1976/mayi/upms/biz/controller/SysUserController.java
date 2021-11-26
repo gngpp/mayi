@@ -29,6 +29,7 @@ import com.zf1976.mayi.common.core.validate.ValidationInsertGroup;
 import com.zf1976.mayi.common.core.validate.ValidationUpdateGroup;
 import com.zf1976.mayi.upms.biz.annotation.Log;
 import com.zf1976.mayi.upms.biz.mail.ValidateEmailService;
+import com.zf1976.mayi.upms.biz.pojo.Department;
 import com.zf1976.mayi.upms.biz.pojo.User;
 import com.zf1976.mayi.upms.biz.pojo.dto.user.UpdateEmailDTO;
 import com.zf1976.mayi.upms.biz.pojo.dto.user.UpdateInfoDTO;
@@ -36,6 +37,7 @@ import com.zf1976.mayi.upms.biz.pojo.dto.user.UpdatePasswordDTO;
 import com.zf1976.mayi.upms.biz.pojo.dto.user.UserDTO;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.pojo.query.UserQueryParam;
+import com.zf1976.mayi.upms.biz.pojo.vo.dept.DepartmentVO;
 import com.zf1976.mayi.upms.biz.pojo.vo.user.UserVO;
 import com.zf1976.mayi.upms.biz.service.SysUserService;
 import org.springframework.context.annotation.DependsOn;
@@ -66,8 +68,7 @@ public class SysUserController {
 
     @Log(description = "分页查询用户")
     @PostMapping("/page")
-    public DataResult<IPage<UserVO>> findByQuery(@RequestBody Query<UserQueryParam> query,
-                                                 @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+    public DataResult<IPage<UserVO>> findByQuery(@RequestBody Query<UserQueryParam> query, @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
         return DataResult.success(service.findByQuery(query, principal.getName()));
     }
 
@@ -85,20 +86,26 @@ public class SysUserController {
 
     @Log(description = "删除用户")
     @DeleteMapping("/delete")
-    public DataResult<Void> deleteByIds(@RequestBody Set<Long> ids) {
+    public DataResult<Void> deleteByIds(@RequestBody @NotNull Set<Long> ids) {
         return DataResult.success(service.deleteByIds(ids));
     }
 
     @Log(description = "获取用户职位")
     @PostMapping("/position/{id}")
-    public DataResult<Set<Long>> findPositionById(@PathVariable Long id) {
+    public DataResult<Set<Long>> findPositionById(@PathVariable @NotNull Long id) {
         return DataResult.success(service.findPositionById(id));
     }
 
     @Log(description = "获取用户角色")
     @PostMapping("/role/{id}")
-    public DataResult<Set<Long>> findRoleById(@PathVariable Long id) {
+    public DataResult<Set<Long>> findRoleById(@PathVariable @NotNull Long id) {
         return DataResult.success(service.findRoleById(id));
+    }
+
+    @Log(description = "获取用户部门")
+    @PostMapping("/department/{id}")
+    public DataResult<DepartmentVO> findDepartmentById(@PathVariable @NotNull Long id) {
+        return DataResult.success(service.findDepartmentById(id));
     }
 
     @Log(description = "修改用户状态")

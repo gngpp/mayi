@@ -31,6 +31,7 @@ import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.service.SysLogService;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.Set;
 
@@ -59,7 +60,7 @@ public class SysLogController {
     }
 
     @DeleteMapping("/delete")
-    public DataResult<Optional<Void>> deleteByIds(@RequestBody Set<Long> ids) {
+    public DataResult<Optional<Void>> deleteByIds(@RequestBody @NotNull Set<Long> ids) {
         return DataResult.success(service.deleteByIds(ids));
     }
 

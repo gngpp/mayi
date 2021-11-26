@@ -80,9 +80,8 @@ public class PermissionController {
 
     @DeleteMapping("/del/batch")
     @PreAuthorize("hasRole('root')")
-    public DataResult<Void> deletePermission(@RequestBody Set<Long> ids) {
+    public DataResult<Void> deletePermission(@RequestBody @NotNull Set<Long> ids) {
         return DataResult.success(this.service.deletePermissionByIds(ids));
     }
-
 
 }

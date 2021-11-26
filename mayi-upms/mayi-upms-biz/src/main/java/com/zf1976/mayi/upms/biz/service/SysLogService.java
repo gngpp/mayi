@@ -30,7 +30,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessException;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
-import com.zf1976.mayi.upms.biz.convert.SysLogConvert;
+import com.zf1976.mayi.upms.biz.convert.LogConvert;
 import com.zf1976.mayi.upms.biz.dao.SysLogDao;
 import com.zf1976.mayi.upms.biz.pojo.po.SysLog;
 import com.zf1976.mayi.upms.biz.pojo.enums.LogType;
@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 @Service
 public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
 
-    private final SysLogConvert convert = SysLogConvert.INSTANCE;
+    private final LogConvert convert = LogConvert.INSTANCE;
 
     public IPage<AbstractLogVO> findByQueryForUser(Query<LogQueryParam> query) {
         LogQueryParam param = query.getQuery();

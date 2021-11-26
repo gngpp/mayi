@@ -23,19 +23,44 @@
 
 package com.zf1976.mayi.upms.biz.convert;
 
-import com.zf1976.mayi.upms.biz.pojo.dto.dict.DictDTO;
-import com.zf1976.mayi.upms.biz.pojo.po.SysDict;
-import com.zf1976.mayi.upms.biz.pojo.vo.dict.DictVO;
-import com.zf1976.mayi.upms.biz.convert.base.Convert;
+import com.zf1976.mayi.upms.biz.pojo.po.SysLog;
+import com.zf1976.mayi.upms.biz.pojo.vo.ErrorLogVO;
+import com.zf1976.mayi.upms.biz.pojo.vo.LogVO;
+import com.zf1976.mayi.upms.biz.pojo.vo.UserLogVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author mac
- * @date 2020/10/23 3:04 下午
- */
+ * @date 2021/1/26
+ **/
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface SysDictConvert extends Convert<SysDict, DictVO, DictDTO> {
-    SysDictConvert INSTANCE = Mappers.getMapper(SysDictConvert.class);
+public interface LogConvert {
+
+    LogConvert INSTANCE = Mappers.getMapper(LogConvert.class);
+
+    /**
+     * to vo
+     *
+     * @param sysLog log
+     * @return /
+     */
+    LogVO toVo(SysLog sysLog);
+
+    /**
+     * to vo
+     *
+     * @param sysLog sysLog
+     * @return /
+     */
+    ErrorLogVO toErrorVo(SysLog sysLog);
+
+    /**
+     * to vo
+     *
+     * @param sysLog sysLog
+     * @return /
+     */
+    UserLogVO toUserLogVo(SysLog sysLog);
 }

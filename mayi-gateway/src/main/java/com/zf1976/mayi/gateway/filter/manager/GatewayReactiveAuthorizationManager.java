@@ -63,28 +63,29 @@ public class GatewayReactiveAuthorizationManager implements ReactiveAuthorizatio
     public Mono<AuthorizationDecision> check(Mono<Authentication> mono, AuthorizationContext authorizationContext) {
         ServerWebExchange exchange = authorizationContext.getExchange();
         ServerHttpRequest request = exchange.getRequest();
-        // 校验是否为owner
-        final Object owner = authorizationContext.getExchange()
-                                                 .getAttributes()
-                                                 .get(AuthConstants.OWNER);
         // options请求放行
         if (Objects.requireNonNull(request.getMethod())
                    .matches(HttpMethod.OPTIONS.name())) {
             return Mono.just(new AuthorizationDecision(true));
         }
-        // 资源所有者放行所有
-        if (owner instanceof Boolean && (Boolean) owner) {
+        String requestUri = this.getRequestUri(request);
+        // 后台路径放行
+        if (this.pathMatcher.match(GatewayRouteConstants.ROOT_ROUTE, requestUri)) {
             return Mono.just(new AuthorizationDecision(true));
         }
-        String requestUri = this.getRequestUri(request);
         // 确保未配置情况下 认证中心放行
         if (this.pathMatcher.match(GatewayRouteConstants.AUTH_ROUTE, requestUri)) {
             return Mono.just(new AuthorizationDecision(true));
         }
-        // 非后台路径放行
-        if (!ObjectUtils.nullSafeEquals(GatewayRouteConstants.ADMIN_ROUTE, requestUri)) {
+        // 校验是否为owner
+        final Object owner = authorizationContext.getExchange()
+                                                 .getAttributes()
+                                                 .get(AuthConstants.OWNER);
+        // 资源所有者放行所有
+        if (owner instanceof Boolean && (Boolean) owner) {
             return Mono.just(new AuthorizationDecision(true));
         }
+
         // 白名单放行
         for (String ignored : this.ignoreUri()) {
             if (this.pathMatcher.match(ignored, requestUri)) {

@@ -41,7 +41,8 @@ import com.zf1976.mayi.common.encrypt.MD5Encoder;
 import com.zf1976.mayi.common.encrypt.RsaUtil;
 import com.zf1976.mayi.common.encrypt.property.RsaProperties;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
-import com.zf1976.mayi.upms.biz.convert.SysUserConvert;
+import com.zf1976.mayi.upms.biz.convert.DepartmentConvert;
+import com.zf1976.mayi.upms.biz.convert.UserConvert;
 import com.zf1976.mayi.upms.biz.dao.*;
 import com.zf1976.mayi.upms.biz.feign.RemoteAuthClient;
 import com.zf1976.mayi.upms.biz.mail.ValidateEmailService;
@@ -58,6 +59,7 @@ import com.zf1976.mayi.upms.biz.pojo.po.SysRole;
 import com.zf1976.mayi.upms.biz.pojo.po.SysUser;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.pojo.query.UserQueryParam;
+import com.zf1976.mayi.upms.biz.pojo.vo.dept.DepartmentVO;
 import com.zf1976.mayi.upms.biz.pojo.vo.user.UserVO;
 import com.zf1976.mayi.upms.biz.property.FileProperties;
 import com.zf1976.mayi.upms.biz.security.Context;
@@ -86,7 +88,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @CacheConfig(namespace = Namespace.USER, dependsOn = {Namespace.DEPARTMENT, Namespace.POSITION, Namespace.ROLE})
-@Transactional(rollbackFor = Throwable.class)
+@Transactional(readOnly = true, rollbackFor = Throwable.class)
 public class SysUserService extends AbstractService<SysUserDao, SysUser> {
 
     private final Logger log = LoggerFactory.getLogger("[SysUserService]");
@@ -95,7 +97,8 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     private final SysDepartmentDao departmentDao;
     private final SysRoleDao roleDao;
     private final SysPermissionDao permissionDao;
-    private final SysUserConvert userConvert;
+    private final UserConvert userConvert = UserConvert.INSTANCE;
+    private final DepartmentConvert departmentConvert = DepartmentConvert.INSTANCE;
     private final RemoteAuthClient securityClient;
     private final SecurityProperties securityProperties;
     private final MD5Encoder md5Encoder = new MD5Encoder();
@@ -112,7 +115,6 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         this.roleDao = sysRoleDao;
         this.permissionDao = permissionDao;
         this.securityProperties = securityProperties;
-        this.userConvert = SysUserConvert.INSTANCE;
     }
 
     @CachePut(key = "#username")
@@ -127,7 +129,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         // 权限值
         Set<String> grantedAuthorities = this.grantedAuthorities(user.getUsername(), user.getRoleList());
         // 数据权限
-        Set<Long> grantedDataPermission = this.grantedDataPermission(user.getUsername(), user.getDepartment().getId(), user.getRoleList());
+        Set<Long> grantedDataPermission = this.grantedDataPermission(user.getUsername(), user.getDepartmentId(), user.getRoleList());
         user.setDataPermissions(grantedDataPermission);
         user.setPermissions(grantedAuthorities);
         return user;
@@ -141,7 +143,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      * @param departmentId 部门id
      * @return 数据权限
      */
-    private Set<Long> grantedDataPermission(String username, long departmentId, List<Role> roleList) {
+    private Set<Long> grantedDataPermission(String username, Long departmentId, List<Role> roleList) {
 
         // 超级管理员
         if (ObjectUtils.nullSafeEquals(username, this.securityProperties.getOwner())) {
@@ -179,11 +181,11 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
 
                 default:
                     // 所有数据权限
-                    return this.departmentDao.selectList(Wrappers.emptyWrapper())
-                                             .stream()
-                                             .filter(SysDepartment::getEnabled)
-                                             .map(SysDepartment::getId)
-                                             .collect(Collectors.toSet());
+                    return ChainWrappers.lambdaQueryChain(this.departmentDao)
+                                        .list()
+                                        .stream().filter(SysDepartment::getEnabled)
+                                        .map(SysDepartment::getId)
+                                        .collect(Collectors.toSet());
             }
         }
         return dataPermission;
@@ -302,31 +304,60 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         /**
          * 获取用户所有角色id
          *
-         * @param id id
+         * @param username 用户名
          * @return role id
          */
         @Transactional(readOnly = true)
-        public Set<Long> findRoleById(Long id){
-            return this.roleDao.selectListByUserId(id)
+        public Set<Long> findRoleByUsername(String username){
+            return this.roleDao.selectListByUsername(username)
                                .stream()
                                .map(SysRole::getId)
                                .collect(Collectors.toSet());
         }
 
-        /**
-         * 获取用户职位id
-         *
-         * @param id id
-         * @return position id
-         */
-        @Transactional(readOnly = true)
-        public Set<Long> findPositionById(Long id){
-            return this.positionDao.selectListByUserId(id)
-                                   .stream()
-                                   .filter(SysPosition::getEnabled)
-                                   .map(SysPosition::getId)
-                                   .collect(Collectors.toSet());
-        }
+    /**
+     * 获取用户所有角色id
+     *
+     * @param id id
+     * @return role id
+     */
+    @Transactional(readOnly = true)
+    public Set<Long> findRoleById(Long id){
+        return this.roleDao.selectListByUserId(id)
+                           .stream()
+                           .map(SysRole::getId)
+                           .collect(Collectors.toSet());
+    }
+
+    /**
+     * 获取用户级别部门
+     *
+     * @param id 部门id
+     * @return role id
+     */
+    @Transactional(readOnly = true)
+    public DepartmentVO findDepartmentById(Long id){
+        final var sysDepartment = ChainWrappers.lambdaQueryChain(this.departmentDao)
+                                               .select(SysDepartment::getId, SysDepartment::getName)
+                                               .eq(SysDepartment::getId, id)
+                                               .one();
+        return this.departmentConvert.toVo(sysDepartment);
+    }
+
+    /**
+     * 获取用户职位id
+     *
+     * @param id id
+     * @return position id
+     */
+    @Transactional(readOnly = true)
+    public Set<Long> findPositionById(Long id){
+        return this.positionDao.selectListByUserId(id)
+                               .stream()
+                               .filter(SysPosition::getEnabled)
+                               .map(SysPosition::getId)
+                               .collect(Collectors.toSet());
+    }
 
         /**
          * 更新用户状态
@@ -671,7 +702,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          */
         @CacheEvict
         @Transactional
-        public Void deleteByIds(Set < Long > ids) {
+        public Void deleteByIds(Set <Long> ids) {
             // 超级管理员
             if (Context.isOwner()) {
                 SysUser sysUser = super.lambdaQuery()

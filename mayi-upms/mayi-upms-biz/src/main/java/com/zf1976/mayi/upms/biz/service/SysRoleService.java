@@ -31,7 +31,7 @@ import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
 import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
 import com.zf1976.mayi.common.core.constants.Namespace;
-import com.zf1976.mayi.upms.biz.convert.SysRoleConvert;
+import com.zf1976.mayi.upms.biz.convert.RoleConvert;
 import com.zf1976.mayi.upms.biz.dao.SysDepartmentDao;
 import com.zf1976.mayi.upms.biz.dao.SysMenuDao;
 import com.zf1976.mayi.upms.biz.dao.SysPermissionDao;
@@ -78,13 +78,13 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
     private final SysDepartmentDao sysDepartmentDao;
     private final SysMenuDao sysMenuDao;
     private final SysPermissionDao permissionDao;
-    private final SysRoleConvert convert;
+    private final RoleConvert convert;
 
     public SysRoleService(SysDepartmentDao sysDepartmentDao, SysPermissionDao permissionDao, SysMenuDao sysMenuDao) {
         this.sysDepartmentDao = sysDepartmentDao;
         this.sysMenuDao = sysMenuDao;
         this.permissionDao = permissionDao;
-        this.convert = SysRoleConvert.INSTANCE;
+        this.convert = RoleConvert.INSTANCE;
     }
 
     /**

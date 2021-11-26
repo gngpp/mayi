@@ -36,6 +36,6 @@ import org.mapstruct.factory.Mappers;
  * @date 2020/10/25 5:37 下午
  */
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface SysPositionConvert extends Convert<SysPosition, PositionVO, PositionDTO> {
-    SysPositionConvert INSTANCE = Mappers.getMapper(SysPositionConvert.class);
+public interface PositionConvert extends Convert<SysPosition, PositionVO, PositionDTO> {
+    PositionConvert INSTANCE = Mappers.getMapper(PositionConvert.class);
 }

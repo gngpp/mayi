@@ -31,7 +31,7 @@ import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
 import com.zf1976.mayi.common.core.constants.Namespace;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
-import com.zf1976.mayi.upms.biz.convert.SysDictDetailConvert;
+import com.zf1976.mayi.upms.biz.convert.DictDetailConvert;
 import com.zf1976.mayi.upms.biz.dao.SysDictDao;
 import com.zf1976.mayi.upms.biz.dao.SysDictDetailDao;
 import com.zf1976.mayi.upms.biz.pojo.dto.dict.DictDetailDTO;
@@ -63,7 +63,7 @@ public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysD
 
     private final Logger log = LoggerFactory.getLogger("[SysDictDetailService]");
     private final SysDictDao sysDictDao;
-    private final SysDictDetailConvert convert = SysDictDetailConvert.INSTANCE;
+    private final DictDetailConvert convert = DictDetailConvert.INSTANCE;
 
     public SysDictDetailService(SysDictDao sysDictDao) {
         this.sysDictDao = sysDictDao;

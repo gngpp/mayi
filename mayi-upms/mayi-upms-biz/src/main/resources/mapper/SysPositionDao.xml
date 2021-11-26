@@ -46,5 +46,19 @@
                  join sys_user_position_relation suj on sys_position.id = suj.position_id
         where user_id = #{userId}
     </select>
+<!--根据用户名查询用户岗位-->
+    <select id="findByUsername" resultType="com.zf1976.mayi.upms.biz.pojo.po.SysPosition">
+        select id,
+               name,
+               enabled,
+               job_sort,
+               create_by,
+               update_by,
+               create_time,
+               update_time,
+               version
+        from sys_position join sys_user_position_relation on sys_position.id = sys_user_position_relation.position_id
+        where sys_user_position_relation.user_id = (select id from sys_user where username = #{username})
+    </select>
 
 </mapper>

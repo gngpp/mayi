@@ -35,6 +35,8 @@ import com.zf1976.mayi.upms.biz.service.SysDictDetailService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author mac
  * @date 2020/10/23 6:58 下午
@@ -65,7 +67,7 @@ public class SysDictDetailController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public DataResult<Void> deleteById(@PathVariable Long id) {
+    public DataResult<Void> deleteById(@PathVariable @NotNull Long id) {
         return DataResult.success(service.deleteById(id));
     }
 

@@ -33,7 +33,7 @@ public interface GatewayRouteConstants {
     /**
      * 管理中心路由
      */
-    String ADMIN_ROUTE = "/api/**";
+    String ROOT_ROUTE = "/api/**";
 
     /**
      * 认证中心路由

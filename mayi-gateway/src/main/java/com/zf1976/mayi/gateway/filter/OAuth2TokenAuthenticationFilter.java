@@ -28,6 +28,7 @@ import com.nimbusds.jose.shaded.json.JSONArray;
 import com.zf1976.mayi.common.core.constants.AuthConstants;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.common.core.util.JSONUtil;
+import com.zf1976.mayi.gateway.GatewayRouteConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -41,6 +42,7 @@ import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.server.resource.BearerTokenError;
 import org.springframework.security.oauth2.server.resource.BearerTokenErrors;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -72,6 +74,7 @@ public class OAuth2TokenAuthenticationFilter implements WebFilter {
             Pattern.CASE_INSENSITIVE);
     private final RestTemplate restTemplate = new RestTemplate();
     private final String jwtCheckUrl;
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
 
     public OAuth2TokenAuthenticationFilter(String checkTokenUrl) {
@@ -95,12 +98,15 @@ public class OAuth2TokenAuthenticationFilter implements WebFilter {
             return webFilterChain.filter(serverWebExchange);
         }
         try {
+            // 后台路径放行
+            if (this.antPathMatcher.match(GatewayRouteConstants.ROOT_ROUTE, getRequestURI(request))) {
+                return webFilterChain.filter(serverWebExchange);
+            }
             String token = this.token(request);
             // 无token放行
             if (token == null || "".equals(token)) {
                 return webFilterChain.filter(serverWebExchange);
             }
-            Boolean owner = isOwner(token);
             if (!isOwner(token)) {
                 if (!this.checkToken(token)) {
                     BearerTokenError bearerTokenError = this.bearerTokenError();
@@ -158,6 +164,10 @@ public class OAuth2TokenAuthenticationFilter implements WebFilter {
             }
         }
         return accessToken != null && this.isParameterTokenSupportedForRequest(request)? accessToken : null;
+    }
+
+    private String getRequestURI(ServerHttpRequest serverHttpRequest) {
+        return serverHttpRequest.getURI().getPath();
     }
 
     private String resolveRequestAuthorizationHeader(HttpHeaders headers) {

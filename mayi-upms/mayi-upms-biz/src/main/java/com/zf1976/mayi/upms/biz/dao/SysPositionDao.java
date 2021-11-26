@@ -55,4 +55,7 @@ public interface SysPositionDao extends BaseMapper<SysPosition> {
      */
     List<SysPosition> selectListByUserId(@Param("userId") Long userId);
 
+
+    List<SysPosition> findByUsername(@Param("username") String username);
+
 }

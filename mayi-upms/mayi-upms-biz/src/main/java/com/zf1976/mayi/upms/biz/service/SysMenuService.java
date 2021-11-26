@@ -28,7 +28,7 @@ import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
 import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
 import com.zf1976.mayi.common.core.constants.Namespace;
-import com.zf1976.mayi.upms.biz.convert.SysMenuConvert;
+import com.zf1976.mayi.upms.biz.convert.MenuConvert;
 import com.zf1976.mayi.upms.biz.dao.SysMenuDao;
 import com.zf1976.mayi.upms.biz.dao.SysRoleDao;
 import com.zf1976.mayi.upms.biz.pojo.dto.menu.MenuDTO;
@@ -74,11 +74,11 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
     public static final String INDEX = "index";
     public static final String SLASH = "/";
     private final SysRoleDao sysRoleDao;
-    private final SysMenuConvert convert;
+    private final MenuConvert convert;
 
     public SysMenuService(SysRoleDao sysRoleDao) {
         this.sysRoleDao = sysRoleDao;
-        this.convert = SysMenuConvert.INSTANCE;
+        this.convert = MenuConvert.INSTANCE;
     }
 
     /**

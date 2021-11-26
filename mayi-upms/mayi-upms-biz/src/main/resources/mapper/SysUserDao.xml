@@ -78,9 +78,11 @@
             #{departmentId}
         </foreach>
     </select>
+
     <!--    根据用户名查询用户，包括部门-->
     <resultMap id="selectOneByUsernameMap" type="com.zf1976.mayi.upms.biz.pojo.po.SysUser">
         <id property="id" column="id"/>
+        <result property="departmentId" column="department_id"/>
         <association property="department" column="department_id"
                      select="com.zf1976.mayi.upms.biz.dao.SysDepartmentDao.selectById"/>
         <collection property="positionList" column="id"

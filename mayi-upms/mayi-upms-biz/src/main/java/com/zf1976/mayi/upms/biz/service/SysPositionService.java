@@ -29,7 +29,7 @@ import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
 import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
 import com.zf1976.mayi.common.core.constants.Namespace;
-import com.zf1976.mayi.upms.biz.convert.SysPositionConvert;
+import com.zf1976.mayi.upms.biz.convert.PositionConvert;
 import com.zf1976.mayi.upms.biz.dao.SysPositionDao;
 import com.zf1976.mayi.upms.biz.pojo.dto.position.PositionDTO;
 import com.zf1976.mayi.upms.biz.pojo.po.SysPosition;
@@ -61,7 +61,7 @@ import java.util.*;
 public class SysPositionService extends AbstractService<SysPositionDao, SysPosition> {
 
     private final Logger log = LoggerFactory.getLogger("[SysPositionService]");
-    private final SysPositionConvert convert = SysPositionConvert.INSTANCE;
+    private final PositionConvert convert = PositionConvert.INSTANCE;
 
     /**
      * 按条件查询岗位

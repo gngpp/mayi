@@ -36,6 +36,6 @@ import org.mapstruct.factory.Mappers;
  * @date 2020/11/21
  **/
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface SysRoleConvert extends Convert<SysRole, RoleVO, RoleDTO> {
-    SysRoleConvert INSTANCE = Mappers.getMapper(SysRoleConvert.class);
+public interface RoleConvert extends Convert<SysRole, RoleVO, RoleDTO> {
+    RoleConvert INSTANCE = Mappers.getMapper(RoleConvert.class);
 }

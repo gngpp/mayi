@@ -88,4 +88,5 @@ public interface SysDepartmentDao extends BaseMapper<SysDepartment> {
      */
     List<Long> selectRoleRelationByIds(@Param("ids") Collection<Long> ids);
 
+    SysDepartment findOneByUsername(@Param("username") String username);
 }

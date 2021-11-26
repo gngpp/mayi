@@ -60,25 +60,25 @@ public class PermissionBindingController {
 
     @PostMapping("/binding/resource")
     @PreAuthorize("hasRole('root')")
-    public DataResult<Void> bindResource(@NotNull Long id, @RequestBody Set<Long> permissionList) {
+    public DataResult<Void> bindResource(@NotNull Long id, @RequestBody @NotNull Set<Long> permissionList) {
         return DataResult.success(this.bindingService.bindingResource(id, permissionList));
     }
 
     @PostMapping("/binding/role")
     @PreAuthorize("hasRole('root')")
-    public DataResult<Void> bindingRole(@NotNull Long id, @RequestBody Set<Long> permissionList) {
+    public DataResult<Void> bindingRole(@NotNull Long id, @RequestBody @NotNull Set<Long> permissionList) {
         return DataResult.success(this.bindingService.bindingRole(id, permissionList));
     }
 
     @PutMapping("/unbinding/resource")
     @PreAuthorize("hasRole('root')")
-    public DataResult<Void> unbindingResource(@NotNull Long id, @RequestBody Set<Long> permissionList) {
+    public DataResult<Void> unbindingResource(@NotNull Long id, @RequestBody @NotNull Set<Long> permissionList) {
         return DataResult.success(this.bindingService.unbindingResource(id, permissionList));
     }
 
     @PutMapping("/unbinding/role")
     @PreAuthorize("hasRole('root')")
-    public DataResult<Void> unbindingRole(@NotNull Long id, @RequestBody Set<Long> permissionList) {
+    public DataResult<Void> unbindingRole(@NotNull Long id, @RequestBody @NotNull Set<Long> permissionList) {
         return DataResult.success(this.bindingService.unbindingRole(id, permissionList));
     }
 

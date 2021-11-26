@@ -40,9 +40,9 @@ public class UserVO {
     private Long id;
 
     /**
-     * 部门
+     * 部门id
      */
-    private DepartmentVO department;
+    private Long departmentId;
 
     /**
      * 头像
@@ -92,14 +92,6 @@ public class UserVO {
         this.id = id;
     }
 
-    public DepartmentVO getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(DepartmentVO department) {
-        this.department = department;
-    }
-
     public String getAvatarName() {
         return avatarName;
     }
@@ -114,6 +106,15 @@ public class UserVO {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public UserVO setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+        return this;
     }
 
     public String getNickName() {
@@ -168,7 +169,7 @@ public class UserVO {
     public String toString() {
         return "UserVO{" +
                 "id=" + id +
-                ", department=" + department +
+                ", departmentId=" + departmentId +
                 ", avatarName='" + avatarName + '\'' +
                 ", username='" + username + '\'' +
                 ", nickName='" + nickName + '\'' +

@@ -29,6 +29,8 @@ import com.zf1976.mayi.upms.biz.security.pojo.BackupFile;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -49,7 +51,7 @@ public class SQLBackupController {
 
     @PreAuthorize("hasRole('root')")
     @PostMapping("/select/files")
-    DataResult<List<BackupFile>> selectBackupList(@RequestParam String date, @RequestParam Integer page) {
+    DataResult<List<BackupFile>> selectBackupList(@RequestParam @NotEmpty String date, @RequestParam @NotNull Integer page) {
         return DataResult.success(this.mySQLBackupService.selectBackupFileByDate(date, page));
     }
 
@@ -67,7 +69,7 @@ public class SQLBackupController {
 
     @PreAuthorize("hasRole('root')")
     @DeleteMapping("/delete")
-    DataResult<Void> deleteBackupFile(@RequestParam String filename) {
+    DataResult<Void> deleteBackupFile(@RequestParam @NotEmpty String filename) {
         return DataResult.success(this.mySQLBackupService.deleteBackupFileByFilename(filename));
     }
 

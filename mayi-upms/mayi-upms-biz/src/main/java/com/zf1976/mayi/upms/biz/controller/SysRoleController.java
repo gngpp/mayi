@@ -100,7 +100,7 @@ public class SysRoleController {
 
     @Log(description = "删除角色")
     @DeleteMapping("/delete")
-    public DataResult<Void> deleteByIds(@RequestBody Set<Long> ids) {
+    public DataResult<Void> deleteByIds(@RequestBody @NotNull Set<Long> ids) {
         return DataResult.success(service.deleteByIds(ids));
     }
 }

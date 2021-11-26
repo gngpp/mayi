@@ -88,4 +88,20 @@
             #{id}
         </foreach>
     </select>
+<!--    根据用户名查询用户级别部门-->
+    <select id="findOneByUsername" resultType="com.zf1976.mayi.upms.biz.pojo.po.SysDepartment">
+        select id,
+               pid,
+               sub_count,
+               name,
+               dept_sort,
+               enabled,
+               create_by,
+               update_by,
+               create_time,
+               update_time,
+               version
+        from sys_department
+        where sys_department.id = (select department_id from sys_user where username = #{username})
+    </select>
 </mapper>

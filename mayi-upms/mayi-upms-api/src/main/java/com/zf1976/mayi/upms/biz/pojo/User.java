@@ -42,6 +42,11 @@ public class User implements Serializable {
     private Long id;
 
     /**
+     * 部门id
+     */
+    private Long departmentId;
+
+    /**
      * 部门
      */
     private Department department;
@@ -133,6 +138,15 @@ public class User implements Serializable {
 
     public User setRoleList(List<Role> roleList) {
         this.roleList = roleList;
+        return this;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public User setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
         return this;
     }
 
@@ -237,6 +251,7 @@ public class User implements Serializable {
     public String toString() {
         return "User{" +
                 "id=" + id +
+                ", departmentId=" + departmentId +
                 ", department=" + department +
                 ", roleList=" + roleList +
                 ", positionList=" + positionList +

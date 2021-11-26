@@ -32,6 +32,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 
 /**
  * @author mac
@@ -49,7 +52,7 @@ public class AuthorizationController {
 
     @Inner
     @PostMapping("/{username}")
-    public DataResult<User> getUser(@PathVariable("username")String username) {
+    public DataResult<User> getUser(@PathVariable("username") @NotEmpty String username) {
         return DataResult.success(this.userService.findByUsername(username));
     }
 }

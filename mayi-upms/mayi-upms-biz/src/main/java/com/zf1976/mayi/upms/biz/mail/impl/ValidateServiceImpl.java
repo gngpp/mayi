@@ -83,7 +83,7 @@ public class ValidateServiceImpl implements ValidateEmailService, ValidateMobile
 
     @Override
     public Void sendVerifyCode(String key) {
-        if (StringUtils.isEmpty(key) || !ValidateUtil.isEmail(key)) {
+        if (!StringUtils.hasLength(key) || !ValidateUtil.isEmail(key)) {
             throw new BusinessException(BusinessMsgState.EMAIL_LOW);
         }
         final String validateCode = RandomUtil.randomString(properties.getLength())
