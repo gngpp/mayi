@@ -79,7 +79,7 @@ public interface AuthConstants {
     /**
      * 资源所有者
      */
-    String OWNER = "ROLE_admin";
+    String OWNER = "ROLE_root";
 
     /**
      * 签发方

@@ -52,7 +52,7 @@ public class DynamicAccessDecisionManager implements AccessDecisionManager {
 
     private final DynamicDataSourceService dynamicDataSourceService;
     private final AntPathMatcher pathMatcher;
-    private static final String SUPER_ADMIN = "ROLE_admin";
+    private static final String SUPER_ADMIN = "ROLE_root";
 
     public DynamicAccessDecisionManager(DynamicDataSourceService dynamicDataSourceService) {
         this.dynamicDataSourceService = dynamicDataSourceService;

@@ -273,16 +273,14 @@ public class AuthorizationUserDetails implements UserDetails, CredentialsContain
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getName()).append(" [");
-        sb.append("Username=").append(this.username).append(", ");
-        sb.append("Password=[PROTECTED], ");
-        sb.append("Enabled=").append(this.enabled).append(", ");
-        sb.append("AccountNonExpired=").append(this.accountNonExpired).append(", ");
-        sb.append("credentialsNonExpired=").append(this.credentialsNonExpired).append(", ");
-        sb.append("AccountNonLocked=").append(this.accountNonLocked).append(", ");
-        sb.append("Granted Authorities=").append(this.authorities).append("]");
-        return sb.toString();
+        return getClass().getName() + " [" +
+                "Username=" + this.username + ", " +
+                "Password=[PROTECTED], " +
+                "Enabled=" + this.enabled + ", " +
+                "AccountNonExpired=" + this.accountNonExpired + ", " +
+                "credentialsNonExpired=" + this.credentialsNonExpired + ", " +
+                "AccountNonLocked=" + this.accountNonLocked + ", " +
+                "Granted Authorities=" + this.authorities + "]";
     }
 
     private static class AuthorityComparator implements Comparator<GrantedAuthority>, Serializable {
@@ -393,7 +391,7 @@ public class AuthorizationUserDetails implements UserDetails, CredentialsContain
          * is equivalent to
          *
          * <code>
-         * builder.authorities("ROLE_USER","ROLE_ADMIN");
+         * builder.authorities("ROLE_USER","ROLE_root");
          * </code>
          *
          * <p>
@@ -446,7 +444,7 @@ public class AuthorizationUserDetails implements UserDetails, CredentialsContain
         /**
          * Populates the authorities. This attribute is required.
          *
-         * @param authorities the authorities for this delegateUser (i.e. ROLE_USER, ROLE_ADMIN,
+         * @param authorities the authorities for this delegateUser (i.e. ROLE_USER, ROLE_root,
          *                    etc). Cannot be null, or contain null values
          * @return the {@link org.springframework.security.core.userdetails.User.UserBuilder} for method chaining (i.e. to populate
          * additional attributes for this delegateUser)

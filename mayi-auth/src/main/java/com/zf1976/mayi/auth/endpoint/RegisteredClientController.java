@@ -49,48 +49,49 @@ public class RegisteredClientController {
     }
 
     @PostMapping("/page")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('root')")
     public DataResult<Page<RegisteredClientVO>> findByPage(@RequestBody @NotNull Page<?> page) {
         return DataResult.success(this.oAuth2RegisteredClientService.findList(page));
     }
 
     @PostMapping("/save")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('root')")
     public DataResult<Void> sava(@RequestBody @Validated(ValidationInsertGroup.class) RegisteredClientDTO dto) {
         return DataResult.success(this.oAuth2RegisteredClientService.sava(dto));
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('root')")
     public DataResult<Void> update(@RequestBody @Validated(ValidationUpdateGroup.class) RegisteredClientDTO dto) {
         return DataResult.success(this.oAuth2RegisteredClientService.sava(dto));
     }
 
     @DeleteMapping("/delete/id/{id}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('root')")
     public DataResult<Void> deleteById(@PathVariable String id) {
         return DataResult.success(this.oAuth2RegisteredClientService.deleteById(id));
     }
 
     @DeleteMapping("/delete/id")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('root')")
     public DataResult<Void> deleteByIds(@RequestBody Set<String> ids) {
         return DataResult.success(this.oAuth2RegisteredClientService.deleteByIds(ids));
     }
 
     @DeleteMapping("/delete/client_id/{clientId}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('root')")
     public DataResult<Void> deleteByClientId(@PathVariable String clientId) {
         return DataResult.success(this.oAuth2RegisteredClientService.deleteByClientId(clientId));
     }
 
     @DeleteMapping("/delete/client_id")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('root')")
     public DataResult<Void> deleteByClientIds(@RequestBody Set<String> clientIds) {
         return DataResult.success(this.oAuth2RegisteredClientService.deleteByClientIds(clientIds));
     }
 
     @GetMapping("/alg")
+    @PreAuthorize("hasRole('root')")
     public DataResult<Set<String>> loadTokenSignatureAlgorithm() {
         return DataResult.success(this.oAuth2RegisteredClientService.loadTokenSignatureAlgorithm());
     }

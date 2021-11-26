@@ -47,25 +47,25 @@ public class SQLBackupController {
         this.mySQLBackupService = mySQLBackupService;
     }
 
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('root')")
     @PostMapping("/select/files")
     DataResult<List<BackupFile>> selectBackupList(@RequestParam String date, @RequestParam Integer page) {
         return DataResult.success(this.mySQLBackupService.selectBackupFileByDate(date, page));
     }
 
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('root')")
     @GetMapping("/select/dates")
     DataResult<List<String>> selectDateList() {
         return DataResult.success(this.mySQLBackupService.selectBackupDate());
     }
 
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('root')")
     @PostMapping("/create")
     DataResult<Void> createBackup(){
         return DataResult.success(this.mySQLBackupService.createBackup());
     }
 
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('root')")
     @DeleteMapping("/delete")
     DataResult<Void> deleteBackupFile(@RequestParam String filename) {
         return DataResult.success(this.mySQLBackupService.deleteBackupFileByFilename(filename));

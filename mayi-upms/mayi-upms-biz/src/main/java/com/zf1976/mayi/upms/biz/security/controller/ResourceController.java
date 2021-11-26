@@ -51,7 +51,7 @@ public class ResourceController {
     }
 
     @PostMapping("/page")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('root')")
     public DataResult<IPage<ResourceNode>> selectResourceByPage(@RequestBody Query<?> page) {
         return DataResult.success(this.dynamicDataSourceService.selectResourceNodeByPage(page));
     }

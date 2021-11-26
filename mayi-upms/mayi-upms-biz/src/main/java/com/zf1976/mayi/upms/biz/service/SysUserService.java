@@ -197,10 +197,10 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      */
     private Set<String> grantedAuthorities(String username, List<Role> roles) {
         Set<String> authorities = new HashSet<>();
-        String markerAdmin = securityProperties.getOwner();
-        if (username.equals(markerAdmin)) {
+        String markerRoot = securityProperties.getOwner();
+        if (username.equals(markerRoot)) {
             // 分配认证超级管理员角色
-            authorities.add(SecurityConstants.ROLE.concat(markerAdmin));
+            authorities.add(SecurityConstants.ROLE.concat(markerRoot));
             return authorities;
         }
         return roles.stream()

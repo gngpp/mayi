@@ -20,7 +20,7 @@ verify-code:
 #公用safe jwt session 等配置信息
 security:
   # super_admin 名字 自己配置就好了/前端也需要修改。。
-  owner: admin
+  owner: root
   # token 头
   token-header: MAYI-ADMIN
   # 签发方
