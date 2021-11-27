@@ -79,7 +79,6 @@ services:
     env_file:
       - ./env/.mysql_env
     environment:
-      NACOS_USERNAME: ${MYSQL_ROOT_USERNAME:-root}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-itcast}
     security_opt:
       - seccomp:unconfined
