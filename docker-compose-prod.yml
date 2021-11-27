@@ -5,7 +5,7 @@ services:
 
   mayi-upms-biz:
     container_name: mayi-upms-biz
-    restart: always
+    restart: on-failure
     ports:
       - "7777:7777"
       - "5555:5555"
@@ -19,11 +19,12 @@ services:
       - mayi-redis
       - mayi-auth
       - mayi-visual-admin
+      - mayi-gateway
     hostname: mayi.upms.biz
 
   mayi-auth:
     container_name: mayi-auth
-    restart: always
+    restart: on-failure
     ports:
       - "9000:9000"
       - "6666:6666"
@@ -34,12 +35,14 @@ services:
     depends_on:
       - mayi-nacos
       - mayi-redis
+      - mayi-mysql
       - mayi-visual-admin
+      - mayi-gateway
     hostname: mayi.auth
 
   mayi-gateway:
     container_name: mayi-gateway
-    restart: always
+    restart: on-failure
     ports:
       - "8888:8888"
     build:
@@ -53,6 +56,7 @@ services:
 
   mayi-visual-admin:
     container_name: mayi-visual-admin
+    restart: on-failure
     ports:
       - "4444:4444"
     build:
@@ -64,7 +68,7 @@ services:
   mayi-redis:
     container_name: mayi-redis
     image: redis:6.2.6
-    restart: always
+    restart: on-failure
     ports:
       - "6379:6379"
     hostname: mayi.redis
@@ -74,11 +78,15 @@ services:
     build:
       context: ./
       dockerfile: ./docker/db/Dockerfile
-    restart: always
+    restart: on-failure
     env_file:
       - ./env/.mysql_env
+      - ./env/.nacos_env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-itcast}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nacos}
+      MYSQL_USER: ${MYSQL_USER:-nacos}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-nacos}
     security_opt:
       - seccomp:unconfined
     image: mayi-mysql
@@ -89,7 +97,7 @@ services:
   mayi-nacos:
     container_name: mayi-nacos
     image: nacos/nacos-server
-    restart: always
+    restart: on-failure
     env_file:
       - ./env/.nacos_env
       - ./env/.mysql_env
@@ -102,9 +110,9 @@ services:
       MYSQL_DATABASE_NUM: 1
       MYSQL_SERVICE_HOST: ${MYSQL_HOST:-mayi.mysql}
       MYSQL_SERVICE_PORT: ${MYSQL_PORT:-3306}
-      MYSQL_SERVICE_USER: ${MYSQL_ROOT_USERNAME:-root}
-      MYSQL_SERVICE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-itcast}
-      MYSQL_SERVICE_DB_NAME: ${MYSQL_SERVICE_DB_NAME:-nacos}
+      MYSQL_SERVICE_USER: ${MYSQL_USER:-nacos}
+      MYSQL_SERVICE_PASSWORD: ${MYSQL_PASSWORD:-nacos}
+      MYSQL_SERVICE_DB_NAME: ${MYSQL_DATABASE:-nacos}
       MYSQL_SERVICE_DB_PARAM: ${MYSQL_SERVICE_DB_PARAM:-allowPublicKeyRetrieval=true&useSSL=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT%2B8}
     ports:
       - "8848:8848"

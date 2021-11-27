@@ -9,10 +9,9 @@ spring:
       config:
         group: MAYI
         file-extension: yaml
+        max-retry: 60
         config-retry-time: 3000
-        max-retry: 30
-        config-long-poll-timeout: 3000
-        timeout: 5000
+        config-long-poll-timeout: 60000
       discovery:
         group: MAYI
         heart-beat-timeout: 5000

@@ -50,8 +50,8 @@ public class GuavaCacheProvider<K, V> extends AbstractGuavaCache<K, V> {
     }
 
     private void checkStatus() {
-        Assert.notNull(super.kvCache, "guava cache uninitialized");
-        Assert.notNull(super.cacheSpace, "guava cache space uninitialized");
+        Assert.notNull(super.kvCache, "guava cache uninitialized.");
+        Assert.notNull(super.cacheSpace, "guava cache space uninitialized.");
     }
 
     @Override

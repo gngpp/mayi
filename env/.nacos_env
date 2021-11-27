@@ -1,2 +1,8 @@
-MYSQL_SERVICE_DB_NAME=nacos
 MYSQL_SERVICE_DB_PARAM=allowPublicKeyRetrieval=true&useSSL=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT%2B8
+MYSQL_USER=nacos
+MYSQL_PASSWORD=nacos
+
+# nacos user
+MYSQL_DATABASE=nacos
+MYSQL_USER=nacos
+MYSQL_PASSWORD=nacos

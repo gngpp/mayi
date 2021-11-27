@@ -46,6 +46,7 @@ public abstract class AbstractGuavaCache<K, V> implements ICache<K, V> {
     protected final GuavaCacheProperties properties;
 
     public AbstractGuavaCache(GuavaCacheProperties properties) {
+        Assert.notNull(properties, "cache config properties cannot been null.");
         this.properties = properties;
     }
 
