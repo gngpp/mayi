@@ -1,8 +1,10 @@
+address: 127.0.0.1
+
 spring:
   datasource:
     username: root
     password: itcast
-    url: jdbc:mysql://127.0.0.1:3306/master?useSSL=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT%2B8
+    url: jdbc:mysql://${address}:3306/master?useSSL=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 30000
@@ -11,7 +13,7 @@ spring:
       minimum-idle: 5
 #Redis
   redis:
-    host: 127.0.0.1
+    host: ${address}
     password:
     port: 6379
     database: 0
@@ -26,22 +28,28 @@ spring:
   cloud:
     nacos:
       config:
+        group: MAYI
         file-extension: yaml
         config-retry-time: 3000
         max-retry: 30
         config-long-poll-timeout: 3000
         timeout: 5000
+        extension-configs:
+          - data-id: application-security.yaml
+            group: MAYI_SHARE
+        refresh-enabled: true
       discovery:
+        group: MAYI
         heart-beat-timeout: 5000
         heart-beat-interval: 3000
-        ip-delete-timeout: 600000 #one minute
-      server-addr: 127.0.0.1:8848
+        ip-delete-timeout: 600000
+      server-addr: ${address}:8848
 
   #Admin监控
   boot:
     admin:
       client:
-        url: http://127.0.0.1:4444
+        url: http://${address}:4444
         username: admin
         password: 123456
   thymeleaf:
@@ -58,4 +66,4 @@ spring:
 
 security:
   # revoke url
-  logout-url: http://127.0.0.1:8888/oauth/revoke
+  logout-url: http://${address}:8888/oauth/revoke

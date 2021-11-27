@@ -15,7 +15,6 @@ COPY ./mayi-common/mayi-common-component/build.gradle ./mayi-common/mayi-common-
 COPY ./mayi-common/mayi-common-core/build.gradle ./mayi-common/mayi-common-core/build.gradle
 COPY ./mayi-common/mayi-common-datasource/build.gradle ./mayi-common/mayi-common-datasource/build.gradle
 COPY ./mayi-common/mayi-common-encrypt/build.gradle ./mayi-common/mayi-common-encrypt/build.gradle
-COPY ./mayi-common/mayi-common-log/build.gradle ./mayi-common/mayi-common-log/build.gradle
 COPY ./mayi-common/mayi-common-remote/build.gradle ./mayi-common/mayi-common-remote/build.gradle
 COPY ./mayi-common/mayi-common-security/build.gradle ./mayi-common/mayi-common-security/build.gradle
 COPY ./mayi-gateway/build.gradle ./mayi-gateway/build.gradle

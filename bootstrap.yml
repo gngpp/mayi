@@ -1,4 +1,4 @@
 # The following profiles are active: xxx
 spring:
   profiles:
-    active: dev,security,feign
+    active: prod,security,feign

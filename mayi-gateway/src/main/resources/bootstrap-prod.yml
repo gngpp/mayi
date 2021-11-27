@@ -3,23 +3,25 @@ server:
 spring:
   cloud:
     nacos:
+      server-addr: mayi.nacos:8848
       config:
+        group: MAYI
         file-extension: yaml
         config-retry-time: 3000
         max-retry: 30
         config-long-poll-timeout: 3000
       discovery:
+        group: MAYI
         heart-beat-timeout: 5000
         heart-beat-interval: 3000
-        ip-delete-timeout: 600000 #one minute
-      server-addr: mayi.nacos:8848
+        ip-delete-timeout: 600000
 
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://mayi.auth:9000/oauth/token_key
-          jwt-check-uri: http://mayi.auth:9000/oauth/check_token
+          jwk-set-uri: http://mayi.auth:9000/oauth2/token_key
+          jwt-check-uri: http://mayi.auth:9000/oauth2/check_token
           issuer-uri: http://mayi.auth:9000
 
   redis:

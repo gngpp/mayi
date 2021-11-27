@@ -1,6 +1,8 @@
+address: 127.0.0.1
+
 spring:
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/master?useSSL=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT%2B8
+    url: jdbc:mysql://${address}:3306/master?useSSL=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT%2B8
     username: root
     password: itcast
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -38,7 +40,7 @@ spring:
 
 #Redis
   redis:
-    host: 127.0.0.1
+    host: ${address}
     password:
     port: 6379
     database: 0
@@ -52,22 +54,28 @@ spring:
   cloud:
     nacos:
       config:
+        group: MAYI
         file-extension: yaml
         config-retry-time: 3000
         max-retry: 30
         config-long-poll-timeout: 3000
         timeout: 5000
-      server-addr: 127.0.0.1:8848
+        extension-configs:
+          - data-id: application-security.yaml
+            group: MAYI_SHARE
+        refresh-enabled: true
+      server-addr: ${address}:8848
       discovery:
+        group: MAYI
         heart-beat-timeout: 5000
         heart-beat-interval: 3000
-        ip-delete-timeout: 600000 #one minute
+        ip-delete-timeout: 600000
 
   #admin监控注册
   boot:
     admin:
       client:
-        url: http://127.0.0.1:4444
+        url: http://${address}:4444
         username: admin
         password: 123456
 
@@ -76,8 +84,8 @@ spring:
       resourceserver:
         opaquetoken:
           client-id: system
-          client-secret: 123456
-          introspection-uri: http://127.0.0.1:9000/oauth2/introspect
+          client-secret: 12345
+          introspection-uri: http://${address}:9000/oauth2/introspect
 security:
   # revoke url
-  logout-url: http://127.0.0.1:8888/oauth2/revoke
+  logout-url: http://${address}:8888/oauth2/revoke

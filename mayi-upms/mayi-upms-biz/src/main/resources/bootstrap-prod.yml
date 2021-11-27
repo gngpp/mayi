@@ -53,14 +53,20 @@ spring:
   cloud:
     nacos:
       config:
+        group: MAYI
         file-extension: yaml
         config-retry-time: 3000
         max-retry: 30
         config-long-poll-timeout: 3000
+        extension-configs:
+          - data-id: application-security.yaml
+            group: MAYI_SHARE
+        refresh-enabled: true
       discovery:
+        group: MAYI
         heart-beat-timeout: 5000
         heart-beat-interval: 3000
-        ip-delete-timeout: 600000 #one minute
+        ip-delete-timeout: 600000
       server-addr: mayi.nacos:8848
 
   #admin监控注册
@@ -74,14 +80,10 @@ spring:
   security:
     oauth2:
       resourceserver:
-        resource-id: mayi-upms-biz
-        jwt:
-          issuer-uri: http://mayi.auth:9000
-          jwk-set-uri: http://mayi.auth:9000/oauth/token_key
-          jwt-check-uri: http://mayi.auth:9000/oauth/check_token
         opaquetoken:
           client-id: system
           client-secret: 123456
+          introspection-uri: http://mayi.auth:9000/oauth2/introspect
 security:
   # revoke url
   logout-url: http://mayi.gateway:8888/oauth/revoke

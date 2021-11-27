@@ -25,7 +25,7 @@
 
 DOCKER_COMPOSE_DEV=./docker-compose-dev.yml
 DOCKER_COMPOSE_PROD=./docker-compose-prod.yml
-DOCKER_COMPOSE_LOCAL=./docker-compose-local.yml
+DOCKER_COMPOSE_LOCAL=./docker-compose-test.yml
 echo "Close all containers by default to prevent port occupation."
 read -p "Please enter the Y/N:" yesNo
 case $yesNo in

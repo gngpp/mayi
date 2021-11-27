@@ -3,65 +3,6 @@ version: "3"
 
 services:
 
-  mayi-upms-biz:
-    container_name: mayi-upms-biz
-    restart: always
-    ports:
-      - "7777:7777"
-      - "5555:5555"
-    build:
-      context: ./
-      dockerfile: docker/dev/system/Dockerfile
-    image: mayi-upms-biz
-    depends_on:
-      - mayi-nacos
-      - mayi-mysql
-      - mayi-redis
-      - mayi-auth
-      - mayi-visual-admin
-    hostname: mayi.upms.biz
-
-  mayi-auth:
-    container_name: mayi-auth
-    restart: always
-    ports:
-      - "9000:9000"
-      - "6666:6666"
-    build:
-      context: ./
-      dockerfile: docker/dev/auth/Dockerfile
-    image: mayi-auth
-    depends_on:
-      - mayi-nacos
-      - mayi-mysql
-      - mayi-redis
-      - mayi-visual-admin
-    hostname: mayi.auth
-
-  mayi-gateway:
-    container_name: mayi-gateway
-    restart: always
-    ports:
-      - "8888:8888"
-    build:
-      context: ./
-      dockerfile: docker/dev/gateway/Dockerfile
-    image: mayi-gateway
-    depends_on:
-      - mayi-nacos
-      - mayi-redis
-    hostname: mayi.gateway
-
-  mayi-visual-admin:
-    container_name: mayi-visual-admin
-    ports:
-      - "4444:4444"
-    build:
-      context: ./
-      dockerfile: docker/dev/monitor/Dockerfile
-    image: mayi-visual-admin
-    hostname: mayi.visual.admin
-
   mayi-redis:
     container_name: mayi-redis
     image: redis:6.2.6

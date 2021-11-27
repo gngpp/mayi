@@ -19,5 +19,10 @@
       "name": "security.logout-url",
       "type": "java.lang.String",
       "description": "Description for security.logout-url."
+    },
+    {
+      "name": "address",
+      "type": "java.lang.String",
+      "description": "Description for address."
     }
   ]}

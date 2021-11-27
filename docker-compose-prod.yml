@@ -7,7 +7,7 @@ services:
     container_name: mayi-upms-biz
     restart: always
     ports:
-      - "7777:5555"
+      - "7777:7777"
       - "5555:5555"
     build:
       context: ./
@@ -17,6 +17,8 @@ services:
       - mayi-nacos
       - mayi-mysql
       - mayi-redis
+      - mayi-auth
+      - mayi-visual-admin
     hostname: mayi.upms.biz
 
   mayi-auth:
@@ -32,6 +34,7 @@ services:
     depends_on:
       - mayi-nacos
       - mayi-redis
+      - mayi-visual-admin
     hostname: mayi.auth
 
   mayi-gateway:
@@ -48,7 +51,7 @@ services:
       - mayi-redis
     hostname: mayi.gateway
 
-  mayi-admin-monitor:
+  mayi-visual-admin:
     container_name: mayi-visual-admin
     ports:
       - "4444:4444"
@@ -72,8 +75,11 @@ services:
       context: ./
       dockerfile: ./docker/db/Dockerfile
     restart: always
+    env_file:
+      - ./env/.mysql_env
     environment:
-      MYSQL_ROOT_PASSWORD: itcast
+      NACOS_USERNAME: ${MYSQL_ROOT_USERNAME:-root}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-itcast}
     security_opt:
       - seccomp:unconfined
     image: mayi-mysql
@@ -85,8 +91,22 @@ services:
     container_name: mayi-nacos
     image: nacos/nacos-server
     restart: always
+    env_file:
+      - ./env/.nacos_env
+      - ./env/.mysql_env
     environment:
-      - "MODE=standalone"
+      JVM_XMX: 256m
+      JVM_XMS: 256m
+      JVM_XMN: 192m
+      MODE: standalone
+      SPRING_DATASOURCE_PLATFORM: mysql
+      MYSQL_DATABASE_NUM: 1
+      MYSQL_SERVICE_HOST: ${MYSQL_HOST:-mayi.mysql}
+      MYSQL_SERVICE_PORT: ${MYSQL_PORT:-3306}
+      MYSQL_SERVICE_USER: ${MYSQL_ROOT_USERNAME:-root}
+      MYSQL_SERVICE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-itcast}
+      MYSQL_SERVICE_DB_NAME: ${MYSQL_SERVICE_DB_NAME:-nacos}
+      MYSQL_SERVICE_DB_PARAM: ${MYSQL_SERVICE_DB_PARAM:-allowPublicKeyRetrieval=true&useSSL=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&serverTimezone=GMT%2B8}
     ports:
       - "8848:8848"
     depends_on:
