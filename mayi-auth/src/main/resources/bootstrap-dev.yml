@@ -36,6 +36,8 @@ spring:
         extension-configs:
           - data-id: application-security.yaml
             group: MAYI_SHARE
+          - data-id: application-feign.yaml
+            group: MAYI_SHARE
         refresh-enabled: true
       discovery:
         group: MAYI
