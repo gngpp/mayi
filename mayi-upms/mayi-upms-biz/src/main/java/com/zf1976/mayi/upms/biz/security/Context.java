@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -23,29 +23,63 @@
 
 package com.zf1976.mayi.upms.biz.security;
 
+import com.zf1976.mayi.common.security.constants.SecurityConstants;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
+import com.zf1976.mayi.upms.biz.feign.RemoteAuthClient;
+import com.zf1976.mayi.upms.biz.security.exception.SecurityException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Component
+@RefreshScope
 public class Context extends SecurityContextHolder {
 
     private static SecurityProperties securityProperties;
+    private static RemoteAuthClient remoteAuthClient;
 
     @Autowired
-    public void setSecurityProperties(SecurityProperties securityProperties) {
+    public void setSecurityProperties(SecurityProperties securityProperties, RemoteAuthClient remoteAuthClient) {
         Context.securityProperties = securityProperties;
+        Context.remoteAuthClient = remoteAuthClient;
     }
 
    public static boolean isOwner() {
-       String name = getContext().getAuthentication().getName();
-       return ObjectUtils.nullSafeEquals(name, securityProperties.getOwner());
+       String name = username();
+       return isOwner(name);
    }
 
-   public static String getUsername() {
+    public static boolean isOwner(String username) {
+        return ObjectUtils.nullSafeEquals(username, securityProperties.getOwner());
+    }
+
+   public static String username() {
        return getContext().getAuthentication().getName();
+   }
+
+    /**
+     * confirm remote service certification
+     *
+     * @param request http request
+     */
+   public static boolean checkRemoteServerAuthentication(HttpServletRequest request) {
+       String header = request.getHeader(SecurityConstants.COMMUNICATION_AUTHORIZATION);
+       return ObjectUtils.nullSafeEquals(header, securityProperties.getCommunicationToken());
+   }
+
+    /**
+     * revoke user authentication
+     *
+     * @param username username
+     */
+   public static void revokeAuthentication(String username) {
+        if (isOwner(username)) {
+            throw new SecurityException("It is not allowed to revoke root authentication.");
+        }
    }
 
 }

@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -27,11 +27,10 @@ package com.zf1976.mayi.upms.biz.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
-import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
-import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
-import com.zf1976.mayi.common.component.cache.annotation.CachePut;
-import com.zf1976.mayi.common.component.cache.constants.Namespace;
-import com.zf1976.mayi.common.security.constants.SecurityConstants;
+import com.zf1976.mayi.commom.cache.annotation.CacheConfig;
+import com.zf1976.mayi.commom.cache.annotation.CacheEvict;
+import com.zf1976.mayi.commom.cache.annotation.CachePut;
+import com.zf1976.mayi.commom.cache.constants.Namespace;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessException;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
 import com.zf1976.mayi.common.core.util.UUIDUtil;
@@ -40,11 +39,11 @@ import com.zf1976.mayi.common.core.validate.Validator;
 import com.zf1976.mayi.common.encrypt.MD5Encoder;
 import com.zf1976.mayi.common.encrypt.RsaUtil;
 import com.zf1976.mayi.common.encrypt.property.RsaProperties;
+import com.zf1976.mayi.common.security.constants.SecurityConstants;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.upms.biz.convert.DepartmentConvert;
 import com.zf1976.mayi.upms.biz.convert.UserConvert;
 import com.zf1976.mayi.upms.biz.dao.*;
-import com.zf1976.mayi.upms.biz.feign.RemoteAuthClient;
 import com.zf1976.mayi.upms.biz.mail.ValidateEmailService;
 import com.zf1976.mayi.upms.biz.pojo.Permission;
 import com.zf1976.mayi.upms.biz.pojo.Role;
@@ -99,7 +98,6 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     private final SysPermissionDao permissionDao;
     private final UserConvert userConvert = UserConvert.INSTANCE;
     private final DepartmentConvert departmentConvert = DepartmentConvert.INSTANCE;
-    private final RemoteAuthClient securityClient;
     private final SecurityProperties securityProperties;
     private final MD5Encoder md5Encoder = new MD5Encoder();
 
@@ -107,10 +105,9 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     public SysUserService(SysPositionDao sysPositionDao,
                           SysDepartmentDao sysDepartmentDao,
                           SysRoleDao sysRoleDao,
-                          RemoteAuthClient securityClient,
-                          SysPermissionDao permissionDao, SecurityProperties securityProperties) {
+                          SysPermissionDao permissionDao,
+                          SecurityProperties securityProperties) {
         this.positionDao = sysPositionDao;
-        this.securityClient = securityClient;
         this.departmentDao = sysDepartmentDao;
         this.roleDao = sysRoleDao;
         this.permissionDao = permissionDao;
@@ -374,7 +371,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                                    .oneOpt()
                                    .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
 
-            String currentUsername = Context.getUsername();
+            String currentUsername = Context.username();
             // 禁止操作oneself,当前session ID与操作ID相等，说明操作到是当前用户
             Validator.of(currentUsername)
                      .withValidated(username -> !username.equals(sysUser.getUsername()),
@@ -401,7 +398,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         public Void updateAvatar (MultipartFile multipartFile){
             final SysUser sysUser = super.lambdaQuery()
                                          .select(SysUser::getId, SysUser::getAvatarName)
-                                         .eq(SysUser::getUsername, Context.getUsername())
+                                         .eq(SysUser::getUsername, Context.username())
                                          .one();
             String filename = null;
             try {
@@ -446,7 +443,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         public Void updatePassword (UpdatePasswordDTO dto){
             final SysUser sysUser = super.lambdaQuery()
                                          .select(SysUser::getId, SysUser::getPassword)
-                                         .eq(SysUser::getUsername, Context.getUsername())
+                                         .eq(SysUser::getUsername, Context.username())
                                          .oneOpt()
                                          .orElseThrow(() -> new BusinessException(BusinessMsgState.CODE_NOT_FOUNT));
             String rawPassword;
@@ -505,7 +502,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
             // 查询用户
             var sysUser = super.lambdaQuery()
                                .select(SysUser::getId, SysUser::getPassword, SysUser::getEmail)
-                               .eq(SysUser::getUsername, Context.getUsername())
+                               .eq(SysUser::getUsername, Context.username())
                                .oneOpt()
                                .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
             if (validateService.validateVerifyCode(dto.getEmail(), code)) {
@@ -617,7 +614,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                                    .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
             // 禁用
             if (!dto.getEnabled()) {
-                String currentUsername = Context.getUsername();
+                String currentUsername = Context.username();
                 // 禁止禁用oneself,禁止操作当前登录的用户
                 Validator.of(currentUsername)
                          .withValidated(username -> !username.equals(sysUser.getUsername()),
@@ -706,7 +703,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
             // 超级管理员
             if (Context.isOwner()) {
                 SysUser sysUser = super.lambdaQuery()
-                                       .eq(SysUser::getUsername, Context.getUsername())
+                                       .eq(SysUser::getUsername, Context.username())
                                        .oneOpt()
                                        .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
                 // 禁止删除超级管理员账号
@@ -721,7 +718,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                 try {
                     // 登出用户
 //                    final Session session = SessionManagement.getSession(id);
-//                    this.securityClient.logout(session.getToken());
+//                    this.securityClient.revoke(session.getToken());
                 } catch (Exception e) {
                     log.info(e.getMessage(), e.getCause());
                 }

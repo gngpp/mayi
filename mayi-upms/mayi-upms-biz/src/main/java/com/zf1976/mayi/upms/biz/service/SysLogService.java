@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -32,11 +32,11 @@ import com.zf1976.mayi.common.core.foundation.exception.BusinessException;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
 import com.zf1976.mayi.upms.biz.convert.LogConvert;
 import com.zf1976.mayi.upms.biz.dao.SysLogDao;
-import com.zf1976.mayi.upms.biz.pojo.po.SysLog;
 import com.zf1976.mayi.upms.biz.pojo.enums.LogType;
-import com.zf1976.mayi.upms.biz.pojo.vo.base.AbstractLogVO;
+import com.zf1976.mayi.upms.biz.pojo.po.SysLog;
 import com.zf1976.mayi.upms.biz.pojo.query.LogQueryParam;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
+import com.zf1976.mayi.upms.biz.pojo.vo.base.AbstractLogVO;
 import com.zf1976.mayi.upms.biz.security.Context;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -44,7 +44,10 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -63,7 +66,7 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
         // 查询分页对象
         Page<SysLog> sourcePage = super.lambdaQuery()
                                        .eq(SysLog::getLogType, LogType.INFO)
-                                       .eq(SysLog::getUsername, Context.getUsername())
+                                       .eq(SysLog::getUsername, Context.username())
                                        .page(new Page<>(query.getPage(), query.getSize()));
         return this.mapPage(sourcePage,convert::toUserLogVo);
     }

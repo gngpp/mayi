@@ -27,6 +27,8 @@ plugins {
 }
 
 dependencies {
+    implementation project(':mayi-common:mayi-common-core')
+    implementation project(':mayi-common:mayi-common-security')
     implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
     implementation "org.springframework.boot:spring-boot-starter-web:$springbootVersion"
 }

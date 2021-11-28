@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -24,16 +24,15 @@
 package com.zf1976.mayi.auth.service;
 
 import com.zf1976.mayi.auth.exception.ClientException;
-import com.zf1976.mayi.auth.oauth2.repository.CustomizeJdbcRegisteredClientRepository;
 import com.zf1976.mayi.auth.oauth2.repository.CustomizeRegisteredClientRepository;
 import com.zf1976.mayi.auth.oauth2.repository.Page;
-import com.zf1976.mayi.auth.pojo.*;
+import com.zf1976.mayi.auth.pojo.ClientSettingsConvert;
+import com.zf1976.mayi.auth.pojo.TokenSettingsConvert;
 import com.zf1976.mayi.auth.pojo.dto.RegisteredClientDTO;
 import com.zf1976.mayi.auth.pojo.vo.RegisteredClientVO;
 import com.zf1976.mayi.common.core.util.UUIDUtil;
 import com.zf1976.mayi.common.core.validate.Validator;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;

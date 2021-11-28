@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -39,7 +39,7 @@ public class MetaDataHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        String currentUsername = Context.getUsername();
+        String currentUsername = Context.username();
         this.setFieldValByName("createTime", new Date(), metaObject);
         this.setFieldValByName("createBy", currentUsername, metaObject);
         this.setFieldValByName("updateTime", new Date(), metaObject);
@@ -48,7 +48,7 @@ public class MetaDataHandler implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        String currentUsername = Context.getUsername();
+        String currentUsername = Context.username();
         this.setFieldValByName("updateTime", new Date(), metaObject);
         this.setFieldValByName("updateBy", currentUsername, metaObject);
     }

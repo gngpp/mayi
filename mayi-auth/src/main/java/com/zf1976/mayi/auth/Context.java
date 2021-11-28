@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -23,11 +23,13 @@
 
 package com.zf1976.mayi.auth;
 
+import com.zf1976.mayi.auth.feign.RemoteUserService;
+import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.zf1976.mayi.upms.biz.pojo.User;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.ObjectUtils;
@@ -40,11 +42,17 @@ import java.util.Map;
  * @author mac
  */
 @Component
+@RefreshScope
 public class Context extends SecurityContextHolder {
 
-    private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
     private static final Map<Class<?>, Object> CONTENTS_MAP = new ConcurrentReferenceHashMap<>(16, ConcurrentReferenceHashMap.ReferenceType.WEAK);
     private static SecurityProperties securityProperties;
+    private static RemoteUserService remoteUserService;
+
+    public Context(SecurityProperties securityProperties, RemoteUserService remoteUserService) {
+        Context.securityProperties = securityProperties;
+        Context.remoteUserService = remoteUserService;
+    }
 
     public static void setShareObject(Class<?> clazz, Object object) {
         Assert.isInstanceOf(clazz, object, "must be an instance of class");
@@ -57,22 +65,25 @@ public class Context extends SecurityContextHolder {
         return cast;
     }
 
-    public static String getIssuer() {
-        return securityProperties.getTokenIssuer();
-    }
-
     public static boolean isOwner(String username) {
         return ObjectUtils.nullSafeEquals(Context.securityProperties.getOwner(), username);
     }
 
     public static boolean isOwner() {
-        String name = getContext().getAuthentication().getName();
-        return ObjectUtils.nullSafeEquals(Context.securityProperties.getOwner(), name);
+        String name = username();
+        return isOwner(name);
     }
 
-    @Autowired
-    public void setSecurityProperties(SecurityProperties securityProperties) {
-        Context.securityProperties = securityProperties;
+    public static String username() {
+        return getContext().getAuthentication().getName();
+    }
+
+    private static String communicationToken() {
+        return Context.securityProperties.getCommunicationToken();
+    }
+
+    public static DataResult<User> loadUserByUsername(String username) {
+        return remoteUserService.findUserByUsername(Context.communicationToken(), username);
     }
 
 }

@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -23,9 +23,8 @@
 
 package com.zf1976.mayi.auth.service;
 
+import com.zf1976.mayi.auth.Context;
 import com.zf1976.mayi.auth.enums.AuthenticationState;
-import com.zf1976.mayi.auth.feign.RemoteUserService;
-import com.zf1976.mayi.common.security.constants.SecurityConstants;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.upms.biz.pojo.User;
 import org.slf4j.Logger;
@@ -49,17 +48,12 @@ public class OAuth2UserDetailsService implements UserDetailsService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
-    private final RemoteUserService remoteUserService;
-
-    public OAuth2UserDetailsService(RemoteUserService remoteUserService) {
-        this.remoteUserService = remoteUserService;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) {
         DataResult<User> dataResult;
         try {
-            dataResult = this.remoteUserService.getUser(username, SecurityConstants.FROM_IN);
+            dataResult = Context.loadUserByUsername(username);
         } catch (Exception e) {
             log.debug(e.getMessage(), e);
             throw new InternalAuthenticationServiceException("authorization server error.");

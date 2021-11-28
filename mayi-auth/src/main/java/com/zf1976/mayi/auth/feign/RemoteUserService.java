@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -23,9 +23,9 @@
 
 package com.zf1976.mayi.auth.feign;
 
-import com.zf1976.mayi.common.security.constants.SecurityConstants;
+import com.zf1976.mayi.common.core.constants.ServiceNameConstants;
 import com.zf1976.mayi.common.core.foundation.DataResult;
-import com.zf1976.mayi.common.security.constants.ServiceNameConstants;
+import com.zf1976.mayi.common.security.constants.SecurityConstants;
 import com.zf1976.mayi.upms.biz.pojo.User;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,5 +40,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface RemoteUserService {
 
     @PostMapping("/api/authorities/user/{username}")
-    DataResult<User> getUser(@PathVariable("username") String username, @RequestHeader(SecurityConstants.FROM) String form);
+    DataResult<User> findUserByUsername(@RequestHeader(SecurityConstants.COMMUNICATION_AUTHORIZATION) String communicationAuthorization,
+                                        @PathVariable("username") String username);
 }

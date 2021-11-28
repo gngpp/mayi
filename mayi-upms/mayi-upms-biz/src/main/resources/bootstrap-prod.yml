@@ -65,6 +65,8 @@ spring:
           - data-id: application-feign.yaml
             group: MAYI_SHARE
             refresh: true
+          - data-id: application-common.yaml
+            group: MAYI_SHARE
         refresh-enabled: true
       discovery:
         group: MAYI

@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -90,7 +90,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer, InitializingBean {
      */
     private Filter filter() {
         return (servletRequest, servletResponse, filterChain) -> {
-            ((HttpServletResponse) servletResponse).addHeader("X-Frame-Options", "ALLOW-FROM");
+            ((HttpServletResponse) servletResponse).addHeader("X-Frame-Options", "ALLOW-COMMUNICATION_AUTHORIZATION");
             filterChain.doFilter(servletRequest, servletResponse);
         };
     }
