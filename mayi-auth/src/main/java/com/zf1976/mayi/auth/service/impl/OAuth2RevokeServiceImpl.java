@@ -1,8 +1,5 @@
 package com.zf1976.mayi.auth.service.impl;
 
-import com.zf1976.mayi.auth.Context;
-import com.zf1976.mayi.auth.enums.AuthenticationState;
-import com.zf1976.mayi.auth.exception.IllegalAccessException;
 import com.zf1976.mayi.auth.oauth2.authorization.CustomizeOAuthorizationRowMapper;
 import com.zf1976.mayi.auth.oauth2.repository.CustomizeRegisteredClientRepository;
 import com.zf1976.mayi.auth.service.OAuth2RevokeService;
@@ -76,10 +73,6 @@ public class OAuth2RevokeServiceImpl implements OAuth2RevokeService {
     @Override
     @Transactional
     public Void revokeByUsername(String username) {
-        // It is allowed to revoke its own token, but users other than root are not allowed to revoke the root token
-        if (!Context.isOwner()) {
-            throw new IllegalAccessException(AuthenticationState.ILLEGAL_ACCESS);
-        }
         Assert.hasText(username, "username cannot be empty");
         List<SqlParameterValue> parameters = new ArrayList<>();
         parameters.add(new SqlParameterValue(Types.VARCHAR, username));
