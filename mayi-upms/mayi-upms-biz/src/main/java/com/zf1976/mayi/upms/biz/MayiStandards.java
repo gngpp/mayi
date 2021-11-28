@@ -21,7 +21,7 @@
  *
  */
 
-package com.zf1976.mayi.common.core.constants;
+package com.zf1976.mayi.upms.biz;
 
 import java.nio.file.Paths;
 

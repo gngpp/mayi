@@ -29,7 +29,7 @@ import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.zf1976.mayi.common.core.constants.ParameterConstants;
+import com.zf1976.mayi.common.core.constants.DateFormatterConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -75,9 +75,9 @@ public class JSONUtil {
         // 忽略空字段
         JSON_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         // 所有日期格式都统一为固定格式
-        JSON_MAPPER.setDateFormat(new SimpleDateFormat(ParameterConstants.DATETIME_FORMAT));
+        JSON_MAPPER.setDateFormat(new SimpleDateFormat(DateFormatterConstants.DATETIME_FORMAT));
         // 设置时区
-        JSON_MAPPER.setTimeZone(TimeZone.getTimeZone(ParameterConstants.TIME_ZONE_GMT8));
+        JSON_MAPPER.setTimeZone(TimeZone.getTimeZone(DateFormatterConstants.TIME_ZONE_GMT8));
         JSON_MAPPER.registerModule(new JavaTimeModule());
     }
 

@@ -25,7 +25,7 @@ package com.zf1976.mayi.upms.biz.communication;
 
 import com.zf1976.mayi.common.core.util.IpUtil;
 import com.zf1976.mayi.common.core.util.RequestUtil;
-import com.zf1976.mayi.common.core.constants.SecurityConstants;
+import com.zf1976.mayi.common.security.constants.SecurityConstants;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -86,6 +86,7 @@ public class InnerApiAspect {
         }
         return proceedingJoinPoint.proceed();
     }
+
     private boolean checkAuthentication(HttpServletRequest request) {
         String header = request.getHeader(SecurityConstants.FROM);
         return ObjectUtils.nullSafeEquals(header, SecurityConstants.FROM_IN);

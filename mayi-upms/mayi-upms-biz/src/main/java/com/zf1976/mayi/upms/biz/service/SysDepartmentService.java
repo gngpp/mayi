@@ -28,7 +28,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
 import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
-import com.zf1976.mayi.common.core.constants.Namespace;
+import com.zf1976.mayi.common.component.cache.constants.Namespace;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessException;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
 import com.zf1976.mayi.upms.biz.convert.DepartmentConvert;

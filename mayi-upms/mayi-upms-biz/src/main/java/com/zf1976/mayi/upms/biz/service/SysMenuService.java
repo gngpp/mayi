@@ -27,7 +27,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
 import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
-import com.zf1976.mayi.common.core.constants.Namespace;
+import com.zf1976.mayi.common.component.cache.constants.Namespace;
 import com.zf1976.mayi.upms.biz.convert.MenuConvert;
 import com.zf1976.mayi.upms.biz.dao.SysMenuDao;
 import com.zf1976.mayi.upms.biz.dao.SysRoleDao;

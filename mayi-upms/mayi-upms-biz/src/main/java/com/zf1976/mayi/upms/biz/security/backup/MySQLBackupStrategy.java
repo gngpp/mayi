@@ -24,7 +24,7 @@
 package com.zf1976.mayi.upms.biz.security.backup;
 
 import com.zf1976.mayi.common.core.compressors.gzip.GzipCompressorOutputStream;
-import com.zf1976.mayi.common.core.constants.MayiStandards;
+import com.zf1976.mayi.upms.biz.MayiStandards;
 import com.zf1976.mayi.common.core.util.IOUtil;
 import com.zf1976.mayi.upms.biz.security.backup.exception.SQLBackupException;
 import org.slf4j.Logger;

@@ -24,19 +24,20 @@
 package com.zf1976.mayi.common.core.constants;
 
 /**
- * @author mac
- * @date 2021/6/13
+ * @author ant
+ * Create by Ant on 2021/3/9 7:55 PM
  */
-public interface ServiceNameConstants {
+public interface DateFormatterConstants {
 
     /**
-     * 认证服务的SERVICED
+     * 公共日期格式
      */
-    String AUTH_SERVICE = "mayi-auth";
-
-    /**
-     * UMPS模块
-     */
-    String UMPS_SERVICE = "mayi-upms-biz";
+    String MONTH_FORMAT = "yyyy-MM";
+    String DATE_FORMAT = "yyyy-MM-dd";
+    String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    String SIMPLE_MONTH_FORMAT = "yyyyMM";
+    String SIMPLE_DATE_FORMAT = "yyyyMMdd";
+    String SIMPLE_DATETIME_FORMAT = "yyyyMMddHHmmss";
+    String TIME_ZONE_GMT8 = "GMT+8";
 
 }

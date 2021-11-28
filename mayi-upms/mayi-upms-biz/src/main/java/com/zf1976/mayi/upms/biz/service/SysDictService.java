@@ -29,7 +29,7 @@ import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
 import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
 import com.zf1976.mayi.common.component.cache.annotation.CachePut;
-import com.zf1976.mayi.common.core.constants.Namespace;
+import com.zf1976.mayi.common.component.cache.constants.Namespace;
 import com.zf1976.mayi.upms.biz.convert.DictConvert;
 import com.zf1976.mayi.upms.biz.dao.SysDictDao;
 import com.zf1976.mayi.upms.biz.dao.SysDictDetailDao;

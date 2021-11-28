@@ -24,15 +24,13 @@
 package com.zf1976.mayi.auth.service;
 
 import com.zf1976.mayi.auth.enums.AuthenticationState;
-import com.zf1976.mayi.auth.exception.UserNotFountException;
 import com.zf1976.mayi.auth.feign.RemoteUserService;
-import com.zf1976.mayi.common.core.constants.SecurityConstants;
+import com.zf1976.mayi.common.security.constants.SecurityConstants;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.upms.biz.pojo.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.core.authority.AuthorityUtils;

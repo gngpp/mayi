@@ -41,6 +41,10 @@ public class SecurityProperties {
      */
     private String owner;
     /**
+     * 各系统服务向与认证
+     */
+    private String communicationToken;
+    /**
      * token header
      */
     private String tokenHeader;
@@ -120,6 +124,15 @@ public class SecurityProperties {
 
     public SecurityProperties setTokenRefreshScope(Integer tokenRefreshScope) {
         this.tokenRefreshScope = tokenRefreshScope;
+        return this;
+    }
+
+    public String getCommunicationToken() {
+        return communicationToken;
+    }
+
+    public SecurityProperties setCommunicationToken(String communicationToken) {
+        this.communicationToken = communicationToken;
         return this;
     }
 

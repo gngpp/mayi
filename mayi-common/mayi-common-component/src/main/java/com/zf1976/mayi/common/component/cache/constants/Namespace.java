@@ -21,40 +21,33 @@
  *
  */
 
-package com.zf1976.mayi.common.core.constants;
+package com.zf1976.mayi.common.component.cache.constants;
 
 /**
  * @author mac
- * @date 2021/2/19
+ * @date 2020/12/23
  **/
-public interface AuthGranterTypeConstants {
+public interface Namespace {
 
-    /**
-     * 授权码模式
-     */
-    String AUTHORIZATION_CODE = "authorization_code";
+    String DEPARTMENT = "department_namespace";
 
-    /**
-     * 密码模式
-     */
-    String PASSWORD = "password";
+    String DICT = "dict_namespace";
 
-    /**
-     * 密码模式+验证码
-     */
-    String PASSWORD_CODE = "password_code";
+    String POSITION = "job_namespace";
 
-    /**
-     * 隐藏式
-     */
-    String IMPLICIT = "implicit";
+    String MENU = "menu_namespace";
 
-    /**
-     * 客户端凭证
-     */
-    String CLIENT_CREDENTIALS = "client_credentials";
+    String ROLE = "role_namespace";
 
+    String USER = "user_namespace";
 
-    String[] ARRAY = new String[]{PASSWORD, PASSWORD_CODE, CLIENT_CREDENTIALS, AUTHORIZATION_CODE, IMPLICIT};
+    String CLIENT = "client_namespace";
 
+    String RESOURCE = "resource_namespace";
+
+    String PERMISSION = "permission_namespace";
+
+    String DYNAMIC = "dynamic_namespace";
+
+    String AUTH_SERVICE = "oauth2_service_namespace";
 }
