@@ -61,6 +61,8 @@ spring:
         extension-configs:
           - data-id: application-security.yaml
             group: MAYI_SHARE
+          - data-id: application-feign.yaml
+            group: MAYI_SHARE
         refresh-enabled: true
       discovery:
         group: MAYI
@@ -86,4 +88,4 @@ spring:
           introspection-uri: http://mayi.auth:9000/oauth2/introspect
 security:
   # revoke url
-  logout-url: http://mayi.gateway:8888/oauth/revoke
+  logout-url: http://mayi.auth:9000/oauth2/revoke

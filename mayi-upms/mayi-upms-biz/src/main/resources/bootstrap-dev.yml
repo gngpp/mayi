@@ -62,13 +62,15 @@ spring:
         extension-configs:
           - data-id: application-security.yaml
             group: MAYI_SHARE
+          - data-id: application-feign.yaml
+            group: MAYI_SHARE
         refresh-enabled: true
-      server-addr: ${address}:8848
       discovery:
         group: MAYI
         heart-beat-timeout: 5000
         heart-beat-interval: 3000
         ip-delete-timeout: 600000
+      server-addr: ${address}:8848
 
   #admin监控注册
   boot:
@@ -83,8 +85,8 @@ spring:
       resourceserver:
         opaquetoken:
           client-id: system
-          client-secret: 12345
+          client-secret: 123456
           introspection-uri: http://${address}:9000/oauth2/introspect
 security:
   # revoke url
-  logout-url: http://${address}:8888/oauth2/revoke
+  logout-url: http://${address}:9000/oauth2/revoke
