@@ -26,7 +26,7 @@ package com.zf1976.mayi.auth.oauth2.authorization;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
+import com.zf1976.mayi.auth.core.AuthorizationUserDetails;
 import com.zf1976.mayi.upms.biz.pojo.Department;
 import com.zf1976.mayi.upms.biz.pojo.Position;
 import com.zf1976.mayi.upms.biz.pojo.Role;

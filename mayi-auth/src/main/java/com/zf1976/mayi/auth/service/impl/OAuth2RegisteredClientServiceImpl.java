@@ -21,7 +21,7 @@
  *
  */
 
-package com.zf1976.mayi.auth.service;
+package com.zf1976.mayi.auth.service.impl;
 
 import com.zf1976.mayi.auth.exception.ClientException;
 import com.zf1976.mayi.auth.oauth2.repository.CustomizeRegisteredClientRepository;
@@ -30,6 +30,7 @@ import com.zf1976.mayi.auth.pojo.ClientSettingsConvert;
 import com.zf1976.mayi.auth.pojo.TokenSettingsConvert;
 import com.zf1976.mayi.auth.pojo.dto.RegisteredClientDTO;
 import com.zf1976.mayi.auth.pojo.vo.RegisteredClientVO;
+import com.zf1976.mayi.auth.service.OAuth2RegisteredClientService;
 import com.zf1976.mayi.common.core.util.UUIDUtil;
 import com.zf1976.mayi.common.core.validate.Validator;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,7 +67,7 @@ import java.util.stream.Stream;
 @SuppressWarnings("FieldCanBeLocal")
 @Service
 @Transactional(readOnly = true, rollbackFor = Throwable.class)
-public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClientService{
+public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClientService {
 
     /**
      * all time units are in seconds
@@ -96,6 +97,7 @@ public class OAuth2RegisteredClientServiceImpl implements OAuth2RegisteredClient
     private final CustomizeRegisteredClientRepository clientRepository;
 
     public OAuth2RegisteredClientServiceImpl(@Qualifier(value = "registeredClientRepository") RegisteredClientRepository registeredClientRepository) {
+        Assert.isInstanceOf(CustomizeRegisteredClientRepository.class, registeredClientRepository);
         this.clientRepository = (CustomizeRegisteredClientRepository) registeredClientRepository;
     }
 

@@ -21,7 +21,7 @@
  *
  */
 
-package com.zf1976.mayi.auth.service;
+package com.zf1976.mayi.auth.core;
 
 import com.zf1976.mayi.upms.biz.pojo.User;
 import org.apache.commons.logging.Log;
@@ -84,6 +84,7 @@ public class AuthorizationUserDetails implements UserDetails, CredentialsContain
         Assert.isTrue(username != null && !"".equals(username) && password != null,
                 "Cannot pass null or empty values to constructor");
         this.delegate = delegate;
+        this.id = this.delegate.getId();
         this.username = username;
         this.password = password;
         this.enabled = enabled;

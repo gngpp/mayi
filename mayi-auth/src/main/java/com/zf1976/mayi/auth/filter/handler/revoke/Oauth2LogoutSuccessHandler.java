@@ -24,7 +24,7 @@
 package com.zf1976.mayi.auth.filter.handler.revoke;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
+import com.zf1976.mayi.auth.core.AuthorizationUserDetails;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

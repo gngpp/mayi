@@ -21,9 +21,10 @@
  *
  */
 
-package com.zf1976.mayi.auth.service;
+package com.zf1976.mayi.auth.service.impl;
 
 import com.zf1976.mayi.auth.Context;
+import com.zf1976.mayi.auth.core.AuthorizationUserDetails;
 import com.zf1976.mayi.auth.enums.AuthenticationState;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.upms.biz.pojo.User;
@@ -44,7 +45,7 @@ import org.springframework.stereotype.Service;
  * Create by Ant on 2020/9/2 下午7:02
  */
 @Service("userDetailsService")
-public class OAuth2UserDetailsService implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();

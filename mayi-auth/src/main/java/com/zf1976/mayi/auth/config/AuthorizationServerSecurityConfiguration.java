@@ -34,7 +34,6 @@ import com.zf1976.mayi.auth.oauth2.convert.OAuth2ResourceOwnerPasswordAuthentica
 import com.zf1976.mayi.auth.oauth2.provider.CustomizeDaoAuthenticationProvider;
 import com.zf1976.mayi.auth.oauth2.provider.OAuth2ResourceOwnerPasswordAuthenticationProvider;
 import com.zf1976.mayi.auth.oauth2.repository.CustomizeJdbcRegisteredClientRepository;
-import com.zf1976.mayi.auth.service.OAuth2UserDetailsService;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,11 +94,11 @@ public class AuthorizationServerSecurityConfiguration {
 
 	public AuthorizationServerSecurityConfiguration(SecurityProperties properties,
 													JdbcOperations jdbcOperations,
-													OAuth2UserDetailsService oAuth2UserDetailsService,
+													UserDetailsService userDetailsService,
 													PasswordEncoder passwordEncoder) {
 		this.properties = properties;
 		this.jdbcOperations = jdbcOperations;
-		this.userDetailsService = oAuth2UserDetailsService;
+		this.userDetailsService = userDetailsService;
 		this.passwordEncoder = passwordEncoder;
 	}
 

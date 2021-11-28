@@ -24,9 +24,9 @@
 package com.zf1976.mayi.auth;
 
 
+import com.zf1976.mayi.auth.core.AuthorizationUserDetails;
 import com.zf1976.mayi.auth.enums.AuthenticationState;
 import com.zf1976.mayi.auth.exception.IllegalAccessException;
-import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
 import com.zf1976.mayi.common.core.util.SpringContextHolder;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import io.jsonwebtoken.*;

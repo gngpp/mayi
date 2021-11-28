@@ -24,7 +24,7 @@
 package com.zf1976.mayi.auth.oauth2.authorization;
 
 import com.zf1976.mayi.auth.Context;
-import com.zf1976.mayi.auth.service.AuthorizationUserDetails;
+import com.zf1976.mayi.auth.core.AuthorizationUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

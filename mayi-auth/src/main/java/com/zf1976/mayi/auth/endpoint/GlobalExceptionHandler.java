@@ -24,6 +24,7 @@
 package com.zf1976.mayi.auth.endpoint;
 
 import com.zf1976.mayi.auth.exception.ClientException;
+import com.zf1976.mayi.auth.exception.IllegalAccessException;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -84,6 +85,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 客户端异常
      *
      * @param exception 异常
      * @return {@link DataResult}
@@ -93,4 +95,17 @@ public class GlobalExceptionHandler {
     DataResult clientExceptionHandler(Exception exception) {
         return DataResult.fail(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
+
+    /**
+     * 非法访问异常异常
+     *
+     * @param exception 异常
+     * @return {@link DataResult}
+     */
+    @ExceptionHandler(IllegalAccessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    DataResult clientExceptionHandler(IllegalAccessException exception) {
+        return DataResult.fail(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+    }
+
 }
