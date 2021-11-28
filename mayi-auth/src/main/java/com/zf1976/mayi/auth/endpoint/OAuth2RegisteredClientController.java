@@ -39,12 +39,12 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/oauth2/security/client")
-public class RegisteredClientController {
+public class OAuth2RegisteredClientController {
 
     private final OAuth2RegisteredClientService oAuth2RegisteredClientService;
 
 
-    public RegisteredClientController(OAuth2RegisteredClientService oAuth2RegisteredClientService) {
+    public OAuth2RegisteredClientController(OAuth2RegisteredClientService oAuth2RegisteredClientService) {
         this.oAuth2RegisteredClientService = oAuth2RegisteredClientService;
     }
 

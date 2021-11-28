@@ -111,7 +111,7 @@ public class ResourceServerSecurityConfiguration {
         http.authorizeHttpRequests((authorize) -> authorize
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     // compatible with old version interface
-                    .antMatchers("/oauth2/token_key", "/oauth2/code").permitAll()
+                    .antMatchers("/oauth2/token_key", "/oauth2/code", "/oauth2/security/revoke/**").permitAll()
                     .antMatchers(properties.getIgnoreUri()).permitAll()
                     .anyRequest().authenticated())
             .csrf(v -> v.ignoringRequestMatchers(new AntPathRequestMatcher("/api/**")))

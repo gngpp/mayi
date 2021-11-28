@@ -2,7 +2,7 @@ package com.zf1976.mayi.auth.endpoint;
 
 import com.zf1976.mayi.auth.service.OAuth2RevokeService;
 import com.zf1976.mayi.common.core.foundation.DataResult;
-import org.springframework.security.access.prepost.PreAuthorize;
+import com.zf1976.mayi.common.remote.communication.Inner;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +22,7 @@ public class OAuth2RevokeController {
         this.oAuth2RevokeService = oAuth2RevokeService;
     }
 
-    @PreAuthorize("hasRole('root')")
+    @Inner
     @PostMapping("/{username}")
     public DataResult<Void> revokeByUsername(@PathVariable String username) {
         return DataResult.success(this.oAuth2RevokeService.revokeByUsername(username));

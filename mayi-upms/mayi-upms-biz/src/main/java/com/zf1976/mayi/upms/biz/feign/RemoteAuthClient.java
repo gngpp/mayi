@@ -25,6 +25,7 @@ package com.zf1976.mayi.upms.biz.feign;
 
 import com.zf1976.mayi.common.core.constants.ServiceNameConstants;
 import com.zf1976.mayi.common.core.foundation.DataResult;
+import com.zf1976.mayi.common.security.constants.SecurityConstants;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,6 +50,7 @@ public interface RemoteAuthClient {
      */
     @PostMapping("/oauth2/security/revoke/{username}")
     @SuppressWarnings("rawtypes")
-    DataResult revoke(@RequestHeader(value = "Authorization") String communicationToken, @PathVariable String username);
+    DataResult revoke(@RequestHeader(value = SecurityConstants.COMMUNICATION_AUTHORIZATION) String communicationToken,
+                      @PathVariable String username);
 
 }
