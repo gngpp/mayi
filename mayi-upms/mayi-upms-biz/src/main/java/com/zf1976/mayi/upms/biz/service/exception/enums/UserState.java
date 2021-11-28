@@ -49,6 +49,8 @@ public enum UserState {
      */
     USER_OPT_ERROR(400, "操作错误"),
 
+    USER_PROHIBIT_ERROR(400, "不允许删除当前操作用户"),
+
     USER_OPT_DISABLE_ONESELF_ERROR(400, "Prohibit disabling the current operating user");
 
     /**

@@ -80,6 +80,10 @@ public class Context extends SecurityContextHolder {
         if (isOwner(username)) {
             throw new SecurityException("It is not allowed to revoke root authentication.");
         }
+        remoteAuthClient.revoke(securityProperties.getCommunicationToken(), username);
    }
 
+   public static void revokeAuthentication() {
+       revokeAuthentication(username());
+   }
 }
