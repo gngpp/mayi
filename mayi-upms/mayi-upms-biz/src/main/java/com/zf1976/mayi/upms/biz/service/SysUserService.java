@@ -117,15 +117,15 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     @CachePut(key = "#username")
     @Transactional(readOnly = true)
     public User findByUsername(String username) {
-        // 初步验证用户是否存在
+        // Preliminary verification of the existence of the user
         SysUser sysUser = super.baseMapper.selectOneByUsername(username);
         if (sysUser == null) {
             throw new UserException(UserState.USER_NOT_FOUND, username);
         }
         User user = this.userConvert.convert(sysUser);
-        // 权限值
+        // permission value
         Set<String> grantedAuthorities = this.grantedAuthorities(user.getUsername(), user.getRoleList());
-        // 数据权限
+        // data permission
         Set<Long> grantedDataPermission = this.grantedDataPermission(user.getUsername(), user.getDepartmentId(), user.getRoleList());
         user.setDataPermissions(grantedDataPermission);
         user.setPermissions(grantedAuthorities);
@@ -366,24 +366,33 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         @CacheEvict
         @Transactional
         public Void updateByIdAndEnabled(Long id, Boolean enabled){
-            SysUser sysUser = super.lambdaQuery()
+            SysUser preDeleteUser = super.lambdaQuery()
                                    .eq(SysUser::getId, id)
                                    .oneOpt()
                                    .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
 
             String currentUsername = Context.username();
-            // 禁止操作oneself,当前session ID与操作ID相等，说明操作到是当前用户
+            // 禁止操作当前用户
             Validator.of(currentUsername)
-                     .withValidated(username -> !username.equals(sysUser.getUsername()),
+                     .withValidated(username -> !username.equals(preDeleteUser.getUsername()),
                              () -> new UserException(UserState.USER_OPT_DISABLE_ONESELF_ERROR));
             // 禁止禁用管理员
-            Validator.of(sysUser)
-                     .withValidated(user -> !user.getUsername().equals(this.securityProperties.getOwner()),
+            Validator.of(preDeleteUser)
+                     .withValidated(user -> !Context.isOwner(user.getUsername()),
                              () -> new UserException(UserState.USER_OPT_DISABLE_ONESELF_ERROR));
+            if (!enabled) {
+                try {
+                    // revoke user authentication
+                    Context.revokeAuthentication(preDeleteUser.getUsername());
+                } catch (Exception e) {
+                    log.info(e.getMessage(), e.getCause());
+                    throw new UserException(UserState.USER_SYSTEM_ERROR);
+                }
+            }
             // 设置状态
-            sysUser.setEnabled(enabled);
+            preDeleteUser.setEnabled(enabled);
             // 更新
-            super.savaOrUpdate(sysUser);
+            super.savaOrUpdate(preDeleteUser);
             return null;
         }
 
@@ -623,7 +632,13 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                          .withValidated(username -> !username.equals(this.securityProperties.getOwner()),
                                  () -> new UserException(UserState.USER_OPT_ERROR));
                 // Revoke the authentication of the currently disabled user
-                Context.revokeAuthentication(dto.getUsername());
+                try {
+                    // revoke user authentication
+                    Context.revokeAuthentication(dto.getUsername());
+                } catch (Exception e) {
+                    log.info(e.getMessage(), e.getCause());
+                    throw new UserException(UserState.USER_SYSTEM_ERROR);
+                }
             }
             // Verify username, whether it already exists
             super.lambdaQuery()
