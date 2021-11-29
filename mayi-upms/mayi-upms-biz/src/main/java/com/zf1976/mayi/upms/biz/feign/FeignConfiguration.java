@@ -21,7 +21,7 @@
  *
  */
 
-package com.zf1976.mayi.upms.biz.config;
+package com.zf1976.mayi.upms.biz.feign;
 
 import com.zf1976.mayi.common.core.util.RequestUtil;
 import feign.RequestInterceptor;
@@ -45,7 +45,7 @@ public class FeignConfiguration {
             final Collection<String> tokenHeader = requestTemplate.headers().get(HttpHeaders.AUTHORIZATION);
             if (CollectionUtils.isEmpty(tokenHeader)) {
                 String header = RequestUtil.getRequest().getHeader(HttpHeaders.AUTHORIZATION);
-                requestTemplate.header("Authorization", header);
+                requestTemplate.header(HttpHeaders.AUTHORIZATION, header);
             }
         };
     }

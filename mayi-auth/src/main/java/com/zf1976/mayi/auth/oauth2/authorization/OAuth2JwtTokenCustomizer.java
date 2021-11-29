@@ -24,7 +24,9 @@
 package com.zf1976.mayi.auth.oauth2.authorization;
 
 import com.zf1976.mayi.auth.Context;
+import com.zf1976.mayi.auth.CustomizeOAuth2ParameterNames;
 import com.zf1976.mayi.auth.core.AuthorizationUserDetails;
+import com.zf1976.mayi.common.core.util.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -55,8 +57,9 @@ public class OAuth2JwtTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodi
                                        .map(GrantedAuthority::getAuthority)
                                        .collect(Collectors.toSet());
             context.getClaims().claims(map -> {
-                map.put("user_id", userDetails.getId());
-                map.put("authorities", authority);
+                map.put(CustomizeOAuth2ParameterNames.UUID, UUIDUtil.getUuid());
+                map.put(CustomizeOAuth2ParameterNames.USER_ID, userDetails.getId());
+                map.put(CustomizeOAuth2ParameterNames.AUTHORITIES, authority);
                 Object scope = map.get(OAuth2IntrospectionClaimNames.SCOPE);
                 if (scope instanceof Collection) {
                     Collection<String> collection = this.castAuthoritiesToCollection(scope);

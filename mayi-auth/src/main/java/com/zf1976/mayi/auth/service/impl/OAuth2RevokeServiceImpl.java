@@ -1,9 +1,13 @@
 package com.zf1976.mayi.auth.service.impl;
 
+import com.zf1976.mayi.auth.Context;
+import com.zf1976.mayi.auth.enums.AuthenticationState;
+import com.zf1976.mayi.auth.exception.IllegalAccessException;
 import com.zf1976.mayi.auth.oauth2.authorization.CustomizeOAuthorizationRowMapper;
 import com.zf1976.mayi.auth.oauth2.repository.CustomizeRegisteredClientRepository;
 import com.zf1976.mayi.auth.service.OAuth2RevokeService;
 import org.springframework.jdbc.core.*;
+import org.springframework.lang.Nullable;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
@@ -16,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author mac
@@ -54,9 +59,9 @@ public class OAuth2RevokeServiceImpl implements OAuth2RevokeService {
             + " FROM " + TABLE_NAME
             + " WHERE ";
 
-    private static final String PRINCIPAL_NAME = "principal_name = ?";
-
+    private static final String PRINCIPAL_NAME_AND_CLIENT_ID = "principal_name = ? AND registered_client_id = ?";
     private final OAuth2AuthorizationService oAuth2AuthorizationService;
+    private final RegisteredClientRepository registeredClientRepository;
     private final JdbcOperations jdbcOperations;
     private final RowMapper<OAuth2Authorization> authorizationRowMapper;
 
@@ -67,6 +72,7 @@ public class OAuth2RevokeServiceImpl implements OAuth2RevokeService {
         Assert.isInstanceOf(CustomizeRegisteredClientRepository.class, registeredClientRepository);
         this.jdbcOperations = jdbcOperations;
         this.oAuth2AuthorizationService = oAuth2AuthorizationService;
+        this.registeredClientRepository = registeredClientRepository;
         this.authorizationRowMapper = new CustomizeOAuthorizationRowMapper(registeredClientRepository);
     }
 
@@ -74,12 +80,29 @@ public class OAuth2RevokeServiceImpl implements OAuth2RevokeService {
     @Transactional
     public Void revokeByUsername(String username) {
         Assert.hasText(username, "username cannot be empty");
+        final var registerClientID = this.extractClientId();
+        if (Objects.isNull(registerClientID)) {
+            throw new IllegalAccessException(AuthenticationState.BAD_CREDENTIALS);
+        }
         List<SqlParameterValue> parameters = new ArrayList<>();
         parameters.add(new SqlParameterValue(Types.VARCHAR, username));
-        final var authorizationList = this.findBy(PRINCIPAL_NAME, parameters);
+        parameters.add(new SqlParameterValue(Types.VARCHAR, registerClientID));
+        final var authorizationList = this.findBy(PRINCIPAL_NAME_AND_CLIENT_ID, parameters);
         if (!CollectionUtils.isEmpty(authorizationList)) {
             for (OAuth2Authorization oAuth2Authorization : authorizationList) {
                 this.oAuth2AuthorizationService.remove(oAuth2Authorization);
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    protected String extractClientId() {
+        final var clientId = Context.getAuthenticationClientId();
+        if (clientId != null) {
+            final var registeredClient = this.registeredClientRepository.findByClientId(clientId);
+            if (registeredClient != null) {
+                return registeredClient.getId();
             }
         }
         return null;

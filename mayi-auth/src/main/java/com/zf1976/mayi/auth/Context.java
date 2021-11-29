@@ -27,10 +27,16 @@ import com.zf1976.mayi.auth.feign.RemoteUserService;
 import com.zf1976.mayi.common.core.foundation.DataResult;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.upms.biz.pojo.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.ObjectUtils;
 
@@ -45,6 +51,7 @@ import java.util.Map;
 @RefreshScope
 public class Context extends SecurityContextHolder {
 
+    private static final Logger log = LoggerFactory.getLogger("[Context]");
     private static final Map<Class<?>, Object> CONTENTS_MAP = new ConcurrentReferenceHashMap<>(16, ConcurrentReferenceHashMap.ReferenceType.WEAK);
     private static SecurityProperties securityProperties;
     private static RemoteUserService remoteUserService;
@@ -84,6 +91,22 @@ public class Context extends SecurityContextHolder {
 
     public static DataResult<User> loadUserByUsername(String username) {
         return remoteUserService.findUserByUsername(Context.communicationToken(), username);
+    }
+
+    @Nullable
+    public static String getAuthenticationClientId() {
+        final var authentication = getContext().getAuthentication();
+        if (!authentication.isAuthenticated()) {
+            return null;
+        }
+        try {
+            Jwt jwt = (Jwt) authentication.getPrincipal();
+            final var claimAsStringList = jwt.getClaimAsStringList(JwtClaimNames.AUD);
+            return CollectionUtils.isEmpty(claimAsStringList) ? null : claimAsStringList.get(0);
+        }catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
     }
 
 }

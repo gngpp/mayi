@@ -35,4 +35,8 @@ public interface CustomizeOAuth2ParameterNames extends OAuth2ParameterNames {
 
     String UUID = "uuid";
 
+    String USER_ID = "id";
+
+    String AUTHORITIES = "authorities";
+
 }
