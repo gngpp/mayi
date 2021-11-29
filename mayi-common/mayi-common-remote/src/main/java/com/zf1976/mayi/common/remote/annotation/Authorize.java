@@ -21,7 +21,7 @@
  *
  */
 
-package com.zf1976.mayi.common.remote.communication;
+package com.zf1976.mayi.common.remote.annotation;
 
 import java.lang.annotation.*;
 
@@ -33,5 +33,5 @@ import java.lang.annotation.*;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface Inner {
+public @interface Authorize {
 }

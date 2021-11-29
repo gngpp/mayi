@@ -725,6 +725,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                     Context.revokeAuthentication(user.getUsername());
                 } catch (Exception e) {
                     log.info(e.getMessage(), e.getCause());
+                    throw new UserException(UserState.USER_SYSTEM_ERROR);
                 }
             }
             // delete users

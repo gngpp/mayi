@@ -21,11 +21,13 @@
  *
  */
 
-package com.zf1976.mayi.upms.biz.security.filter;
+package com.zf1976.mayi.upms.biz.security.filter.datasource;
 
 import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.util.AntPathMatcher;
@@ -33,10 +35,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
@@ -66,21 +65,15 @@ public class DynamicSecurityMetadataSource implements FilterInvocationSecurityMe
         HttpServletRequest request = ((FilterInvocation) o).getRequest();
         String uri = request.getRequestURI();
         // 资源URI--Permissions
-        Set<Map.Entry<String, Collection<String>>> entrySet = this.loadDynamicDataSource().entrySet();
+        Set<Map.Entry<String, String>> entrySet = this.loadDynamicDataSource().entrySet();
         // 权限匹配
-        for (Map.Entry<String, Collection<String>> entry : entrySet) {
+        for (Map.Entry<String, String> entry : entrySet) {
             // eq匹配成功退出
             if (ObjectUtils.nullSafeEquals(entry.getKey(), uri)) {
-                return entry.getValue()
-                        .stream()
-                        .map(SecurityConfig::new)
-                        .collect(Collectors.toUnmodifiableSet());
+                return this.toAttribute(entry.getValue());
                 // 模式匹配成功退出
             } else if (pathMatcher.match(entry.getKey(), uri)) {
-                return entry.getValue()
-                        .stream()
-                        .map(SecurityConfig::new)
-                        .collect(Collectors.toUnmodifiableList());
+                return this.toAttribute(entry.getValue());
             }
         }
         // 不存在资源资源路径 返回空
@@ -95,11 +88,8 @@ public class DynamicSecurityMetadataSource implements FilterInvocationSecurityMe
     @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
         Collection<ConfigAttribute> configAttributes = new CopyOnWriteArraySet<>();
-        for (Map.Entry<String, Collection<String>> collectionEntry : this.loadDynamicDataSource().entrySet()) {
-            final Set<SecurityConfig> securityConfigs = collectionEntry.getValue()
-                                                                       .stream()
-                                                                       .map(SecurityConfig::new)
-                                                                       .collect(Collectors.toSet());
+        for (Map.Entry<String, String> entry : this.loadDynamicDataSource().entrySet()) {
+            final List<ConfigAttribute> securityConfigs = toAttribute(entry.getValue());
             configAttributes.addAll(securityConfigs);
         }
         return configAttributes;
@@ -110,7 +100,15 @@ public class DynamicSecurityMetadataSource implements FilterInvocationSecurityMe
         return DynamicSecurityMetadataSource.class.isAssignableFrom(aClass);
     }
 
-    private Map<String, Collection<String>> loadDynamicDataSource() {
+    private List<ConfigAttribute> toAttribute(String value) {
+        return AuthorityUtils.commaSeparatedStringToAuthorityList(value)
+                             .stream()
+                             .filter(Objects::nonNull)
+                             .map(GrantedAuthority::getAuthority)
+                             .map(SecurityConfig::new)
+                             .collect(Collectors.toList());
+    }
+    private Map<String, String> loadDynamicDataSource() {
         return this.dynamicDataSourceService.loadDynamicDataSource();
     }
 }
