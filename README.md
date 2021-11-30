@@ -1,12 +1,12 @@
 <p align="center">
-	<a target="_blank" href="https://github.com/zf1976/mayi/blob/dev-cloud/LICENSE">
+	<a target="_blank" href="https://github.com/zf1976/mayi/blob/main/LICENSE">
 		<img src="https://img.shields.io/badge/license-MIT-blue.svg" ></img>
 	</a>
 	<a target="_blank" href="https://github.com/1976/mayi">
-		<img src="https://img.shields.io/badge/version-2.3.0-brightgreen.svg" ></img>
+		<img src="https://img.shields.io/badge/version-2.5.3-brightgreen.svg" ></img>
 	</a>
 	<a target="_blank" href="https://www.oracle.com/technetwork/java/javase/downloads/index.html">
-		<img src="https://img.shields.io/badge/JDK-11+-green.svg" ></img>
+		<img src="https://img.shields.io/badge/JDK-17+-green.svg" ></img>
 	</a>
 </p>
 
