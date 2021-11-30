@@ -33,5 +33,5 @@ import java.lang.annotation.*;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface Authorize {
+public @interface CommunicateAuthorize {
 }

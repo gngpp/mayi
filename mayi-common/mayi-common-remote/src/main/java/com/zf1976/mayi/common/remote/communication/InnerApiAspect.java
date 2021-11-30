@@ -25,7 +25,7 @@ package com.zf1976.mayi.common.remote.communication;
 
 import com.zf1976.mayi.common.core.util.IpUtil;
 import com.zf1976.mayi.common.core.util.RequestUtil;
-import com.zf1976.mayi.common.remote.annotation.Authorize;
+import com.zf1976.mayi.common.remote.annotation.CommunicateAuthorize;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -60,8 +60,8 @@ public class InnerApiAspect {
      * @return {@link Object}
      * @throws Throwable 异常
      */
-    @Around("@annotation(com.zf1976.mayi.common.remote.annotation.Authorize) && @annotation(authorize)")
-    public Object around(ProceedingJoinPoint proceedingJoinPoint, Authorize authorize) throws Throwable {
+    @Around("@annotation(com.zf1976.mayi.common.remote.annotation.CommunicateAuthorize) && @annotation(authorize)")
+    public Object around(ProceedingJoinPoint proceedingJoinPoint, CommunicateAuthorize authorize) throws Throwable {
         if (authorize != null) {
             // 判断是否内部实例
             List<String> clientServices = this.discoveryClient.getServices();
