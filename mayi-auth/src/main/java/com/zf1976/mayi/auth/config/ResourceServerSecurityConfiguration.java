@@ -76,6 +76,38 @@ public class ResourceServerSecurityConfiguration {
     }
 
     /**
+     * resource server configuration
+     *
+     * @param http http security
+     * @return {@link SecurityFilterChain}
+     * @throws Exception e
+     */
+    @Bean
+    @Order(2)
+    public SecurityFilterChain resourceServerSecurityFilterChain(HttpSecurity http, OAuth2AuthorizationService authorizationService) throws Exception {
+
+        // authorization processing
+        http.authorizeHttpRequests((authorize) -> authorize
+                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    // compatible with old version interface
+                    .antMatchers("/oauth2/token_key", "/oauth2/code").permitAll()
+                    .antMatchers(properties.getIgnoreUri()).permitAll()
+                    .anyRequest().authenticated())
+            .csrf(v -> v.ignoringRequestMatchers(new AntPathRequestMatcher("/api/**")))
+            .cors()
+            .and()
+            .formLogin(Customizer.withDefaults())
+            .oauth2ResourceServer(v -> {
+                v.jwt()
+                 .jwtAuthenticationConverter(this.customizeJwtAuthenticationConverter())
+                 .decoder(new JwtDecoderEnhancer(this.jwtDecoder(), authorizationService));
+                v.accessDeniedHandler(new Oauth2AccessDeniedHandler())
+                 .authenticationEntryPoint(new Oauth2AuthenticationEntryPoint());
+            });
+        return http.build();
+    }
+
+    /**
      * authentication server key pair
      *
      * @return {@link KeyPair}
@@ -94,38 +126,6 @@ public class ResourceServerSecurityConfiguration {
             }
         }
         return this.keyPair;
-    }
-
-    /**
-     * resource server configuration
-     *
-     * @param http http security
-     * @return {@link SecurityFilterChain}
-     * @throws Exception e
-     */
-    @Bean
-    @Order(2)
-    public SecurityFilterChain resourceServerSecurityFilterChain(HttpSecurity http, OAuth2AuthorizationService authorizationService) throws Exception {
-
-        // authorization processing
-        http.authorizeHttpRequests((authorize) -> authorize
-                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    // compatible with old version interface
-                    .antMatchers("/oauth2/token_key", "/oauth2/code", "/oauth2/security/revoke/**").permitAll()
-                    .antMatchers(properties.getIgnoreUri()).permitAll()
-                    .anyRequest().authenticated())
-            .csrf(v -> v.ignoringRequestMatchers(new AntPathRequestMatcher("/api/**")))
-            .cors()
-            .and()
-            .formLogin(Customizer.withDefaults())
-            .oauth2ResourceServer(v -> {
-                v.jwt()
-                 .jwtAuthenticationConverter(this.customizeJwtAuthenticationConverter())
-                 .decoder(new JwtDecoderEnhancer(this.jwtDecoder(), authorizationService));
-                v.accessDeniedHandler(new Oauth2AccessDeniedHandler())
-                 .authenticationEntryPoint(new Oauth2AuthenticationEntryPoint());
-            });
-        return http.build();
     }
 
     JwtDecoder jwtDecoder() {

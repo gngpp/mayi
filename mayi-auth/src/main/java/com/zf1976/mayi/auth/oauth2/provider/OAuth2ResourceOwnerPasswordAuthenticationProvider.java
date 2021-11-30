@@ -25,6 +25,7 @@ package com.zf1976.mayi.auth.oauth2.provider;
 
 import com.zf1976.mayi.auth.oauth2.JwtUtils;
 import com.zf1976.mayi.auth.oauth2.OAuth2ResourceOwnerPasswordAuthenticationToken;
+import com.zf1976.mayi.auth.oauth2.convert.OAuth2EndpointUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,7 +201,8 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements Authen
 
 		} catch (Exception ex) {
 			LOGGER.debug("problem in authenticate", ex);
-			throw new OAuth2AuthenticationException(new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR), ex);
+			OAuth2EndpointUtils.throwError(OAuth2ErrorCodes.INVALID_GRANT, ex.getMessage());
+			return null;
 		}
 
 	}
