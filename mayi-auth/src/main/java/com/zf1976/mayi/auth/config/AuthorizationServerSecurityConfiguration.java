@@ -67,7 +67,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import java.security.KeyPair;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * OAuth Authorization Server Configuration.
@@ -124,7 +124,7 @@ public class AuthorizationServerSecurityConfiguration {
 
 		// /oauth2/token
 		authorizationServerConfigurer.tokenEndpoint(configurer -> {
-			final var delegatingAuthenticationConverter = new DelegatingAuthenticationConverter(Arrays.asList(
+			final var delegatingAuthenticationConverter = new DelegatingAuthenticationConverter(List.of(
 					new OAuth2AuthorizationCodeAuthenticationConverter(),
 					new OAuth2ClientCredentialsAuthenticationConverter(),
 					new OAuth2RefreshTokenAuthenticationConverter(),

@@ -25,7 +25,7 @@ package com.zf1976.mayi.common.remote.communication;
 
 import com.zf1976.mayi.common.core.util.IpUtil;
 import com.zf1976.mayi.common.core.util.RequestUtil;
-import com.zf1976.mayi.common.remote.annotation.Authorize;
+import com.zf1976.mayi.common.remote.annotation.CommunicateAuthorize;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -44,11 +44,11 @@ import java.util.List;
 @Aspect
 @Component
 @RefreshScope
-public class InnerApiAspect {
+public class CommunicateApiAspect {
 
     private final DiscoveryClient discoveryClient;
 
-    public InnerApiAspect(DiscoveryClient discoveryClient) {
+    public CommunicateApiAspect(DiscoveryClient discoveryClient) {
         this.discoveryClient = discoveryClient;
     }
 
@@ -56,13 +56,13 @@ public class InnerApiAspect {
      * 服务内部鉴权
      *
      * @param proceedingJoinPoint 切点
-     * @param authorize 注解
+     * @param communicateAuthorize 注解
      * @return {@link Object}
      * @throws Throwable 异常
      */
-    @Around("@annotation(com.zf1976.mayi.common.remote.annotation.Authorize) && @annotation(authorize)")
-    public Object around(ProceedingJoinPoint proceedingJoinPoint, Authorize authorize) throws Throwable {
-        if (authorize != null) {
+    @Around("@annotation(com.zf1976.mayi.common.remote.annotation.CommunicateAuthorize) && @annotation(communicateAuthorize)")
+    public Object around(ProceedingJoinPoint proceedingJoinPoint, CommunicateAuthorize communicateAuthorize) throws Throwable {
+        if (communicateAuthorize != null) {
             // 判断是否内部实例
             List<String> clientServices = this.discoveryClient.getServices();
             HttpServletRequest request = RequestUtil.getRequest();

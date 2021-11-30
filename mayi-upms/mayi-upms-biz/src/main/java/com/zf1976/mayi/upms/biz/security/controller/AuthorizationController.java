@@ -24,7 +24,7 @@
 package com.zf1976.mayi.upms.biz.security.controller;
 
 import com.zf1976.mayi.common.core.foundation.DataResult;
-import com.zf1976.mayi.common.remote.annotation.Authorize;
+import com.zf1976.mayi.common.remote.annotation.CommunicateAuthorize;
 import com.zf1976.mayi.upms.biz.pojo.User;
 import com.zf1976.mayi.upms.biz.service.SysUserService;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +49,7 @@ public class AuthorizationController {
         this.userService = userService;
     }
 
-    @Authorize
+    @CommunicateAuthorize
     @PostMapping("/{username}")
     public DataResult<User> getUser(@PathVariable("username") @NotEmpty String username) {
         return DataResult.success(this.userService.findByUsername(username));

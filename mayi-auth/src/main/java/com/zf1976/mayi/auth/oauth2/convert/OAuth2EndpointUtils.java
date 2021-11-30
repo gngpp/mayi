@@ -67,4 +67,9 @@ public class OAuth2EndpointUtils {
 		throw new OAuth2AuthenticationException(error);
 	}
 
+	public static void throwError(String errorCode, String description) {
+		OAuth2Error error = new OAuth2Error(errorCode, description, ACCESS_TOKEN_REQUEST_ERROR_URI);
+		throw new OAuth2AuthenticationException(error);
+	}
+
 }

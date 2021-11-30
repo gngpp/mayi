@@ -57,7 +57,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             dataResult = Context.loadUserByUsername(username);
         } catch (Exception e) {
             log.debug(e.getMessage(), e);
-            throw new InternalAuthenticationServiceException("authorization server error.");
+            throw new InternalAuthenticationServiceException("authorization server error");
         }
         User user = dataResult.getData();
         if (user == null) {

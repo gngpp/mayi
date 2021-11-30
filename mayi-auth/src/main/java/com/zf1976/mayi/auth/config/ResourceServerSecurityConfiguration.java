@@ -76,27 +76,6 @@ public class ResourceServerSecurityConfiguration {
     }
 
     /**
-     * authentication server key pair
-     *
-     * @return {@link KeyPair}
-     */
-    @Bean
-    @DependsOn(value = "securityProperties")
-    @ConditionalOnMissingBean
-    public KeyPair keyPair() {
-        if (this.keyPair == null) {
-            synchronized (this) {
-                if (this.keyPair == null) {
-                    ClassPathResource classPathResource = new ClassPathResource("root.jks");
-                    KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(classPathResource, properties.getRsaSecret().toCharArray());
-                    this.keyPair = keyStoreKeyFactory.getKeyPair("root", properties.getRsaSecret().toCharArray());
-                }
-            }
-        }
-        return this.keyPair;
-    }
-
-    /**
      * resource server configuration
      *
      * @param http http security
@@ -126,6 +105,27 @@ public class ResourceServerSecurityConfiguration {
                  .authenticationEntryPoint(new Oauth2AuthenticationEntryPoint());
             });
         return http.build();
+    }
+
+    /**
+     * authentication server key pair
+     *
+     * @return {@link KeyPair}
+     */
+    @Bean
+    @DependsOn(value = "securityProperties")
+    @ConditionalOnMissingBean
+    public KeyPair keyPair() {
+        if (this.keyPair == null) {
+            synchronized (this) {
+                if (this.keyPair == null) {
+                    ClassPathResource classPathResource = new ClassPathResource("root.jks");
+                    KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(classPathResource, properties.getRsaSecret().toCharArray());
+                    this.keyPair = keyStoreKeyFactory.getKeyPair("root", properties.getRsaSecret().toCharArray());
+                }
+            }
+        }
+        return this.keyPair;
     }
 
     JwtDecoder jwtDecoder() {
