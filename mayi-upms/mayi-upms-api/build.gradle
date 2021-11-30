@@ -28,7 +28,9 @@
 
 dependencies {
     implementation project(':mayi-common:mayi-common-core')
-    implementation("com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}")
-    implementation("org.springframework.boot:spring-boot-starter-web:${springbootVersion}")
-    implementation ("org.springframework.boot:spring-boot-starter-validation:${springbootVersion}")
+    implementation("com.baomidou:mybatis-plus-annotation:${MybatisPlusVersion}")
+    implementation("com.baomidou:mybatis-plus-core:${MybatisPlusVersion}")
+    implementation("com.baomidou:mybatis-plus-extension:${MybatisPlusVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-web:${SpringbootVersion}")
+    implementation ("org.springframework.boot:spring-boot-starter-validation:${SpringbootVersion}")
 }

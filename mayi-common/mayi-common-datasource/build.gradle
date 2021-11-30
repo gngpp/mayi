@@ -27,9 +27,9 @@
 
 dependencies {
     implementation project(':mayi-common:mayi-common-security')
-    implementation("org.springframework.boot:spring-boot-starter-web:${springbootVersion}")
-    implementation("com.baomidou:dynamic-datasource-spring-boot-starter:${dynamicDataSourceVersion}")
-    implementation("com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}")
-    implementation("com.alibaba:druid-spring-boot-starter:${druidVersion}")
-    runtimeOnly("mysql:mysql-connector-java:${mysqlConnectorVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-web:${SpringbootVersion}")
+    implementation("com.baomidou:dynamic-datasource-spring-boot-starter:${DynamicDataSourceVersion}")
+    implementation("com.baomidou:mybatis-plus-boot-starter:${MybatisPlusVersion}")
+    implementation("com.alibaba:druid-spring-boot-starter:${DruidVersion}")
+    runtimeOnly("mysql:mysql-connector-java:${MysqlConnectorVersion}")
 }

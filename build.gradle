@@ -60,9 +60,9 @@ subprojects {
          mavenCentral()
      }
      dependencies {
-         implementation "com.google.guava:guava:${guavaVersion}"
-         implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-         annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+         implementation "com.google.guava:guava:${GuavaVersion}"
+         implementation "org.mapstruct:mapstruct:${MapstructVersion}"
+         annotationProcessor "org.mapstruct:mapstruct-processor:${MapstructVersion}"
      }
 }
 

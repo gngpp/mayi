@@ -23,19 +23,19 @@
 //file:noinspection GroovyAssignabilityCheck
 
 plugins {
-    id 'io.spring.dependency-management' version "${springDependencyManagerVersion}"
+    id 'io.spring.dependency-management' version "${SpringDependencyManagerVersion}"
 }
 
 dependencies {
     implementation project(':mayi-common:mayi-common-core')
     implementation project(':mayi-common:mayi-common-security')
     implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
-    implementation "org.springframework.boot:spring-boot-starter-web:$springbootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-web:$SpringbootVersion"
 }
 
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$SpringCloudVersion"
     }
 }

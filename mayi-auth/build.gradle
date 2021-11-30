@@ -23,8 +23,8 @@
 
 //file:noinspection GroovyAssignabilityCheck
 plugins {
-    id 'org.springframework.boot' version "$springbootVersion"
-    id 'io.spring.dependency-management' version "${springDependencyManagerVersion}"
+    id 'org.springframework.boot' version "$SpringbootVersion"
+    id 'io.spring.dependency-management' version "${SpringDependencyManagerVersion}"
 }
 
 configurations {
@@ -42,14 +42,14 @@ dependencies {
     implementation project(':mayi-common:mayi-common-remote')
 
     // miscellaneous
-    implementation "io.jsonwebtoken:jjwt-api:$jwtVersion"
-    implementation "io.jsonwebtoken:jjwt-impl:$jwtVersion"
-    implementation "io.jsonwebtoken:jjwt-jackson:$jwtVersion"
-    implementation "de.codecentric:spring-boot-admin-starter-client:$adminMonitorVersion"
+    implementation "io.jsonwebtoken:jjwt-api:$JWTVersion"
+    implementation "io.jsonwebtoken:jjwt-impl:$JWTVersion"
+    implementation "io.jsonwebtoken:jjwt-jackson:$JWTVersion"
+    implementation "de.codecentric:spring-boot-admin-starter-client:$AdminMonitorVersion"
     implementation 'com.github.whvcse:easy-captcha:1.6.2'
     implementation 'com.github.shalousun:common-util:1.9.2'
-    implementation "com.github.ben-manes.caffeine:caffeine:$caffeineVersion"
-    runtimeOnly "mysql:mysql-connector-java:$mysqlConnectorVersion"
+    implementation "com.github.ben-manes.caffeine:caffeine:$CaffeineVersion"
+    runtimeOnly "mysql:mysql-connector-java:$MysqlConnectorVersion"
 
     // SpringBoot
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -63,7 +63,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // Authorization Server And Resource Server (dependency has been integrated Authorization Server / Resource Server and Spring Security)
-    implementation "org.springframework.security:spring-security-oauth2-authorization-server:$authorizationServerVersion"
+    implementation "org.springframework.security:spring-security-oauth2-authorization-server:$AuthorizationServerVersion"
 
     // SpringCloud
     implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
@@ -77,8 +77,8 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
-        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$alibabaVersion"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$SpringCloudVersion"
+        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$AlibabaVersion"
     }
 }
 

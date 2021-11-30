@@ -23,8 +23,8 @@
 
 //file:noinspection GroovyAssignabilityCheck
 plugins {
-    id 'org.springframework.boot' version "${springbootVersion}"
-    id 'io.spring.dependency-management' version "${springDependencyManagerVersion}"
+    id 'org.springframework.boot' version "${SpringbootVersion}"
+    id 'io.spring.dependency-management' version "${SpringDependencyManagerVersion}"
 }
 
 configurations {
@@ -44,10 +44,10 @@ dependencies {
 
     implementation('cn.hutool:hutool-poi:5.4.5')
     implementation('org.apache.poi:poi-ooxml:4.1.2')
-    implementation "com.github.oshi:oshi-core:${oshiCoreVersion}"
-    implementation("de.codecentric:spring-boot-admin-starter-client:$adminMonitorVersion")
-    implementation "com.github.ben-manes.caffeine:caffeine:$caffeineVersion"
-    implementation("com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}")
+    implementation "com.github.oshi:oshi-core:${OshiCoreVersion}"
+    implementation("de.codecentric:spring-boot-admin-starter-client:$AdminMonitorVersion")
+    implementation "com.github.ben-manes.caffeine:caffeine:$CaffeineVersion"
+    implementation("com.baomidou:mybatis-plus-boot-starter:${MybatisPlusVersion}")
 
 
     // SpringBoot
@@ -75,8 +75,8 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
-        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$alibabaVersion"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$SpringCloudVersion"
+        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$AlibabaVersion"
     }
 }
 

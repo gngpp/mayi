@@ -23,15 +23,15 @@
 
 //file:noinspection GroovyAssignabilityCheck
 plugins {
-    id 'org.springframework.boot' version "${springbootVersion}"
-    id 'io.spring.dependency-management' version "${springDependencyManagerVersion}"
+    id 'org.springframework.boot' version "${SpringbootVersion}"
+    id 'io.spring.dependency-management' version "${SpringDependencyManagerVersion}"
 }
 
 
 dependencies {
     implementation project(':mayi-common:mayi-common-core')
     implementation project(':mayi-common:mayi-common-cache')
-    implementation "com.github.ben-manes.caffeine:caffeine:$caffeineVersion"
+    implementation "com.github.ben-manes.caffeine:caffeine:$CaffeineVersion"
     implementation "org.springframework.security:spring-security-oauth2-resource-server"
     implementation "org.springframework.security:spring-security-oauth2-jose"
     implementation "org.springframework.security:spring-security-config"
@@ -50,8 +50,8 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$alibabaVersion"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${SpringCloudVersion}"
+        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$AlibabaVersion"
     }
 }
 
