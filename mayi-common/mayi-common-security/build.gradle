@@ -20,6 +20,11 @@
  * SOFTWARE.
  *
  */
+//file:noinspection GroovyAssignabilityCheck
+
+plugins {
+    id 'io.spring.dependency-management' version "${springDependencyManagerVersion}"
+}
 
 dependencies {
     implementation project(':mayi-upms:mayi-upms-api')

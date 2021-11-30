@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -29,10 +29,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
-import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
-import com.zf1976.mayi.common.component.cache.annotation.CachePut;
-import com.zf1976.mayi.common.core.constants.KeyConstants;
-import com.zf1976.mayi.common.core.constants.Namespace;
+import com.zf1976.mayi.commom.cache.annotation.CacheConfig;
+import com.zf1976.mayi.commom.cache.annotation.CachePut;
+import com.zf1976.mayi.commom.cache.constants.KeyConstants;
+import com.zf1976.mayi.commom.cache.constants.Namespace;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.upms.biz.dao.SysPermissionDao;
 import com.zf1976.mayi.upms.biz.dao.SysResourceDao;
@@ -41,6 +41,7 @@ import com.zf1976.mayi.upms.biz.pojo.ResourceLinkBinding;
 import com.zf1976.mayi.upms.biz.pojo.ResourceNode;
 import com.zf1976.mayi.upms.biz.pojo.po.SysResource;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -64,6 +65,7 @@ import java.util.stream.Collectors;
         namespace = Namespace.RESOURCE,
         postInvoke = {"initialize"}
 )
+@RefreshScope
 @Transactional(rollbackFor = Throwable.class)
 public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysResource> implements InitPermission{
 
@@ -242,31 +244,31 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
      */
     @CachePut(key = KeyConstants.RESOURCE_LIST)
     @Transactional(readOnly = true)
-    public Map<String, Collection<String>> loadDynamicDataSource() {
+    public Map<String, String> loadDynamicDataSource() {
         //清空缓存
         if (!CollectionUtils.isEmpty(this.resourceMethodMap) || !CollectionUtils.isEmpty(this.allowUriSet)) {
             this.resourceMethodMap.clear();
             this.allowUriSet.clear();
         }
-        final Map<String, Collection<String>> resourcePermissionMap = new HashMap<>(16);
+        final Map<String, String> resourcePermissionMap = new HashMap<>(16);
         // 所有资源
-        List<SysResource> resourceList = this.permissionDao.selectResourceBindingList();
+        final List<SysResource> resourceList = this.permissionDao.selectResourceBindingList();
         // 构建资源节点树
-        List<ResourceNode> resourceNodeTree = this.generatorResourceTree(resourceList);
+        final List<ResourceNode> resourceNodeTree = this.generatorResourceTree(resourceList);
         // 绑定权限的资源链接列表
-        List<ResourceLinkBinding> resourceLinkBindingList = this.generatorResourceLinkBindingList(resourceNodeTree);
+        final List<ResourceLinkBinding> resourceLinkBindingList = this.generatorResourceLinkBindingList(resourceNodeTree);
         // 放行资源
         resourceLinkBindingList.forEach(resourceLinkBinding -> {
-                                   this.resourceMethodMap.put(resourceLinkBinding.getUri(), resourceLinkBinding.getMethod());
-                                   List<String> permissions = resourceLinkBinding.getBindingPermissions()
-                                                                                 .stream()
-                                                                                 .map(Permission::getValue)
-                                                                                 .collect(Collectors.toList());
-                                   resourcePermissionMap.put(resourceLinkBinding.getUri(), permissions);
-                                   if (resourceLinkBinding.getAllow()) {
-                                       this.allowUriSet.add(resourceLinkBinding.getUri());
-                                   }
-                               });
+            this.resourceMethodMap.put(resourceLinkBinding.getUri(), resourceLinkBinding.getMethod());
+            String permissions = resourceLinkBinding.getBindingPermissions()
+                                                    .stream()
+                                                    .map(Permission::getValue)
+                                                    .collect(Collectors.joining(","));
+            resourcePermissionMap.put(resourceLinkBinding.getUri(), permissions);
+            if (resourceLinkBinding.getAllow()) {
+                this.allowUriSet.add(resourceLinkBinding.getUri());
+            }
+        });
         return resourcePermissionMap;
     }
 

@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -27,10 +27,10 @@ package com.zf1976.mayi.upms.biz.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
-import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
-import com.zf1976.mayi.common.component.cache.annotation.CachePut;
-import com.zf1976.mayi.common.core.constants.Namespace;
+import com.zf1976.mayi.commom.cache.annotation.CacheConfig;
+import com.zf1976.mayi.commom.cache.annotation.CacheEvict;
+import com.zf1976.mayi.commom.cache.annotation.CachePut;
+import com.zf1976.mayi.commom.cache.constants.Namespace;
 import com.zf1976.mayi.upms.biz.convert.RoleConvert;
 import com.zf1976.mayi.upms.biz.dao.SysDepartmentDao;
 import com.zf1976.mayi.upms.biz.dao.SysMenuDao;
@@ -152,17 +152,12 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
     @CacheEvict
     @Transactional
     public Void updateByIdAndEnabled(Long id, Boolean enabled) {
-        if (!enabled) {
-            // 存在用户关联不允许禁用当前角色
-            if (super.baseMapper.selectUserDependsOnById(id) > 0) {
-                throw new RoleException(RoleState.ROLE_DEPENDS_ERROR);
-            }
-        }
+        this.checkBindingRole(id, enabled);
         boolean isUpdate = lambdaUpdate().set(SysRole::getEnabled, enabled)
                                          .eq(SysRole::getId, id)
                                          .update();
         if (!isUpdate) {
-            throw new RoleException(RoleState.ROLE_NOT_FOUND);
+            throw new RoleException(RoleState.ROLE_OPT_ERROR);
         }
         return null;
     }
@@ -253,6 +248,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
     @CacheEvict
     @Transactional
     public Void updateOne(RoleDTO dto) {
+        this.checkBindingRole(dto.getId(), dto.getEnabled());
         // 范围消息
         DataPermissionEnum permissionEnum = Optional.ofNullable(dto.getDataScope())
                 .orElseThrow(() -> new RoleException(RoleState.ROLE_OPT_ERROR));
@@ -290,6 +286,15 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
         super.savaOrUpdate(sysRole);
         this.updateDependent(dto);
         return null;
+    }
+
+    private void checkBindingRole(Long roleId, Boolean bool) {
+        if (!bool) {
+            // There is a user association that does not allow the current role to be disabled
+            if (super.baseMapper.selectUserDependsOnById(roleId) > 0) {
+                throw new RoleException(RoleState.ROLE_DEPENDS_ERROR);
+            }
+        }
     }
 
     /**

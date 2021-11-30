@@ -101,7 +101,7 @@ public class Validator<T> {
     /**
      * 链式校验抛异常
      *
-     * @param predicate         一个校验策略
+     * @param predicate         校验策略
      * @param exceptionSupplier 异常处理
      * @param <X>               如果没有值
      * @return Validator<T>

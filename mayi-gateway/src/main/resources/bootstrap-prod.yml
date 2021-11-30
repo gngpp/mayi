@@ -10,6 +10,9 @@ spring:
         max-retry: 60
         config-retry-time: 3000
         config-long-poll-timeout: 60000
+        extension-configs:
+          - data-id: application-common.yaml
+            group: MAYI_SHARE
       discovery:
         group: MAYI
         heart-beat-timeout: 5000

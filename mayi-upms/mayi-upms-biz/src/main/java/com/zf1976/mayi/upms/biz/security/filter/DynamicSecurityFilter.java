@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -27,6 +27,8 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
+import com.zf1976.mayi.upms.biz.security.filter.datasource.DynamicSecurityMetadataSource;
+import com.zf1976.mayi.upms.biz.security.filter.manager.DynamicAccessDecisionManager;
 import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

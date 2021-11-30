@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -40,6 +40,10 @@ public class SecurityProperties {
      * 资源所有者（管理员）marked
      */
     private String owner;
+    /**
+     * 各系统服务向与认证
+     */
+    private String communicationToken;
     /**
      * token header
      */
@@ -120,6 +124,15 @@ public class SecurityProperties {
 
     public SecurityProperties setTokenRefreshScope(Integer tokenRefreshScope) {
         this.tokenRefreshScope = tokenRefreshScope;
+        return this;
+    }
+
+    public String getCommunicationToken() {
+        return communicationToken;
+    }
+
+    public SecurityProperties setCommunicationToken(String communicationToken) {
+        this.communicationToken = communicationToken;
         return this;
     }
 

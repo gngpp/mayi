@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -25,10 +25,10 @@ package com.zf1976.mayi.upms.biz.service;
 
 import cn.hutool.core.collection.ConcurrentHashSet;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
-import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
-import com.zf1976.mayi.common.component.cache.annotation.CachePut;
-import com.zf1976.mayi.common.core.constants.Namespace;
+import com.zf1976.mayi.commom.cache.annotation.CacheConfig;
+import com.zf1976.mayi.commom.cache.annotation.CacheEvict;
+import com.zf1976.mayi.commom.cache.annotation.CachePut;
+import com.zf1976.mayi.commom.cache.constants.Namespace;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessException;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
 import com.zf1976.mayi.upms.biz.convert.DepartmentConvert;
@@ -162,7 +162,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
                     parent.getChildren().add(child);
                 }
             }
-            // 设置dept node properties
+            // 设置dept node cacheProperties
             this.setDepartmentNodeProperties(parent);
         }
         // 清除已被添加的节点
@@ -173,7 +173,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
     }
 
     /**
-     * 设置 tree properties
+     * 设置 tree cacheProperties
      *
      * @param vo vo
      */

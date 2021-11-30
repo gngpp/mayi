@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -27,8 +27,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zf1976.mayi.common.core.util.RequestUtil;
 import com.zf1976.mayi.common.core.util.StringUtil;
-import com.zf1976.mayi.upms.biz.pojo.po.SysLog;
 import com.zf1976.mayi.upms.biz.pojo.enums.LogType;
+import com.zf1976.mayi.upms.biz.pojo.po.SysLog;
 import com.zf1976.mayi.upms.biz.security.Context;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -66,7 +66,7 @@ public abstract class BaseLogAspect {
         // 方法名
         String methodSignatureName = methodSignature.getName();
         // 调用者
-        String username = Context.getUsername();
+        String username = Context.username();
 
         SysLog sysLog = new SysLog();
         sysLog.setUsername(username)

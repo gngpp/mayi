@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -24,7 +24,7 @@
 package com.zf1976.mayi.upms.biz.security.controller;
 
 import com.zf1976.mayi.common.core.foundation.DataResult;
-import com.zf1976.mayi.upms.biz.communication.Inner;
+import com.zf1976.mayi.common.remote.annotation.CommunicateAuthorize;
 import com.zf1976.mayi.upms.biz.pojo.User;
 import com.zf1976.mayi.upms.biz.service.SysUserService;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 
 /**
@@ -50,7 +49,7 @@ public class AuthorizationController {
         this.userService = userService;
     }
 
-    @Inner
+    @CommunicateAuthorize
     @PostMapping("/{username}")
     public DataResult<User> getUser(@PathVariable("username") @NotEmpty String username) {
         return DataResult.success(this.userService.findByUsername(username));

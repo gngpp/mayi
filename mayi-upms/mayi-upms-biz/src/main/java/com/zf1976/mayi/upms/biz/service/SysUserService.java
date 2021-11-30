@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -27,11 +27,10 @@ package com.zf1976.mayi.upms.biz.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
-import com.zf1976.mayi.common.component.cache.annotation.CacheConfig;
-import com.zf1976.mayi.common.component.cache.annotation.CacheEvict;
-import com.zf1976.mayi.common.component.cache.annotation.CachePut;
-import com.zf1976.mayi.common.core.constants.Namespace;
-import com.zf1976.mayi.common.core.constants.SecurityConstants;
+import com.zf1976.mayi.commom.cache.annotation.CacheConfig;
+import com.zf1976.mayi.commom.cache.annotation.CacheEvict;
+import com.zf1976.mayi.commom.cache.annotation.CachePut;
+import com.zf1976.mayi.commom.cache.constants.Namespace;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessException;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
 import com.zf1976.mayi.common.core.util.UUIDUtil;
@@ -40,11 +39,11 @@ import com.zf1976.mayi.common.core.validate.Validator;
 import com.zf1976.mayi.common.encrypt.MD5Encoder;
 import com.zf1976.mayi.common.encrypt.RsaUtil;
 import com.zf1976.mayi.common.encrypt.property.RsaProperties;
+import com.zf1976.mayi.common.security.constants.SecurityConstants;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.upms.biz.convert.DepartmentConvert;
 import com.zf1976.mayi.upms.biz.convert.UserConvert;
 import com.zf1976.mayi.upms.biz.dao.*;
-import com.zf1976.mayi.upms.biz.feign.RemoteAuthClient;
 import com.zf1976.mayi.upms.biz.mail.ValidateEmailService;
 import com.zf1976.mayi.upms.biz.pojo.Permission;
 import com.zf1976.mayi.upms.biz.pojo.Role;
@@ -99,7 +98,6 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     private final SysPermissionDao permissionDao;
     private final UserConvert userConvert = UserConvert.INSTANCE;
     private final DepartmentConvert departmentConvert = DepartmentConvert.INSTANCE;
-    private final RemoteAuthClient securityClient;
     private final SecurityProperties securityProperties;
     private final MD5Encoder md5Encoder = new MD5Encoder();
 
@@ -107,10 +105,9 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     public SysUserService(SysPositionDao sysPositionDao,
                           SysDepartmentDao sysDepartmentDao,
                           SysRoleDao sysRoleDao,
-                          RemoteAuthClient securityClient,
-                          SysPermissionDao permissionDao, SecurityProperties securityProperties) {
+                          SysPermissionDao permissionDao,
+                          SecurityProperties securityProperties) {
         this.positionDao = sysPositionDao;
-        this.securityClient = securityClient;
         this.departmentDao = sysDepartmentDao;
         this.roleDao = sysRoleDao;
         this.permissionDao = permissionDao;
@@ -120,15 +117,15 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     @CachePut(key = "#username")
     @Transactional(readOnly = true)
     public User findByUsername(String username) {
-        // 初步验证用户是否存在
+        // Preliminary verification of the existence of the user
         SysUser sysUser = super.baseMapper.selectOneByUsername(username);
         if (sysUser == null) {
             throw new UserException(UserState.USER_NOT_FOUND, username);
         }
         User user = this.userConvert.convert(sysUser);
-        // 权限值
+        // permission value
         Set<String> grantedAuthorities = this.grantedAuthorities(user.getUsername(), user.getRoleList());
-        // 数据权限
+        // data permission
         Set<Long> grantedDataPermission = this.grantedDataPermission(user.getUsername(), user.getDepartmentId(), user.getRoleList());
         user.setDataPermissions(grantedDataPermission);
         user.setPermissions(grantedAuthorities);
@@ -369,24 +366,33 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         @CacheEvict
         @Transactional
         public Void updateByIdAndEnabled(Long id, Boolean enabled){
-            SysUser sysUser = super.lambdaQuery()
+            SysUser preDeleteUser = super.lambdaQuery()
                                    .eq(SysUser::getId, id)
                                    .oneOpt()
                                    .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
 
-            String currentUsername = Context.getUsername();
-            // 禁止操作oneself,当前session ID与操作ID相等，说明操作到是当前用户
+            String currentUsername = Context.username();
+            // 禁止操作当前用户
             Validator.of(currentUsername)
-                     .withValidated(username -> !username.equals(sysUser.getUsername()),
+                     .withValidated(username -> !username.equals(preDeleteUser.getUsername()),
                              () -> new UserException(UserState.USER_OPT_DISABLE_ONESELF_ERROR));
             // 禁止禁用管理员
-            Validator.of(sysUser)
-                     .withValidated(user -> !user.getUsername().equals(this.securityProperties.getOwner()),
+            Validator.of(preDeleteUser)
+                     .withValidated(user -> !Context.isOwner(user.getUsername()),
                              () -> new UserException(UserState.USER_OPT_DISABLE_ONESELF_ERROR));
+            if (!enabled) {
+                try {
+                    // revoke user authentication
+                    Context.revokeAuthentication(preDeleteUser.getUsername());
+                } catch (Exception e) {
+                    log.info(e.getMessage(), e.getCause());
+                    throw new UserException(UserState.USER_SYSTEM_ERROR);
+                }
+            }
             // 设置状态
-            sysUser.setEnabled(enabled);
+            preDeleteUser.setEnabled(enabled);
             // 更新
-            super.savaOrUpdate(sysUser);
+            super.savaOrUpdate(preDeleteUser);
             return null;
         }
 
@@ -401,7 +407,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         public Void updateAvatar (MultipartFile multipartFile){
             final SysUser sysUser = super.lambdaQuery()
                                          .select(SysUser::getId, SysUser::getAvatarName)
-                                         .eq(SysUser::getUsername, Context.getUsername())
+                                         .eq(SysUser::getUsername, Context.username())
                                          .one();
             String filename = null;
             try {
@@ -436,17 +442,16 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         }
 
         /**
-         * 修改密码
+         * change password
          *
          * @param dto dto
-         * @return /
          */
         @CacheEvict
         @Transactional
         public Void updatePassword (UpdatePasswordDTO dto){
             final SysUser sysUser = super.lambdaQuery()
                                          .select(SysUser::getId, SysUser::getPassword)
-                                         .eq(SysUser::getUsername, Context.getUsername())
+                                         .eq(SysUser::getUsername, Context.username())
                                          .oneOpt()
                                          .orElseThrow(() -> new BusinessException(BusinessMsgState.CODE_NOT_FOUNT));
             String rawPassword;
@@ -458,37 +463,37 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                 throw new BusinessException(BusinessMsgState.OPT_ERROR);
             }
 
-            // 校验原密码，新密码是否为空
+            // Verify the original password, whether the new password is empty
             if (StringUtils.isEmpty(rawPassword) || StringUtils.isEmpty(freshPassword)) {
                 throw new BusinessException(BusinessMsgState.NULL_PASSWORD);
             }
 
             Validator.of(freshPassword)
-                     // 校验密码是否重复
+                     // verify if the password is repeated
                      .withValidated(value -> ObjectUtils.nullSafeEquals(value, rawPassword),
                              () -> new BusinessException(BusinessMsgState.PASSWORD_REPEAT))
-                     //校验密码合格性
+                     // verify password eligibility
                      .withValidated(ValidateUtil::isPassword,
                              () -> new BusinessException(BusinessMsgState.PASSWORD_LOW));
 
-            // 密码匹配校验
+            // password matching verification
             Validator.of(rawPassword)
                      .withValidated(value -> md5Encoder.matches(value, sysUser.getPassword()),
                              () -> new BusinessException(BusinessMsgState.PASSWORD_REPEAT));
 
-            // 设置新密码
+            // set new password
             sysUser.setPassword(md5Encoder.encode(freshPassword));
-            // 更新实体
+            // update entity
             super.savaOrUpdate(sysUser);
-            // 强制用户重新登陆
-//            SessionManagement.removeSession();
+            // force users to log in again
+            Context.revokeAuthentication();
             return null;
         }
 
         /**
-         * 修改邮箱
+         * modify email
          *
-         * @param code 验证码
+         * @param code verification code
          * @param dto dto
          * @return /
          */
@@ -496,29 +501,29 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         @Transactional
         public Void updateEmail (String code, UpdateEmailDTO dto){
 
-            // 校验验证码是否为空
-            if (StringUtils.isEmpty(code) || ObjectUtils.isEmpty(dto)) {
+            // check whether the verification code is empty
+            if (!StringUtils.hasLength(code) || ObjectUtils.isEmpty(dto)) {
                 throw new BusinessException(BusinessMsgState.PARAM_ILLEGAL);
             }
 
             ValidateEmailService validateService = ValidateEmailService.validateEmailService();
-            // 查询用户
+            // query user
             var sysUser = super.lambdaQuery()
                                .select(SysUser::getId, SysUser::getPassword, SysUser::getEmail)
-                               .eq(SysUser::getUsername, Context.getUsername())
+                               .eq(SysUser::getUsername, Context.username())
                                .oneOpt()
                                .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
             if (validateService.validateVerifyCode(dto.getEmail(), code)) {
                 try {
                     String rawPassword = RsaUtil.decryptByPrivateKey(RsaProperties.PRIVATE_KEY, dto.getPassword());
                     if (md5Encoder.matches(rawPassword, sysUser.getPassword())) {
-                        // 验证邮箱是否重复
+                        // verify whether the mailbox is duplicate
                         if (ObjectUtils.nullSafeEquals(sysUser.getEmail(), dto.getEmail())) {
                             throw new BusinessException(BusinessMsgState.EMAIL_EXISTING);
                         }
-                        // 设置新邮箱
+                        // set up a new mailbox
                         sysUser.setEmail(dto.getEmail());
-                        // 更新实体
+                        // update entity
                         super.savaOrUpdate(sysUser);
                     }
                 } catch (BusinessException e) {
@@ -533,7 +538,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         }
 
         /**
-         * 个人中心信息修改
+         * personal center information modification
          *
          * @param dto dto
          * @return /
@@ -541,12 +546,12 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         @CacheEvict
         @Transactional
         public Void updateInfo(UpdateInfoDTO dto){
-            // 查询当前用户是否存在
+            // query whether the current user exists
             SysUser sysUser = super.lambdaQuery()
                                    .eq(SysUser::getId, dto.getId())
                                    .oneOpt()
                                    .orElseThrow(() -> new BusinessException(BusinessMsgState.DATA_NOT_FOUNT));
-            // 不允许非手机号
+            // non-mobile phone numbers are not allowed
             if (!ValidateUtil.isPhone(dto.getPhone())) {
                 throw new BusinessException(BusinessMsgState.NOT_PHONE);
             }
@@ -559,7 +564,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         }
 
         /**
-         * 新增用户
+         * new users
          *
          * @param dto dto
          * @return /
@@ -572,9 +577,9 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
             super.lambdaQuery()
                  .select(SysUser::getUsername, SysUser::getEmail, SysUser::getPhone)
                  .and(sysUserLambdaQueryWrapper -> {
-                     // 校验用户名是否唯一
-                     // 校验邮箱是否唯一
-                     // 校验手机号是否唯一
+                     // verify that the username is unique
+                     // verify that the mailbox is unique
+                     // verify that the mobile phone number is unique
                      sysUserLambdaQueryWrapper.eq(SysUser::getUsername, dto.getUsername())
                                               .or()
                                               .eq(SysUser::getEmail, dto.getEmail())
@@ -587,21 +592,21 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                          throw new UserException(UserState.USER_INFO_EXISTING, collection.toString());
                      }
                  }));
-            // 转实体
+            // transfer entity
             SysUser sysUser = this.userConvert.toEntity(dto);
-            // 设置加密密码
+            // set encryption password
             sysUser.setPassword(DigestUtils.md5DigestAsHex(DEFAULT_PASSWORD_BYTE));
-            // 保存用户
+            // save user
             super.savaOrUpdate(sysUser);
-            // 保存用户职位关联
+            // save user position association
             super.baseMapper.savePositionRelationById(sysUser.getId(), dto.getPositionIds());
-            // 保存用户角色关联
+            // save user role association
             super.baseMapper.savaRoleRelationById(sysUser.getId(), dto.getRoleIds());
             return null;
         }
 
         /**
-         * 更新用户
+         * update user
          *
          * @param dto dto
          * @return /
@@ -610,26 +615,32 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         @Transactional
         public Void updateOne(UserDTO dto){
             this.validatePhone(dto.getPhone());
-            // 查询用户是否存在
+            // Query whether the user exists
             SysUser sysUser = super.lambdaQuery()
                                    .eq(SysUser::getId, dto.getId())
                                    .oneOpt()
                                    .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
-            // 禁用
+            // Disable
             if (!dto.getEnabled()) {
-                String currentUsername = Context.getUsername();
-                // 禁止禁用oneself,禁止操作当前登录的用户
+                String currentUsername = Context.username();
+                // It is forbidden to disable oneself, and it is forbidden to operate the currently logged-in user
                 Validator.of(currentUsername)
                          .withValidated(username -> !username.equals(sysUser.getUsername()),
                                  () -> new UserException(UserState.USER_OPT_DISABLE_ONESELF_ERROR));
-                // 禁止禁用管理员
+                // prohibit disabling the administrator
                 Validator.of(dto.getUsername())
                          .withValidated(username -> !username.equals(this.securityProperties.getOwner()),
                                  () -> new UserException(UserState.USER_OPT_ERROR));
-                // 踢出当前被禁用用户
-//                SessionManagement.removeSession(sysUser.getId());
+                // Revoke the authentication of the currently disabled user
+                try {
+                    // revoke user authentication
+                    Context.revokeAuthentication(dto.getUsername());
+                } catch (Exception e) {
+                    log.info(e.getMessage(), e.getCause());
+                    throw new UserException(UserState.USER_SYSTEM_ERROR);
+                }
             }
-            // 验证用户名，是否已存在
+            // Verify username, whether it already exists
             super.lambdaQuery()
                  .select(SysUser::getUsername)
                  .ne(SysUser::getId, dto.getId())
@@ -640,30 +651,30 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                          throw new UserException(UserState.USER_INFO_EXISTING, collection.toString());
                      }
                  }));
-            // 复制属性
+            // copy attributes
             this.userConvert.copyProperties(dto, sysUser);
-            // 更新
+            // renew
             super.savaOrUpdate(sysUser);
-            // 更新依赖
+            // update dependencies
             this.updateDependents(dto);
             return null;
         }
 
         /**
-         * 更新用户依赖关系
+         * update user dependencies
          *
          * @param dto dto
          */
         private void updateDependents (UserDTO dto){
-            // 用户id
+            // user id
             final Long userId = dto.getId();
-            // 用户岗位id集合
+            // user post id collection
             final Set<Long> positionIds = dto.getPositionIds();
             if (!CollectionUtils.isEmpty(positionIds)) {
                 super.baseMapper.deletePositionRelationById(userId);
                 super.baseMapper.savePositionRelationById(userId, positionIds);
             }
-            // 用户角色id集合
+            // user role id collection
             final Set<Long> roleIds = dto.getRoleIds();
             if (!CollectionUtils.isEmpty(roleIds)) {
                 super.baseMapper.deleteRoleRelationById(userId);
@@ -672,7 +683,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         }
 
         /**
-         * 验证手机号
+         * verify mobile phone number
          *
          * @param phone phone
          */
@@ -683,7 +694,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         }
 
         /**
-         * 验证用户名
+         * verify username
          *
          * @date 2021-05-16 12:06:34
          * @param username 用户名
@@ -695,7 +706,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         }
 
         /**
-         * 删除用户
+         * delete users
          *
          * @param ids ids
          * @return /
@@ -703,30 +714,36 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         @CacheEvict
         @Transactional
         public Void deleteByIds(Set <Long> ids) {
-            // 超级管理员
-            if (Context.isOwner()) {
-                SysUser sysUser = super.lambdaQuery()
-                                       .eq(SysUser::getUsername, Context.getUsername())
-                                       .oneOpt()
-                                       .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
-                // 禁止删除超级管理员账号
-                if (ids.contains(sysUser.getId())) {
-                    throw new UserException(UserState.USER_OPT_ERROR);
-                }
+            SysUser currentUser = super.lambdaQuery()
+                                   .eq(SysUser::getUsername, Context.username())
+                                   .oneOpt()
+                                   .orElseThrow(() -> new UserException(UserState.USER_NOT_FOUND));
+            // prohibit deleting the current operating user
+            if (ids.contains(currentUser.getId())) {
+                throw new UserException(UserState.USER_PROHIBIT_ERROR);
             }
-            // 删除用户关系依赖
-            for (Long id : ids) {
-                super.baseMapper.deleteRoleRelationById(id);
-                super.baseMapper.deletePositionRelationById(id);
+            final var sysUserList = super.lambdaQuery()
+                                  .in(SysUser::getId, ids)
+                                  .list();
+            // prohibit deleting super administrators
+            if (sysUserList.stream()
+                           .map(SysUser::getUsername)
+                           .anyMatch(Context::isOwner)) {
+                throw new UserException(UserState.USER_OPT_ERROR);
+            }
+            // delete user relationship dependency
+            for (SysUser user : sysUserList) {
+                super.baseMapper.deleteRoleRelationById(user.getId());
+                super.baseMapper.deletePositionRelationById(user.getId());
                 try {
-                    // 登出用户
-//                    final Session session = SessionManagement.getSession(id);
-//                    this.securityClient.logout(session.getToken());
+                    // revoke user authentication
+                    Context.revokeAuthentication(user.getUsername());
                 } catch (Exception e) {
                     log.info(e.getMessage(), e.getCause());
+                    throw new UserException(UserState.USER_SYSTEM_ERROR);
                 }
             }
-            // 删除用户
+            // delete users
             super.deleteByIds(ids);
             return null;
         }

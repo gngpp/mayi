@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -24,8 +24,8 @@
 package com.zf1976.mayi.upms.biz.security.backup;
 
 import com.zf1976.mayi.common.core.compressors.gzip.GzipCompressorOutputStream;
-import com.zf1976.mayi.common.core.constants.MayiStandards;
 import com.zf1976.mayi.common.core.util.IOUtil;
+import com.zf1976.mayi.upms.biz.MayiStandards;
 import com.zf1976.mayi.upms.biz.security.backup.exception.SQLBackupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

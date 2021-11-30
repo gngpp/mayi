@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -25,9 +25,9 @@ package com.zf1976.mayi.upms.biz.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zf1976.mayi.common.core.foundation.DataResult;
-import com.zf1976.mayi.upms.biz.pojo.vo.base.AbstractLogVO;
 import com.zf1976.mayi.upms.biz.pojo.query.LogQueryParam;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
+import com.zf1976.mayi.upms.biz.pojo.vo.base.AbstractLogVO;
 import com.zf1976.mayi.upms.biz.service.SysLogService;
 import org.springframework.web.bind.annotation.*;
 

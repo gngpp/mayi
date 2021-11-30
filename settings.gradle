@@ -49,4 +49,6 @@ project(':mayi-common:mayi-common-remote').projectDir = file('mayi-common/mayi-c
 project(':mayi-upms:mayi-upms-biz').projectDir = file('mayi-upms/mayi-upms-biz')
 project(':mayi-upms:mayi-upms-api').projectDir = file('mayi-upms/mayi-upms-api')
 project(':mayi-visual:mayi-visual-admin').projectDir = file('mayi-visual/mayi-visual-admin')
+include 'mayi-common:mayi-common-cache'
+findProject(':mayi-common:mayi-common-cache')?.name = 'mayi-common-cache'
 

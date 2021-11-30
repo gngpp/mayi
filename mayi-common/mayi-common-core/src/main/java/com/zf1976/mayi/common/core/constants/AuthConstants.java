@@ -15,7 +15,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
@@ -28,16 +28,6 @@ package com.zf1976.mayi.common.core.constants;
  * Create by Ant on 2021/2/16 12:54 PM
  */
 public interface AuthConstants {
-
-    /**
-     * oauth 缓存前缀
-     */
-    String PROJECT_OAUTH_ACCESS = "ant_oauth2:";
-
-    /**
-     * oauth 缓存令牌前缀
-     */
-    String PROJECT_OAUTH = "ant_oauth2:";
 
     /**
      * 验证码前缀
@@ -64,8 +54,6 @@ public interface AuthConstants {
      */
     String JWT_AUTHORITIES_KEY = "authorities";
 
-    String RESOURCE_IDS = "resourceIds";
-
     /**
      * 空值权限
      */
@@ -86,10 +74,6 @@ public interface AuthConstants {
      */
     String ISSUER = "issuer";
 
-    /**
-     * 过期时间
-     */
-    String SESSION_EXPIRED = "session_expired";
 
     /**
      * jwt 唯一标示
