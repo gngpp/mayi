@@ -34,11 +34,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.server.authorization.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenCustomizer;
-import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionClaimNames;
 import org.springframework.util.Assert;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class OAuth2JwtTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodingContext> {
@@ -60,11 +58,6 @@ public class OAuth2JwtTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodi
                 map.put(CustomizeOAuth2ParameterNames.UUID, UUIDUtil.getUuid());
                 map.put(CustomizeOAuth2ParameterNames.USER_ID, userDetails.getId());
                 map.put(CustomizeOAuth2ParameterNames.AUTHORITIES, authority);
-                Object scope = map.get(OAuth2IntrospectionClaimNames.SCOPE);
-                if (scope instanceof Collection) {
-                    Collection<String> collection = this.castAuthoritiesToCollection(scope);
-                    collection.addAll(Collections.emptySet());
-                }
             });
             Context.setShareObject(AuthorizationUserDetails.class, userDetails);
             log.debug("login username: {}", userDetails.getUsername());
