@@ -30,6 +30,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.zf1976.mayi.commom.cache.annotation.CacheConfig;
+import com.zf1976.mayi.commom.cache.annotation.CacheEvict;
 import com.zf1976.mayi.commom.cache.annotation.CachePut;
 import com.zf1976.mayi.commom.cache.constants.KeyConstants;
 import com.zf1976.mayi.commom.cache.constants.Namespace;
@@ -66,7 +67,7 @@ import java.util.stream.Collectors;
         postInvoke = {"initialize"}
 )
 @RefreshScope
-@Transactional(rollbackFor = Throwable.class)
+@Transactional(readOnly = true, rollbackFor = Throwable.class)
 public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysResource> implements InitPermission{
 
     private final Map<String, String> resourceMethodMap = new ConcurrentHashMap<>(16);
@@ -87,8 +88,7 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
      * @return {@link IPage<ResourceNode>}
      */
     @CachePut(key = "#query")
-    @Transactional(readOnly = true)
-    public IPage<ResourceNode> selectResourceNodeByPage(Query<?> query) {
+    public IPage<ResourceNode> findByQuery(Query<?> query) {
         // 根据根节点分页查询
         Page<SysResource> sourcePage = super.lambdaQuery()
                                             .isNull(SysResource::getPid)
@@ -229,7 +229,7 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
      */
     private String initResourceNodeFullUri(ResourceNode resourceNode) {
         String parentUri = resourceNode.getFullUri();
-        if (StringUtils.isEmpty(parentUri)) {
+        if (!StringUtils.hasLength(parentUri)) {
             parentUri = resourceNode.getUri();
         }
         return parentUri;
@@ -243,7 +243,6 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
      * @date 2021-05-05 19:53:43
      */
     @CachePut(key = KeyConstants.RESOURCE_LIST)
-    @Transactional(readOnly = true)
     public Map<String, String> loadDynamicDataSource() {
         //清空缓存
         if (!CollectionUtils.isEmpty(this.resourceMethodMap) || !CollectionUtils.isEmpty(this.allowUriSet)) {
@@ -272,14 +271,12 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
         return resourcePermissionMap;
     }
 
-
     /**
      * 获取资源匹配方法Map
      *
      * @return {@link Map<String,String>}
      */
     @CachePut(key = KeyConstants.RESOURCE_METHOD)
-    @Transactional(readOnly = true)
     public Map<String, String> loadResourceMethodMap() {
         if (CollectionUtils.isEmpty(this.resourceMethodMap)) {
             this.loadDynamicDataSource();
@@ -293,7 +290,6 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
      * @return getAllowUri
      */
     @CachePut(key = KeyConstants.RESOURCE_ALLOW)
-    @Transactional(readOnly = true)
     public List<String> loadAllowUri() {
         if (CollectionUtils.isEmpty(this.allowUriSet)) {
             this.loadDynamicDataSource();
@@ -302,11 +298,24 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
         return Lists.newArrayList(this.allowUriSet);
     }
 
-
     @Override
     @PostConstruct
     public void initialize() {
         this.loadDynamicDataSource();
         this.loadAllowUri();
+    }
+
+    @CacheEvict
+    @Transactional
+    public Void updateEnabledById(Long id, Boolean enabled) {
+
+        return null;
+    }
+
+    @CacheEvict
+    @Transactional
+    public Void updateAllowById(Long id, Boolean allow) {
+
+        return null;
     }
 }

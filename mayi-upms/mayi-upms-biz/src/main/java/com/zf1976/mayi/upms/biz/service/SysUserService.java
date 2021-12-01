@@ -117,7 +117,6 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     }
 
     @CachePut(key = "#username")
-    @Transactional(readOnly = true)
     public User findByUsername(String username) {
         // Preliminary verification of the existence of the user
         SysUser sysUser = super.baseMapper.selectOneByUsername(username);
@@ -240,7 +239,6 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      * @return /
      */
     @CachePut(key = "#query", dynamicsKey = "#username")
-    @Transactional(readOnly = true)
     public IPage<UserVO> findByQuery(Query<UserQueryParam> query, String username) {
         final IPage<SysUser> sourcePage;
         // 非super admin 过滤数据权限
@@ -289,7 +287,6 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @param departmentId id
          * @param supplier supplier
          */
-        @Transactional(readOnly = true)
         public void findDepartmentTreeIds(Long departmentId, Collection < Long > supplier){
             Assert.notNull(departmentId, "department id can not been null");
             supplier.add(departmentId);
@@ -308,7 +305,6 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @param username 用户名
          * @return role id
          */
-        @Transactional(readOnly = true)
         public Set<Long> findRoleByUsername(String username){
             return this.roleDao.selectListByUsername(username)
                                .stream()
@@ -322,7 +318,6 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      * @param id id
      * @return role id
      */
-    @Transactional(readOnly = true)
     public Set<Long> findRoleById(Long id){
         return this.roleDao.selectListByUserId(id)
                            .stream()
@@ -336,7 +331,6 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      * @param id 部门id
      * @return role id
      */
-    @Transactional(readOnly = true)
     public DepartmentVO findDepartmentById(Long id){
         final var sysDepartment = ChainWrappers.lambdaQueryChain(this.departmentDao)
                                                .select(SysDepartment::getId, SysDepartment::getName)
@@ -351,7 +345,6 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
      * @param id id
      * @return position id
      */
-    @Transactional(readOnly = true)
     public Set<Long> findPositionById(Long id){
         return this.positionDao.selectListByUserId(id)
                                .stream()

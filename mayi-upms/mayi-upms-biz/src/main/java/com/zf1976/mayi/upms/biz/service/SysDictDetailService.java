@@ -58,7 +58,7 @@ import org.springframework.util.StringUtils;
  */
 @Service
 @CacheConfig(namespace = Namespace.DICT)
-@Transactional(rollbackFor = Throwable.class)
+@Transactional(readOnly = true, rollbackFor = Throwable.class)
 public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysDictDetail> {
 
     private final Logger log = LoggerFactory.getLogger("[SysDictDetailService]");
@@ -76,7 +76,6 @@ public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysD
      * @return dict details page
      */
     @CachePut(key = "#query")
-    @Transactional(readOnly = true)
     public IPage<DictDetailVO> findByQuery(Query<DictDetailQueryParam> query) {
         DictDetailQueryParam param = query.getQuery();
         Assert.notNull(param, BusinessMsgState.PARAM_ILLEGAL::getReasonPhrase);

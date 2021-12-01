@@ -65,7 +65,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @CacheConfig(namespace = Namespace.MENU, dependsOn = Namespace.ROLE)
-@Transactional(rollbackFor = Throwable.class)
+@Transactional(readOnly = true, rollbackFor = Throwable.class)
 public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
 
     private final Logger log = LoggerFactory.getLogger("[SysMenuService]");
@@ -86,7 +86,6 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
      *
      * @return menu list
      */
-    @Transactional(readOnly = true)
     public Collection<MenuBuildVO> generatedMenu() {
         // 菜单
         List<SysMenu> menuList;
@@ -107,6 +106,7 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
         // 获取非叶子
         Optional.ofNullable(baseMapper.selectMaxType())
                 .ifPresent(maxType::add);
+        @SuppressWarnings("SimplifyStreamApiCallChains")
         final List<SysMenu> targetMenu =  menuList.stream()
                                                   .filter(sysMenu -> sysMenu.getType() < maxType.longValue())
                                                   .sorted(Comparator.comparingInt(SysMenu::getMenuSort))
@@ -143,10 +143,10 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
             if (Objects.nonNull(menu)) {
                 final List<SysMenu> childrenMenu = menu.getChildren();
                 final MenuBuildVO var1 = new MenuBuildVO();
-                String componentName = StringUtils.isEmpty(menu.getComponentName()) ? menu.getTitle() : menu.getComponentName();
+                String componentName = StringUtils.hasLength(menu.getComponentName()) ?  menu.getComponentName() : menu.getTitle();
                 var1.setName(componentName);
                 // 前端一级目录需要添加斜杠
-                String path = StringUtils.isEmpty(menu.getPid()) ? SLASH + menu.getRoutePath() : menu.getRoutePath();
+                String path = menu.getPid() == null ? SLASH + menu.getRoutePath() : menu.getRoutePath();
                 var1.setPath(path);
                 var1.setHidden(menu.getHidden());
                 var1.intiMeta(menu.getTitle(), menu.getIcon(), !menu.getCache());
@@ -154,9 +154,9 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
                 if (!menu.getIframe()) {
                     // 是否一级目录
                     if (Objects.isNull(menu.getPid())) {
-                        String componentPath = StringUtils.isEmpty(menu.getComponentPath()) ? LAYOUT_NAME : menu.getComponentPath();
+                        String componentPath = StringUtils.hasLength(menu.getComponentPath()) ? menu.getComponentPath() : LAYOUT_NAME;
                         var1.setComponent(componentPath);
-                    } else if (!StringUtils.isEmpty(menu.getComponentPath())) {
+                    } else if (StringUtils.hasLength(menu.getComponentPath())) {
                         var1.setComponent(menu.getComponentPath());
                     }
                 }
@@ -223,10 +223,10 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
                           var1.getChildren().add(var2);
                       }
                   });
-            // 设置menu tree cacheProperties
             this.setMenuTreeProperties(var1);
         });
         // 排除已被添加的节点
+        @SuppressWarnings("SimplifyStreamApiCallChains")
         final List<MenuVO> target = vertex.parallelStream()
                                            .filter(menuVO -> ObjectUtils.isEmpty(menuVO.getPid()))
                                            .sorted(Comparator.comparingInt(MenuVO::getMenuSort))
@@ -251,7 +251,6 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
      * @return 满足前提条件的菜单树
      */
     @CachePut(key = "#id")
-    @Transactional(readOnly = true)
     public IPage<MenuVO> findVertexById(Long id) {
         super.lambdaQuery()
              .eq(SysMenu::getId, id)

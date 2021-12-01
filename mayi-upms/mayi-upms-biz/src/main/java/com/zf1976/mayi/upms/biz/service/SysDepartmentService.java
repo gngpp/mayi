@@ -63,7 +63,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @CacheConfig(namespace = Namespace.DEPARTMENT, dependsOn = {Namespace.ROLE, Namespace.USER})
-@Transactional(rollbackFor = Throwable.class)
+@Transactional(readOnly = true, rollbackFor = Throwable.class)
 public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysDepartment> {
 
     private static final int MAX_PAGE_DEPARTMENT = 9999;
@@ -81,7 +81,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
         IPage<SysDepartment> sourcePage = super.queryWrapper()
                                                .chainQuery(page)
                                                .selectPage();
-        return this.departmentTreeBuilder(sourcePage);
+        return this.generatorDepartmentTree(sourcePage);
     }
 
     /**
@@ -91,7 +91,6 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      * @return 满足前提条件的部门树
      */
     @CachePut(key = "#id")
-    @Transactional(readOnly = true)
     public IPage<DepartmentVO> findVertexById(Long id) {
         // 查询部门是否存在
         super.lambdaQuery()
@@ -111,7 +110,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
                                                       .sorted(Comparator.comparingInt(SysDepartment::getDeptSort))
                                                       .collect(Collectors.toList());
         // 构建部门树并返回
-        return this.departmentTreeBuilder(sourcePage.setRecords(collect));
+        return this.generatorDepartmentTree(sourcePage.setRecords(collect));
     }
 
     /**
@@ -147,7 +146,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      *
      * @param sourcePage source page
      */
-    private IPage<DepartmentVO> departmentTreeBuilder(IPage<SysDepartment> sourcePage) {
+    private IPage<DepartmentVO> generatorDepartmentTree(IPage<SysDepartment> sourcePage) {
         final IPage<DepartmentVO> targetPage = super.mapPageToTarget(sourcePage, this.convert::toVo);
         // 所有节点
         final List<DepartmentVO> list = targetPage.getRecords();
@@ -162,13 +161,13 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
                     parent.getChildren().add(child);
                 }
             }
-            // 设置dept node cacheProperties
             this.setDepartmentNodeProperties(parent);
         }
         // 清除已被添加的节点
+        @SuppressWarnings("SimplifyStreamApiCallChains")
         final List<DepartmentVO> target = list.stream().filter(departmentVO -> departmentVO.getPid() == null)
-                                                .sorted(Comparator.comparingInt(DepartmentVO::getDeptSort))
-                                                .collect(Collectors.toList());
+                                              .sorted(Comparator.comparingInt(DepartmentVO::getDeptSort))
+                                              .collect(Collectors.toList());
         return targetPage.setRecords(Collections.unmodifiableList(target));
     }
 

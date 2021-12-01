@@ -57,7 +57,7 @@ import java.util.*;
  */
 @Service
 @CacheConfig(namespace = Namespace.POSITION, dependsOn = Namespace.USER)
-@Transactional(rollbackFor = Throwable.class)
+@Transactional(readOnly = true, rollbackFor = Throwable.class)
 public class SysPositionService extends AbstractService<SysPositionDao, SysPosition> {
 
     private final Logger log = LoggerFactory.getLogger("[SysPositionService]");

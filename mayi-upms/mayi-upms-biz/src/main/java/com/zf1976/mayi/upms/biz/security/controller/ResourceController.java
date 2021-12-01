@@ -29,10 +29,9 @@ import com.zf1976.mayi.upms.biz.pojo.ResourceNode;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author mac
@@ -52,8 +51,20 @@ public class ResourceController {
 
     @PostMapping("/page")
     @PreAuthorize("hasRole('root')")
-    public DataResult<IPage<ResourceNode>> selectResourceByPage(@RequestBody Query<?> page) {
-        return DataResult.success(this.dynamicDataSourceService.selectResourceNodeByPage(page));
+    public DataResult<IPage<ResourceNode>> findByQuery(@RequestBody Query<?> query) {
+        return DataResult.success(this.dynamicDataSourceService.findByQuery(query));
+    }
+
+    @PatchMapping("/update/status/{id}")
+    @PreAuthorize("hasRole('root')")
+    public DataResult<IPage<ResourceNode>> updateEnabledById(@PathVariable @NotNull Long id, @RequestParam @NotNull Boolean enabled) {
+        return DataResult.success(this.dynamicDataSourceService.updateEnabledById(id, enabled));
+    }
+
+    @PatchMapping("/update/allow/{id}")
+    @PreAuthorize("hasRole('root')")
+    public DataResult<IPage<ResourceNode>> updateAllowById(@PathVariable @NotNull Long id, @RequestParam @NotNull Boolean allow) {
+        return DataResult.success(this.dynamicDataSourceService.updateAllowById(id, allow));
     }
 
 }
