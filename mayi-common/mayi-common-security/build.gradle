@@ -23,17 +23,17 @@
 //file:noinspection GroovyAssignabilityCheck
 
 plugins {
-    id 'io.spring.dependency-management' version "${springDependencyManagerVersion}"
+    id 'io.spring.dependency-management' version "${SpringDependencyManagerVersion}"
 }
 
 dependencies {
     implementation project(':mayi-upms:mayi-upms-api')
     implementation project(':mayi-common:mayi-common-core')
     implementation project(':mayi-common:mayi-common-encrypt')
-    implementation("org.redisson:redisson:${redissonVersion}")
-    implementation("io.jsonwebtoken:jjwt-api:${jwtVersion}")
-    implementation("io.jsonwebtoken:jjwt-impl:${jwtVersion}")
-    implementation("io.jsonwebtoken:jjwt-jackson:${jwtVersion}")
-    implementation("org.springframework.boot:spring-boot-starter-web:${springbootVersion}")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis:${springbootVersion}")
+    implementation("org.redisson:redisson:${RedissonVersion}")
+    implementation("io.jsonwebtoken:jjwt-api:${JWTVersion}")
+    implementation("io.jsonwebtoken:jjwt-impl:${JWTVersion}")
+    implementation("io.jsonwebtoken:jjwt-jackson:${JWTVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-web:${SpringbootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:${SpringbootVersion}")
 }

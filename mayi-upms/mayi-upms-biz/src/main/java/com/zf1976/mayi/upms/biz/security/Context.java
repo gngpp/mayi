@@ -27,6 +27,8 @@ import com.zf1976.mayi.common.security.constants.SecurityConstants;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.upms.biz.feign.RemoteAuthClient;
 import com.zf1976.mayi.upms.biz.security.exception.SecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 @RefreshScope
 public class Context extends SecurityContextHolder {
 
+    private static final Logger log = LoggerFactory.getLogger("[Context]");
     private static SecurityProperties securityProperties;
     private static RemoteAuthClient remoteAuthClient;
 
@@ -80,7 +83,12 @@ public class Context extends SecurityContextHolder {
         if (isOwner(username)) {
             throw new SecurityException("It is not allowed to revoke root authentication.");
         }
-        remoteAuthClient.revoke(securityProperties.getCommunicationToken(), username);
+       try {
+           remoteAuthClient.revoke(securityProperties.getCommunicationToken(), username);
+       } catch (Exception e) {
+           log.error(e.getMessage(), e);
+           throw new SecurityException("system error");
+       }
    }
 
    public static void revokeAuthentication() {

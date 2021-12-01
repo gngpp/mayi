@@ -41,8 +41,8 @@ allprojects {
     group = 'com.zf1976'
     version = 'latest'
     // Specify compilation version
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
     configurations {
         compileOnly {
             extendsFrom annotationProcessor
@@ -60,9 +60,9 @@ subprojects {
          mavenCentral()
      }
      dependencies {
-         implementation "com.google.guava:guava:${guavaVersion}"
-         implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-         annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+         implementation "com.google.guava:guava:${GuavaVersion}"
+         implementation "org.mapstruct:mapstruct:${MapstructVersion}"
+         annotationProcessor "org.mapstruct:mapstruct-processor:${MapstructVersion}"
      }
 }
 

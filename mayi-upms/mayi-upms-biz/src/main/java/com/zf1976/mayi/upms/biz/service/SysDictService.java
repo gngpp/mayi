@@ -60,7 +60,7 @@ import java.util.*;
  */
 @Service
 @CacheConfig(namespace = Namespace.DICT)
-@Transactional(rollbackFor = Throwable.class)
+@Transactional(readOnly = true, rollbackFor = Throwable.class)
 public class SysDictService extends AbstractService<SysDictDao, SysDict> {
 
     private final Logger log = LoggerFactory.getLogger("[SysDictService]");
@@ -156,7 +156,6 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      * @param response response
      * @return /
      */
-    @Transactional(readOnly = true)
     public Void downloadExcel(Query<DictQueryParam> query, HttpServletResponse response) {
         List<SysDict> records = super.queryWrapper()
                                      .chainQuery(query)

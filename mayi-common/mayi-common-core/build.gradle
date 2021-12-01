@@ -23,11 +23,11 @@
  */
 
 dependencies {
-    implementation("org.lionsoul:ip2region:${ipRegionVersion}")
+    implementation("org.lionsoul:ip2region:${IpRegionVersion}")
     implementation("javax.servlet:javax.servlet-api:3.1.0")
-    implementation("org.springframework.boot:spring-boot-starter-json:${springbootVersion}")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis:${springbootVersion}")
-    implementation("org.springframework.boot:spring-boot-configuration-processor:${springbootVersion}")
-    implementation ("org.springframework.boot:spring-boot-starter-validation:${springbootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-json:${SpringbootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:${SpringbootVersion}")
+    implementation("org.springframework.boot:spring-boot-configuration-processor:${SpringbootVersion}")
+    implementation ("org.springframework.boot:spring-boot-starter-validation:${SpringbootVersion}")
     implementation("eu.bitwalker:UserAgentUtils:1.21")
 }

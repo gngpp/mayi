@@ -71,7 +71,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @CacheConfig(namespace = Namespace.ROLE, dependsOn = {Namespace.USER, Namespace.PERMISSION})
-@Transactional(rollbackFor = Throwable.class)
+@Transactional(readOnly = true, rollbackFor = Throwable.class)
 public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
 
     private final Logger log = LoggerFactory.getLogger("[SysRoleService]");
@@ -107,14 +107,13 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * @return /
      */
     @CachePut(key = "#query")
-    @Transactional(readOnly = true)
     public IPage<RoleVO> findByQuery(Query<RoleQueryParam> query) {
         IPage<SysRole> sourcePage = this.queryWrapper()
                                         .chainQuery(query)
                                         .selectPage();
         return super.mapPageToTarget(sourcePage, sysRole -> {
-            sysRole.setDepartmentIds(this.selectRoleDepartmentIds(sysRole.getId()));
-            sysRole.setMenuIds(this.selectRoleMenuIds(sysRole.getId()));
+            sysRole.setDepartmentIds(this.findRoleDepartmentIds(sysRole.getId()));
+            sysRole.setMenuIds(this.findRoleMenuIds(sysRole.getId()));
             final var permissions = this.permissionDao.selectPermissionsByRoleId(sysRole.getId())
                                                       .stream()
                                                       .map(Permission::getValue)
@@ -168,13 +167,12 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * @param id id
      * @return role
      */
-    @Transactional(readOnly = true)
     public RoleVO findById(Long id) {
         final SysRole sysRole = super.lambdaQuery()
                                      .eq(SysRole::getId, id)
                                      .oneOpt().orElseThrow(() -> new RoleException(RoleState.ROLE_NOT_FOUND));
-        sysRole.setDepartmentIds(this.selectRoleDepartmentIds(id));
-        sysRole.setMenuIds(this.selectRoleMenuIds(id));
+        sysRole.setDepartmentIds(this.findRoleDepartmentIds(id));
+        sysRole.setMenuIds(this.findRoleMenuIds(id));
         return this.convert.toVo(sysRole);
     }
 
@@ -184,7 +182,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * @param id 角色id
      * @return department collection
      */
-    private Set<Long> selectRoleDepartmentIds(Long id) {
+    private Set<Long> findRoleDepartmentIds(Long id) {
         Assert.notNull(id, "role id cannot be null");
         return this.sysDepartmentDao.selectListByRoleId(id)
                                     .stream()
@@ -198,7 +196,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * @param id 角色id
      * @return id collection
      */
-    private Set<Long> selectRoleMenuIds(Long id) {
+    private Set<Long> findRoleMenuIds(Long id) {
         Assert.notNull(id, "role id cannot be null");
         return this.sysMenuDao.selectListByRoleId(id)
                               .stream()

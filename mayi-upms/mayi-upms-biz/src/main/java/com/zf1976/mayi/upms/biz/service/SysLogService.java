@@ -28,6 +28,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zf1976.mayi.commom.cache.annotation.CachePut;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessException;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
 import com.zf1976.mayi.upms.biz.convert.LogConvert;
@@ -39,6 +40,7 @@ import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.pojo.vo.base.AbstractLogVO;
 import com.zf1976.mayi.upms.biz.security.Context;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
@@ -56,6 +58,7 @@ import java.util.stream.Collectors;
  * @date 2021/1/25
  **/
 @Service
+@Transactional(readOnly = true, rollbackFor = Throwable.class)
 public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
 
     private final LogConvert convert = LogConvert.INSTANCE;
@@ -71,6 +74,7 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
         return this.mapPage(sourcePage,convert::toUserLogVo);
     }
 
+    @CachePut(key = "#query")
     public IPage<AbstractLogVO> findByQuery(Query<LogQueryParam> query) {
         LogQueryParam param = query.getQuery();
         Assert.notNull(param, BusinessMsgState.PARAM_ILLEGAL::getReasonPhrase);
@@ -98,13 +102,10 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
                                 .page(page);
         IPage<AbstractLogVO> targetPage = null;
         switch (param.getLogType()) {
-            case INFO:
-                targetPage = this.mapPage(sourcePage, convert::toVo);
-                break;
-            case ERROR:
-                targetPage = this.mapPage(sourcePage, convert::toErrorVo);
-                break;
-            default:
+            case INFO -> targetPage = this.mapPage(sourcePage, convert::toVo);
+            case ERROR -> targetPage = this.mapPage(sourcePage, convert::toErrorVo);
+            default -> {
+            }
         }
         // 进行过滤
         if (!ObjectUtils.isEmpty(targetPage) && param.getBlurry() != null) {
@@ -159,6 +160,7 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
      * @param ids ids
      * @return /
      */
+    @Transactional
     public Optional<Void> deleteByIds(Set<Long> ids) {
         if (!super.removeByIds(ids)) {
             throw new BusinessException(BusinessMsgState.OPT_ERROR);
@@ -171,6 +173,7 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
      *
      * @return /
      */
+    @Transactional
     public Optional<Void> deleteError() {
         LambdaQueryWrapper<SysLog> wrapper = new LambdaQueryWrapper<SysLog>()
                 .eq(SysLog::getLogType, LogType.ERROR);
@@ -185,6 +188,7 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
      *
      * @return /
      */
+    @Transactional
     public Optional<Void> deleteInfo() {
         LambdaQueryWrapper<SysLog> wrapper = new LambdaQueryWrapper<SysLog>()
                 .ne(SysLog::getLogType, LogType.ERROR);
