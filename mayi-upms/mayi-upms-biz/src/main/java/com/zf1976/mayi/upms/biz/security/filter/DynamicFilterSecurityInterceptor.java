@@ -27,7 +27,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
-import com.zf1976.mayi.upms.biz.security.filter.datasource.DynamicSecurityMetadataSource;
+import com.zf1976.mayi.upms.biz.security.filter.datasource.DynamicFilterInvocationSecurityMetadataSource;
 import com.zf1976.mayi.upms.biz.security.filter.manager.DynamicAccessDecisionManager;
 import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.slf4j.Logger;
@@ -52,18 +52,18 @@ import java.util.Set;
  * @author mac
  * @date 2020/12/25
  **/
-public class DynamicSecurityFilter extends AbstractSecurityInterceptor implements Filter {
+public class DynamicFilterSecurityInterceptor extends AbstractSecurityInterceptor implements Filter {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final SecurityProperties properties;
     private final DynamicDataSourceService dynamicDataSourceService;
-    private final DynamicSecurityMetadataSource dynamicSecurityMetadataSource;
+    private final DynamicFilterInvocationSecurityMetadataSource dynamicSecurityMetadataSource;
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
-    public DynamicSecurityFilter(SecurityProperties properties, DynamicDataSourceService dynamicDataSourceService) {
+    public DynamicFilterSecurityInterceptor(SecurityProperties properties, DynamicDataSourceService dynamicDataSourceService) {
         this.properties = properties;
         this.dynamicDataSourceService = dynamicDataSourceService;
-        this.dynamicSecurityMetadataSource = new DynamicSecurityMetadataSource(dynamicDataSourceService);
+        this.dynamicSecurityMetadataSource = new DynamicFilterInvocationSecurityMetadataSource(dynamicDataSourceService);
         super.setAccessDecisionManager(new DynamicAccessDecisionManager(dynamicDataSourceService));
         this.checkState();
     }
@@ -106,7 +106,7 @@ public class DynamicSecurityFilter extends AbstractSecurityInterceptor implement
     private Collection<String> loadAllowUrl() {
         // 配置文件白名单
         Set<String> defaultAllow = Sets.newHashSet(this.properties.getIgnoreUri());
-        return Lists.newArrayList(Iterables.concat(this.dynamicDataSourceService.loadAllowUri(), defaultAllow));
+        return Lists.newArrayList(Iterables.concat(this.dynamicDataSourceService.loadAllowResource(), defaultAllow));
     }
 
     @Override

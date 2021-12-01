@@ -25,7 +25,7 @@ package com.zf1976.mayi.gateway.config;
 
 import com.zf1976.mayi.gateway.filter.OAuth2TokenAuthenticationFilter;
 import com.zf1976.mayi.gateway.filter.manager.GatewayReactiveAuthorizationManager;
-import com.zf1976.mayi.gateway.properties.AuthProperties;
+import com.zf1976.mayi.gateway.properties.ResourceProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,10 +57,10 @@ import java.util.Map;
 @EnableWebFluxSecurity
 public class ResourceServerSecurityConfigurer {
 
-    private final AuthProperties properties;
+    private final ResourceProperties properties;
     private final RedisTemplate<Object, Map<Object, Object>> redisTemplate;
 
-    public ResourceServerSecurityConfigurer(AuthProperties properties,
+    public ResourceServerSecurityConfigurer(ResourceProperties properties,
                                             RedisTemplate<Object, Map<Object, Object>> mapRedisTemplate) {
         this.properties = properties;
         this.redisTemplate = mapRedisTemplate;
@@ -76,8 +76,7 @@ public class ResourceServerSecurityConfigurer {
                            .cors()
                            .and()
                            // 关闭表单登录
-                           .formLogin()
-                           .disable()
+                           .formLogin().disable()
                            .authorizeExchange(authorizeExchangeSpec -> {
                                authorizeExchangeSpec.pathMatchers("/actuator/**", "/oauth/**","/avatar/**").permitAll()
                                                     .pathMatchers(HttpMethod.OPTIONS).permitAll()

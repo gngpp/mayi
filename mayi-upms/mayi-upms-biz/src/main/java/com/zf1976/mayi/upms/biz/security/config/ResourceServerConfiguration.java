@@ -24,7 +24,7 @@
 package com.zf1976.mayi.upms.biz.security.config;
 
 import com.zf1976.mayi.common.security.property.SecurityProperties;
-import com.zf1976.mayi.upms.biz.security.filter.DynamicSecurityFilter;
+import com.zf1976.mayi.upms.biz.security.filter.DynamicFilterSecurityInterceptor;
 import com.zf1976.mayi.upms.biz.security.oauth2.CustomizeNimbusOpaqueTokenIntrospector;
 import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,7 +88,7 @@ public class ResourceServerConfiguration extends WebSecurityConfigurerAdapter {
             .cors();
 
         // dynamic permission filtering
-        http.addFilterAt(new DynamicSecurityFilter(this.securityProperties, this.dynamicDataSourceService), FilterSecurityInterceptor.class);
+        http.addFilterAt(new DynamicFilterSecurityInterceptor(this.securityProperties, this.dynamicDataSourceService), FilterSecurityInterceptor.class);
     }
 
 

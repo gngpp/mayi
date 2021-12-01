@@ -31,8 +31,8 @@ import org.springframework.stereotype.Component;
  * @date 2021/3/11
  **/
 @Component
-@ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver.jwt")
-public class AuthProperties {
+@ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver.jwt", ignoreInvalidFields = true)
+public class ResourceProperties {
 
     /**
      * jwt公钥地址

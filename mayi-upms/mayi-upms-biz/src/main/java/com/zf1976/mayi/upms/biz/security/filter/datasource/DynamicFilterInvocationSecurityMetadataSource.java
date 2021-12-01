@@ -45,12 +45,12 @@ import java.util.stream.Collectors;
  * @author mac
  * @date 2020/12/25
  **/
-public class DynamicSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
+public class DynamicFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
 
     private final DynamicDataSourceService dynamicDataSourceService;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    public DynamicSecurityMetadataSource(DynamicDataSourceService dynamicDataSourceService) {
+    public DynamicFilterInvocationSecurityMetadataSource(DynamicDataSourceService dynamicDataSourceService) {
         this.dynamicDataSourceService = dynamicDataSourceService;
         this.checkState();
     }
@@ -65,7 +65,7 @@ public class DynamicSecurityMetadataSource implements FilterInvocationSecurityMe
         HttpServletRequest request = ((FilterInvocation) o).getRequest();
         String uri = request.getRequestURI();
         // 资源URI--Permissions
-        Set<Map.Entry<String, String>> entrySet = this.loadDynamicDataSource().entrySet();
+        Set<Map.Entry<String, String>> entrySet = this.loadDynamicPermissionDataSource().entrySet();
         // 权限匹配
         for (Map.Entry<String, String> entry : entrySet) {
             // eq匹配成功退出
@@ -88,7 +88,7 @@ public class DynamicSecurityMetadataSource implements FilterInvocationSecurityMe
     @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
         Collection<ConfigAttribute> configAttributes = new CopyOnWriteArraySet<>();
-        for (Map.Entry<String, String> entry : this.loadDynamicDataSource().entrySet()) {
+        for (Map.Entry<String, String> entry : this.loadDynamicPermissionDataSource().entrySet()) {
             final List<ConfigAttribute> securityConfigs = toAttribute(entry.getValue());
             configAttributes.addAll(securityConfigs);
         }
@@ -97,7 +97,7 @@ public class DynamicSecurityMetadataSource implements FilterInvocationSecurityMe
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return DynamicSecurityMetadataSource.class.isAssignableFrom(aClass);
+        return DynamicFilterInvocationSecurityMetadataSource.class.isAssignableFrom(aClass);
     }
 
     private List<ConfigAttribute> toAttribute(String value) {
@@ -108,7 +108,7 @@ public class DynamicSecurityMetadataSource implements FilterInvocationSecurityMe
                              .map(SecurityConfig::new)
                              .collect(Collectors.toList());
     }
-    private Map<String, String> loadDynamicDataSource() {
-        return this.dynamicDataSourceService.loadDynamicDataSource();
+    private Map<String, String> loadDynamicPermissionDataSource() {
+        return this.dynamicDataSourceService.loadDynamicPermissionDataSource();
     }
 }

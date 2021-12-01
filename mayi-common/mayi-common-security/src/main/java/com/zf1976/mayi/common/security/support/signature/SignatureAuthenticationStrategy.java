@@ -26,7 +26,6 @@ package com.zf1976.mayi.common.security.support.signature;
 import com.zf1976.mayi.common.security.support.signature.enums.SignaturePattern;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 /**
  * 签名认证策略接口
@@ -40,7 +39,6 @@ public interface SignatureAuthenticationStrategy {
      * 执行认证
      *
      * @param httpServletRequest request
-     * @throws IOException exception
      */
     void onAuthenticate(HttpServletRequest httpServletRequest);
 

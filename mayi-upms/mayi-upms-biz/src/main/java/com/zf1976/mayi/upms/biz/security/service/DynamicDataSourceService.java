@@ -43,14 +43,16 @@ import com.zf1976.mayi.upms.biz.pojo.ResourceNode;
 import com.zf1976.mayi.upms.biz.pojo.po.SysResource;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
@@ -70,7 +72,9 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true, rollbackFor = Throwable.class)
 public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysResource> implements InitPermission{
 
-    private final Map<String, String> resourceMethodMap = new ConcurrentHashMap<>(16);
+    private final static byte DEFAULT_CAP = 16;
+    private final Map<String, String> resourceMethodMap = new HashMap<>(DEFAULT_CAP);
+    private final Map<RequestMatcher, Collection<ConfigAttribute>> requestMap = new LinkedHashMap<>(DEFAULT_CAP);
     private final Set<String> allowUriSet = new CopyOnWriteArraySet<>();
     private final SysPermissionDao permissionDao;
     private final SecurityProperties securityProperties;
@@ -118,6 +122,7 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
      * @date 2021-05-07 08:42:41
      */
     public List<ResourceNode> generatorResourceTree(List<SysResource> resourceList) {
+        @SuppressWarnings("SimplifyStreamApiCallChains")
         List<ResourceNode> treeList = resourceList.stream()
                                                   .map(ResourceNode::new)
                                                   .collect(Collectors.toList());
@@ -243,7 +248,7 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
      * @date 2021-05-05 19:53:43
      */
     @CachePut(key = KeyConstants.RESOURCE_LIST)
-    public Map<String, String> loadDynamicDataSource() {
+    public Map<String, String> loadDynamicPermissionDataSource() {
         //清空缓存
         if (!CollectionUtils.isEmpty(this.resourceMethodMap) || !CollectionUtils.isEmpty(this.allowUriSet)) {
             this.resourceMethodMap.clear();
@@ -256,7 +261,7 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
         final List<ResourceNode> resourceNodeTree = this.generatorResourceTree(resourceList);
         // 绑定权限的资源链接列表
         final List<ResourceLinkBinding> resourceLinkBindingList = this.generatorResourceLinkBindingList(resourceNodeTree);
-        // 放行资源
+
         resourceLinkBindingList.forEach(resourceLinkBinding -> {
             this.resourceMethodMap.put(resourceLinkBinding.getUri(), resourceLinkBinding.getMethod());
             String permissions = resourceLinkBinding.getBindingPermissions()
@@ -264,12 +269,25 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
                                                     .map(Permission::getValue)
                                                     .collect(Collectors.joining(","));
             resourcePermissionMap.put(resourceLinkBinding.getUri(), permissions);
+            // 放行资源
             if (resourceLinkBinding.getAllow()) {
                 this.allowUriSet.add(resourceLinkBinding.getUri());
             }
         });
         return resourcePermissionMap;
     }
+
+    /**
+     * 加载动态数据源资源 （URI--Permissions）
+     *
+     * @return {@link Map}
+     * @date 2021-05-05 19:53:43
+     */
+    @CachePut(key = KeyConstants.RESOURCE_LIST)
+    public Map<RequestMatcher, Collection<ConfigAttribute>> loadDynamicRequestMap() {
+        return this.requestMap;
+    }
+
 
     /**
      * 获取资源匹配方法Map
@@ -279,7 +297,7 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
     @CachePut(key = KeyConstants.RESOURCE_METHOD)
     public Map<String, String> loadResourceMethodMap() {
         if (CollectionUtils.isEmpty(this.resourceMethodMap)) {
-            this.loadDynamicDataSource();
+            this.loadDynamicPermissionDataSource();
         }
         return this.resourceMethodMap;
     }
@@ -290,9 +308,9 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
      * @return getAllowUri
      */
     @CachePut(key = KeyConstants.RESOURCE_ALLOW)
-    public List<String> loadAllowUri() {
+    public List<String> loadAllowResource() {
         if (CollectionUtils.isEmpty(this.allowUriSet)) {
-            this.loadDynamicDataSource();
+            this.loadDynamicPermissionDataSource();
         }
         CollectionUtils.mergeArrayIntoCollection(securityProperties.getIgnoreUri(), this.allowUriSet);
         return Lists.newArrayList(this.allowUriSet);
@@ -301,13 +319,15 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
     @Override
     @PostConstruct
     public void initialize() {
-        this.loadDynamicDataSource();
-        this.loadAllowUri();
+        this.loadDynamicPermissionDataSource();
+        this.loadAllowResource();
     }
 
     @CacheEvict
     @Transactional
     public Void updateEnabledById(Long id, Boolean enabled) {
+        Assert.notNull(id, "id cannot been null");
+        Assert.notNull(enabled, "enabled cannot been null");
 
         return null;
     }
@@ -315,7 +335,8 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
     @CacheEvict
     @Transactional
     public Void updateAllowById(Long id, Boolean allow) {
-
+        Assert.notNull(id, "id cannot been null");
+        Assert.notNull(allow, "allow cannot been null");
         return null;
     }
 }

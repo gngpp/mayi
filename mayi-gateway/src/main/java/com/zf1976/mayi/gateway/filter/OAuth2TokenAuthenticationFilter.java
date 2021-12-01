@@ -76,7 +76,6 @@ public class OAuth2TokenAuthenticationFilter implements WebFilter {
     private final String jwtCheckUrl;
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
-
     public OAuth2TokenAuthenticationFilter(String checkTokenUrl) {
         this.jwtCheckUrl = checkTokenUrl.concat("?token={value}");
     }

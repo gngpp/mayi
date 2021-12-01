@@ -40,7 +40,7 @@ public class RequestMappingAccessDecisionVoter implements AccessDecisionVoter<Ob
     @Override
     public int vote(Authentication authentication, Object object, Collection<ConfigAttribute> attributes) {
         // uri-method
-        Map<String, String> resourceMethodMap = this.dynamicDataSourceService.loadResourceMethodMap();
+        Map<String, String> resourceMethodMap = this.loadDynamicDataSource();
         if (CollectionUtils.isEmpty(resourceMethodMap)) {
             return ACCESS_ABSTAIN;
         }
@@ -68,6 +68,15 @@ public class RequestMappingAccessDecisionVoter implements AccessDecisionVoter<Ob
         }
 
         return ACCESS_DENIED;
+    }
+
+
+    private Map<String, String> loadDynamicDataSource() {
+        return this.dynamicDataSourceService.loadDynamicPermissionDataSource();
+    }
+
+    private Map<String, String> loadBlacklistDynamicDataSource() {
+        return this.dynamicDataSourceService.loadDynamicPermissionDataSource();
     }
 
 }

@@ -13,6 +13,9 @@ spring:
         config-retry-time: 3000
         config-long-poll-timeout: 60000
         extension-configs:
+          - data-id: application-security.yaml
+            group: MAYI_SHARE
+            refresh: true
           - data-id: application-common.yaml
             group: MAYI_SHARE
       discovery:
