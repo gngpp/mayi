@@ -70,8 +70,23 @@ public interface SysUserDao extends BaseMapper<SysUser> {
     SysUser selectOneByUsername(@Param("username") String username);
 
     /**
+     * 根据用户ID，查询用户角色依赖的ID集合
+     *
+     * @param id 用户id
+     * @return {@link List<Long>}
+     */
+    List<Long> selectRoleRelationById(@Param("id") Long id);
+
+    /**
+     * 根据用户ID，查询用户岗位依赖的ID集合
+     *
+     * @param id 用户id
+     * @return {@link List<Long>}
+     */
+    List<Long> selectPositionRelationById(@Param("id") Long id);
+
+    /**
      * 添加岗位依赖关系
-     * 　　　　 *
      *
      * @param id     id
      * @param jobIds job collection id
@@ -80,6 +95,7 @@ public interface SysUserDao extends BaseMapper<SysUser> {
 
     /**
      * 添加角色依赖关系
+     *
      * @param id id
      * @param roleIds role collection id
      */

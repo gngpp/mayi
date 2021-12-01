@@ -51,11 +51,16 @@ public interface SysPositionDao extends BaseMapper<SysPosition> {
      * 查询用户岗位
      *
      * @param userId 用户id
-     * @return 岗位collection
+     * @return {@link List<SysPosition>}
      */
     List<SysPosition> selectListByUserId(@Param("userId") Long userId);
 
-
-    List<SysPosition> findByUsername(@Param("username") String username);
+    /**
+     * 根据用户名查询用户岗位
+     *
+     * @param username 用户名
+     * @return {@link  List<SysPosition>}
+     */
+    List<SysPosition> selectByUsername(@Param("username") String username);
 
 }

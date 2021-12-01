@@ -110,4 +110,16 @@
         from sys_user
         where sys_user.username = #{username}
     </select>
+<!--    查询user-position关系ID-->
+    <select id="selectPositionRelationById" resultType="java.lang.Long">
+        select sys_user_position_relation.position_id
+        from sys_user_position_relation left join sys_user on sys_user_position_relation.user_id = sys_user.id
+        where sys_user.id = #{id}
+    </select>
+    <!--    查询user-关系ID-->
+    <select id="selectRoleRelationById" resultType="java.lang.Long">
+        select sys_user_role_relation.role_id
+        from sys_user_role_relation left join sys_user on sys_user_role_relation.user_id = sys_user.id
+        where sys_user.id = #{id}
+    </select>
 </mapper>

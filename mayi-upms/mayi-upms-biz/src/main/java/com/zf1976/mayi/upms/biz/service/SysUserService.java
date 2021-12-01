@@ -33,6 +33,7 @@ import com.zf1976.mayi.commom.cache.annotation.CachePut;
 import com.zf1976.mayi.commom.cache.constants.Namespace;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessException;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
+import com.zf1976.mayi.common.core.util.CollectionUtil;
 import com.zf1976.mayi.common.core.util.UUIDUtil;
 import com.zf1976.mayi.common.core.util.ValidateUtil;
 import com.zf1976.mayi.common.core.validate.Validator;
@@ -72,6 +73,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -143,7 +145,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
     private Set<Long> grantedDataPermission(String username, Long departmentId, List<Role> roleList) {
 
         // 超级管理员
-        if (ObjectUtils.nullSafeEquals(username, this.securityProperties.getOwner())) {
+        if (Context.isOwner(username)) {
             return this.departmentDao.selectList(Wrappers.emptyWrapper())
                                      .stream()
                                      .map(SysDepartment::getId)
@@ -151,10 +153,10 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
         }
 
         // 用户级别角色排序
-        final List<Role> roles = roleList.stream()
+        final Set<Role> roles = roleList.stream()
                                          .filter(Role::getEnabled)
                                          .sorted(Comparator.comparingInt(Role::getLevel))
-                                         .collect(Collectors.toList());
+                                         .collect(Collectors.toCollection(LinkedHashSet::new));
         // 数据权限范围
         final Set<Long> dataPermission = new HashSet<>();
         for (Role role : roles) {
@@ -180,7 +182,8 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                     // 所有数据权限
                     return ChainWrappers.lambdaQueryChain(this.departmentDao)
                                         .list()
-                                        .stream().filter(SysDepartment::getEnabled)
+                                        .stream()
+                                        .filter(SysDepartment::getEnabled)
                                         .map(SysDepartment::getId)
                                         .collect(Collectors.toSet());
             }
@@ -203,6 +206,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
             return authorities;
         }
         return roles.stream()
+                    .filter(Role::getEnabled)
                     .flatMap(role -> permissionDao.selectPermissionsByRoleId(role.getId())
                                                   .stream()
                                                   .map(Permission::getValue)
@@ -267,7 +271,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                         this.departmentDao.selectChildrenById(departmentId)
                                           .stream()
                                           .map(SysDepartment::getId)
-                                          .forEach(id -> this.selectDepartmentTreeIds(id, collectIds));
+                                          .forEach(id -> this.findDepartmentTreeIds(id, collectIds));
                         collectIds.add(departmentId);
                         List<SysUser> collectUser = sourcePage.getRecords()
                                                               .stream()
@@ -286,7 +290,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * @param supplier supplier
          */
         @Transactional(readOnly = true)
-        public void selectDepartmentTreeIds (Long departmentId, Collection < Long > supplier){
+        public void findDepartmentTreeIds(Long departmentId, Collection < Long > supplier){
             Assert.notNull(departmentId, "department id can not been null");
             supplier.add(departmentId);
             this.departmentDao.selectChildrenById(departmentId)
@@ -294,7 +298,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                               .map(SysDepartment::getId)
                               .forEach(id -> {
                                   // 继续下一级子节点
-                                  this.selectDepartmentTreeIds(id, supplier);
+                                  this.findDepartmentTreeIds(id, supplier);
                               });
         }
 
@@ -381,13 +385,8 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                      .withValidated(user -> !Context.isOwner(user.getUsername()),
                              () -> new UserException(UserState.USER_OPT_DISABLE_ONESELF_ERROR));
             if (!enabled) {
-                try {
-                    // revoke user authentication
-                    Context.revokeAuthentication(preDeleteUser.getUsername());
-                } catch (Exception e) {
-                    log.info(e.getMessage(), e.getCause());
-                    throw new UserException(UserState.USER_SYSTEM_ERROR);
-                }
+                // revoke user authentication
+                Context.revokeAuthentication(preDeleteUser.getUsername());
             }
             // 设置状态
             preDeleteUser.setEnabled(enabled);
@@ -632,13 +631,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
                          .withValidated(username -> !username.equals(this.securityProperties.getOwner()),
                                  () -> new UserException(UserState.USER_OPT_ERROR));
                 // Revoke the authentication of the currently disabled user
-                try {
-                    // revoke user authentication
-                    Context.revokeAuthentication(dto.getUsername());
-                } catch (Exception e) {
-                    log.info(e.getMessage(), e.getCause());
-                    throw new UserException(UserState.USER_SYSTEM_ERROR);
-                }
+                Context.revokeAuthentication(dto.getUsername());
             }
             // Verify username, whether it already exists
             super.lambdaQuery()
@@ -665,20 +658,31 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          *
          * @param dto dto
          */
-        private void updateDependents (UserDTO dto){
+        private void updateDependents(@NotNull UserDTO dto){
+            Assert.notNull(dto, "user dto cannot been null");
+            Assert.notNull(dto.getId(), "user id cannot been null");
+            Assert.notNull(dto.getUsername(), "username cannot been null");
             // user id
             final Long userId = dto.getId();
             // user post id collection
-            final Set<Long> positionIds = dto.getPositionIds();
-            if (!CollectionUtils.isEmpty(positionIds)) {
-                super.baseMapper.deletePositionRelationById(userId);
-                super.baseMapper.savePositionRelationById(userId, positionIds);
+            final var preUpdatePositionIds = dto.getPositionIds();
+            if (!CollectionUtils.isEmpty(preUpdatePositionIds)) {
+                final var positionIds = new HashSet<>(super.baseMapper.selectPositionRelationById(userId));
+                if (CollectionUtil.notEq(preUpdatePositionIds, positionIds)) {
+                    super.baseMapper.deletePositionRelationById(userId);
+                    super.baseMapper.savePositionRelationById(userId, preUpdatePositionIds);
+                }
             }
             // user role id collection
-            final Set<Long> roleIds = dto.getRoleIds();
-            if (!CollectionUtils.isEmpty(roleIds)) {
-                super.baseMapper.deleteRoleRelationById(userId);
-                super.baseMapper.savaRoleRelationById(dto.getId(), roleIds);
+            final var preUpdateRoleIds = dto.getRoleIds();
+            if (!CollectionUtils.isEmpty(preUpdateRoleIds)) {
+                final var roleIds = new HashSet<>(super.baseMapper.selectRoleRelationById(userId));
+                if (CollectionUtil.notEq(preUpdateRoleIds, roleIds)) {
+                    // revoke user authentication
+                    Context.revokeAuthentication(dto.getUsername());
+                    super.baseMapper.deleteRoleRelationById(userId);
+                    super.baseMapper.savaRoleRelationById(userId, preUpdateRoleIds);
+                }
             }
         }
 
@@ -735,13 +739,8 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
             for (SysUser user : sysUserList) {
                 super.baseMapper.deleteRoleRelationById(user.getId());
                 super.baseMapper.deletePositionRelationById(user.getId());
-                try {
-                    // revoke user authentication
-                    Context.revokeAuthentication(user.getUsername());
-                } catch (Exception e) {
-                    log.info(e.getMessage(), e.getCause());
-                    throw new UserException(UserState.USER_SYSTEM_ERROR);
-                }
+                // revoke user authentication
+                Context.revokeAuthentication(user.getUsername());
             }
             // delete users
             super.deleteByIds(ids);

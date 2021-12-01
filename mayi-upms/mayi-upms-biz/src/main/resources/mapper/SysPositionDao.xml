@@ -47,7 +47,7 @@
         where user_id = #{userId}
     </select>
 <!--根据用户名查询用户岗位-->
-    <select id="findByUsername" resultType="com.zf1976.mayi.upms.biz.pojo.po.SysPosition">
+    <select id="selectByUsername" resultType="com.zf1976.mayi.upms.biz.pojo.po.SysPosition">
         select id,
                name,
                enabled,
