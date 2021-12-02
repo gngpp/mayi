@@ -1,5 +1,12 @@
+FROM openjdk:17-alpine as jre-build
+USER root
+# Create a custom Java runtime
+RUN $JAVA_HOME/bin/jlink \
+         --add-modules ALL-MODULE-PATH \
+         --output /javaruntime
+
 # Target image
-FROM adoptopenjdk:11-jre-openj9
+FROM alpine
 USER root
 WORKDIR /mayi
 MAINTAINER zf1976 <verticle@foxmail.com>
@@ -7,6 +14,9 @@ LABEL name=mayi-visual-admin
 LABEL url=https://github.com/zf1976/mayi
 # env
 ENV LANG C.UTF-8
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH "${JAVA_HOME}/bin:${PATH}"
+COPY --from=jre-build /javaruntime $JAVA_HOME
 ENV JAR_FILE=./mayi-visual/mayi-visual-admin/build/libs/mayi-visual-admin-latest.jar
 COPY $JAR_FILE ./target.jar
 # depoly
