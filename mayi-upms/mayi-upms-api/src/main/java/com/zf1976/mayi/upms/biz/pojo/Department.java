@@ -32,6 +32,9 @@ import java.io.Serializable;
  */
 public class Department implements Serializable {
 
+
+    private static final long serialVersionUID = 5968130146907270375L;
+
     /**
      * 部门id
      */

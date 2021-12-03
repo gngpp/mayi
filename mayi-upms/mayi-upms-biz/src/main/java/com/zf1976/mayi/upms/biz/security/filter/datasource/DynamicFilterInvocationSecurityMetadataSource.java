@@ -23,20 +23,18 @@
 
 package com.zf1976.mayi.upms.biz.security.filter.datasource;
 
-import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
+import com.zf1976.mayi.common.security.matcher.RequestMatcher;
+import com.zf1976.mayi.common.security.matcher.load.LoadDataSource;
 import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.access.SecurityConfig;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -45,35 +43,26 @@ import java.util.stream.Collectors;
  * @author mac
  * @date 2020/12/25
  **/
-public class DynamicFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
+public record DynamicFilterInvocationSecurityMetadataSource(
+        LoadDataSource loadDataSource) implements FilterInvocationSecurityMetadataSource {
 
-    private final DynamicDataSourceService dynamicDataSourceService;
-    private final AntPathMatcher pathMatcher = new AntPathMatcher();
-
-    public DynamicFilterInvocationSecurityMetadataSource(DynamicDataSourceService dynamicDataSourceService) {
-        this.dynamicDataSourceService = dynamicDataSourceService;
+    public DynamicFilterInvocationSecurityMetadataSource(LoadDataSource loadDataSource) {
+        this.loadDataSource = loadDataSource;
         this.checkState();
     }
 
     private void checkState() {
-        Assert.notNull(this.dynamicDataSourceService, "dynamicDataSourceService cannot been null");
+        Assert.notNull(this.loadDataSource, "loadDataSource cannot been null");
     }
 
     @Override
     public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
         Assert.isInstanceOf(FilterInvocation.class, o, "target not is instance of FilterInvocation");
         HttpServletRequest request = ((FilterInvocation) o).getRequest();
-        String uri = request.getRequestURI();
-        // 资源URI--Permissions
-        Set<Map.Entry<String, String>> entrySet = this.loadDynamicPermissionDataSource().entrySet();
-        // 权限匹配
-        for (Map.Entry<String, String> entry : entrySet) {
-            // eq匹配成功退出
-            if (ObjectUtils.nullSafeEquals(entry.getKey(), uri)) {
-                return this.toAttribute(entry.getValue());
-                // 模式匹配成功退出
-            } else if (pathMatcher.match(entry.getKey(), uri)) {
-                return this.toAttribute(entry.getValue());
+        final var requestMatcherCollectionMap = this.loadDynamicPermissionDataSource();
+        for (Map.Entry<RequestMatcher, Collection<ConfigAttribute>> entry : requestMatcherCollectionMap.entrySet()) {
+            if (entry.getKey().matches(request)) {
+                return entry.getValue();
             }
         }
         // 不存在资源资源路径 返回空
@@ -87,12 +76,12 @@ public class DynamicFilterInvocationSecurityMetadataSource implements FilterInvo
      */
     @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
-        Collection<ConfigAttribute> configAttributes = new CopyOnWriteArraySet<>();
-        for (Map.Entry<String, String> entry : this.loadDynamicPermissionDataSource().entrySet()) {
-            final List<ConfigAttribute> securityConfigs = toAttribute(entry.getValue());
-            configAttributes.addAll(securityConfigs);
-        }
-        return configAttributes;
+        return this.loadDynamicPermissionDataSource()
+                   .entrySet()
+                   .stream()
+                   .map(Map.Entry::getValue)
+                   .flatMap(Collection::stream)
+                   .collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override
@@ -100,15 +89,8 @@ public class DynamicFilterInvocationSecurityMetadataSource implements FilterInvo
         return DynamicFilterInvocationSecurityMetadataSource.class.isAssignableFrom(aClass);
     }
 
-    private List<ConfigAttribute> toAttribute(String value) {
-        return AuthorityUtils.commaSeparatedStringToAuthorityList(value)
-                             .stream()
-                             .filter(Objects::nonNull)
-                             .map(GrantedAuthority::getAuthority)
-                             .map(SecurityConfig::new)
-                             .collect(Collectors.toList());
+    private Map<RequestMatcher, Collection<ConfigAttribute>> loadDynamicPermissionDataSource() {
+        return this.loadDataSource.loadRequestMap();
     }
-    private Map<String, String> loadDynamicPermissionDataSource() {
-        return this.dynamicDataSourceService.loadDynamicPermissionDataSource();
-    }
+
 }

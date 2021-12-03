@@ -23,10 +23,10 @@
 
 package com.zf1976.mayi.upms.biz.security.filter.manager;
 
+import com.zf1976.mayi.common.security.matcher.load.LoadDataSource;
 import com.zf1976.mayi.upms.biz.security.Context;
 import com.zf1976.mayi.upms.biz.security.filter.vote.AuthoritiesAccessDecisionVoter;
 import com.zf1976.mayi.upms.biz.security.filter.vote.RequestMappingAccessDecisionVoter;
-import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
@@ -45,9 +45,9 @@ import java.util.List;
  **/
 public class DynamicAccessDecisionManager extends AbstractAccessDecisionManager {
 
-    public DynamicAccessDecisionManager(DynamicDataSourceService dynamicDataSourceService) {
-        super(List.of(new AuthoritiesAccessDecisionVoter(),
-                new RequestMappingAccessDecisionVoter(dynamicDataSourceService)));
+    public DynamicAccessDecisionManager(LoadDataSource LoadDataSource) {
+        super(List.of(new RequestMappingAccessDecisionVoter(LoadDataSource),
+                new AuthoritiesAccessDecisionVoter()));
         setAllowIfAllAbstainDecisions(true);
     }
 

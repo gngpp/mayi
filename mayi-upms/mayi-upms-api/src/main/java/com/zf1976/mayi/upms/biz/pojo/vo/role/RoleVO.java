@@ -25,6 +25,7 @@ package com.zf1976.mayi.upms.biz.pojo.vo.role;
 
 import com.zf1976.mayi.upms.biz.pojo.enums.DataPermissionEnum;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +34,9 @@ import java.util.Set;
  * @author mac
  * @date 2020/11/21
  **/
-public class RoleVO {
+public class RoleVO implements Serializable {
+
+    private static final long serialVersionUID = -1044981781904947290L;
 
     /**
      * id

@@ -35,6 +35,8 @@ import java.util.Date;
 @TableName("sys_permission")
 public class SysPermission extends Model<SysPermission> {
 
+    private static final long serialVersionUID = 6622372794801130999L;
+
     @TableId(type = IdType.AUTO)
     private Long id;
 

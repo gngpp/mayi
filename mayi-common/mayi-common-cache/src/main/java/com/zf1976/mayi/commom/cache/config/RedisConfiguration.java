@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import com.zf1976.mayi.commom.cache.serializer.KryoRedisSerializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -39,7 +40,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.Map;
@@ -56,16 +56,16 @@ import java.util.Map;
 @SuppressWarnings({"rawtypes, unchecked", "DuplicatedCode"})
 public class RedisConfiguration extends CachingConfigurerSupport {
 
-    @Bean(name = "jdkRedisTemplate")
-    public RedisTemplate<Object, Object> jdkRedisTemplate(RedisConnectionFactory factory) {
+    @Bean(name = "kryoRedisTemplate")
+    public RedisTemplate<Object, Object> kryoRedisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<Object, Object> template = new RedisTemplate<>();
-        return this.setJDKSerializer(template, factory);
+        return this.setKryoSerializer(template, factory);
     }
 
-    @Bean(name = "jdkRedisMapTemplate")
-    public RedisTemplate<Object, Map<Object, Object>> jdkRedisMapTemplate(RedisConnectionFactory factory) {
+    @Bean(name = "kryoRedisMapTemplate")
+    public RedisTemplate<Object, Map<Object, Object>> kryoRedisMapTemplate(RedisConnectionFactory factory) {
         RedisTemplate<Object, Map<Object, Object>> template = new RedisTemplate<>();
-        return this.setJDKSerializer(template, factory);
+        return this.setKryoSerializer(template, factory);
     }
 
 
@@ -85,14 +85,14 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     }
 
 
-    private RedisTemplate setJDKSerializer(RedisTemplate<?,?> template, RedisConnectionFactory factory) {
-        final var jdkSerializationRedisSerializer = new JdkSerializationRedisSerializer();
+    private RedisTemplate setKryoSerializer(RedisTemplate<?,?> template, RedisConnectionFactory factory) {
+        final var kryoRedisSerializer = new KryoRedisSerializer();
         final var stringRedisSerializer = new StringRedisSerializer();
         template.setConnectionFactory(factory);
         template.setKeySerializer(stringRedisSerializer);
-        template.setValueSerializer(jdkSerializationRedisSerializer);
+        template.setValueSerializer(kryoRedisSerializer);
         template.setHashKeySerializer(stringRedisSerializer);
-        template.setHashValueSerializer(jdkSerializationRedisSerializer);
+        template.setHashValueSerializer(kryoRedisSerializer);
         template.afterPropertiesSet();
         return template;
     }

@@ -24,6 +24,7 @@
 package com.zf1976.mayi.upms.biz.pojo.vo.dept;
 
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -31,7 +32,9 @@ import java.util.Map;
 /**
  * @author mac
  */
-public class DepartmentExcelVO {
+public class DepartmentExcelVO implements Serializable {
+
+    private static final long serialVersionUID = -1092485164722322926L;
 
     /**
      * 上级部门

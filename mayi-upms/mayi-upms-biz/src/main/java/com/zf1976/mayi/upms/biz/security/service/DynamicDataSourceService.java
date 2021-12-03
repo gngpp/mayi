@@ -28,12 +28,16 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.zf1976.mayi.commom.cache.annotation.CacheConfig;
 import com.zf1976.mayi.commom.cache.annotation.CacheEvict;
 import com.zf1976.mayi.commom.cache.annotation.CachePut;
 import com.zf1976.mayi.commom.cache.constants.KeyConstants;
 import com.zf1976.mayi.commom.cache.constants.Namespace;
+import com.zf1976.mayi.common.security.access.PermissionAttribute;
+import com.zf1976.mayi.common.security.matcher.DynamicRequestMatcher;
+import com.zf1976.mayi.common.security.matcher.RequestMatcher;
+import com.zf1976.mayi.common.security.matcher.load.LoadDataSource;
 import com.zf1976.mayi.common.security.property.SecurityProperties;
 import com.zf1976.mayi.upms.biz.dao.SysPermissionDao;
 import com.zf1976.mayi.upms.biz.dao.SysResourceDao;
@@ -44,7 +48,6 @@ import com.zf1976.mayi.upms.biz.pojo.po.SysResource;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -53,7 +56,6 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 
@@ -70,12 +72,12 @@ import java.util.stream.Collectors;
 )
 @RefreshScope
 @Transactional(readOnly = true, rollbackFor = Throwable.class)
-public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysResource> implements InitPermission{
+public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysResource> implements InitPermission, LoadDataSource {
 
     private final static byte DEFAULT_CAP = 16;
-    private final Map<String, String> resourceMethodMap = new HashMap<>(DEFAULT_CAP);
     private final Map<RequestMatcher, Collection<ConfigAttribute>> requestMap = new LinkedHashMap<>(DEFAULT_CAP);
-    private final Set<String> allowUriSet = new CopyOnWriteArraySet<>();
+    private final Collection<RequestMatcher> allowRequest = new LinkedList<>();
+    private final Collection<RequestMatcher> blackListRequest = new LinkedList<>();
     private final SysPermissionDao permissionDao;
     private final SecurityProperties securityProperties;
 
@@ -247,80 +249,99 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
      * @return {@link Map}
      * @date 2021-05-05 19:53:43
      */
-    @CachePut(key = KeyConstants.RESOURCE_LIST)
-    public Map<String, String> loadDynamicPermissionDataSource() {
+    @CacheEvict
+    public void reloadDataSource() {
         //清空缓存
-        if (!CollectionUtils.isEmpty(this.resourceMethodMap) || !CollectionUtils.isEmpty(this.allowUriSet)) {
-            this.resourceMethodMap.clear();
-            this.allowUriSet.clear();
+        if (!CollectionUtils.isEmpty(this.requestMap)
+                || !CollectionUtils.isEmpty(this.allowRequest)
+                || !CollectionUtils.isEmpty(this.blackListRequest)) {
+            this.requestMap.clear();
+            this.allowRequest.clear();
+            this.blackListRequest.clear();
         }
-        final Map<String, String> resourcePermissionMap = new HashMap<>(16);
         // 所有资源
         final List<SysResource> resourceList = this.permissionDao.selectResourceBindingList();
         // 构建资源节点树
         final List<ResourceNode> resourceNodeTree = this.generatorResourceTree(resourceList);
         // 绑定权限的资源链接列表
         final List<ResourceLinkBinding> resourceLinkBindingList = this.generatorResourceLinkBindingList(resourceNodeTree);
-
+        // 配置文件白名单
+        Set<String> defaultAllow = Sets.newHashSet(this.securityProperties.getIgnoreUri());
+        for (String pattern : defaultAllow) {
+            this.allowRequest.add(new DynamicRequestMatcher(pattern));
+        }
         resourceLinkBindingList.forEach(resourceLinkBinding -> {
-            this.resourceMethodMap.put(resourceLinkBinding.getUri(), resourceLinkBinding.getMethod());
-            String permissions = resourceLinkBinding.getBindingPermissions()
-                                                    .stream()
-                                                    .map(Permission::getValue)
-                                                    .collect(Collectors.joining(","));
-            resourcePermissionMap.put(resourceLinkBinding.getUri(), permissions);
-            // 放行资源
-            if (resourceLinkBinding.getAllow()) {
-                this.allowUriSet.add(resourceLinkBinding.getUri());
+            final Collection<ConfigAttribute> permission = resourceLinkBinding.getBindingPermissions()
+                                                                              .stream()
+                                                                              .map(Permission::getValue)
+                                                                              .map(PermissionAttribute::new)
+                                                                              .collect(Collectors.toCollection(ArrayList::new));
+            final var pattern = resourceLinkBinding.getUri();
+            final var method = resourceLinkBinding.getMethod();
+            final var enabled = resourceLinkBinding.getEnabled();
+            final var allow = resourceLinkBinding.getAllow();
+            // allow resource
+            if (allow) {
+                this.allowRequest.add(new DynamicRequestMatcher(pattern, method));
+            } else {
+                this.requestMap.put(new DynamicRequestMatcher(pattern, method), permission);
             }
+            // blacklist
+            if (!enabled) {
+                this.blackListRequest.add(new DynamicRequestMatcher(pattern, method, false));
+            }
+
         });
-        return resourcePermissionMap;
     }
 
     /**
-     * 加载动态数据源资源 （URI--Permissions）
-     *
-     * @return {@link Map}
-     * @date 2021-05-05 19:53:43
-     */
-    @CachePut(key = KeyConstants.RESOURCE_LIST)
-    public Map<RequestMatcher, Collection<ConfigAttribute>> loadDynamicRequestMap() {
-        return this.requestMap;
-    }
-
-
-    /**
-     * 获取资源匹配方法Map
+     * 请求MAP
      *
      * @return {@link Map<String,String>}
      */
-    @CachePut(key = KeyConstants.RESOURCE_METHOD)
-    public Map<String, String> loadResourceMethodMap() {
-        if (CollectionUtils.isEmpty(this.resourceMethodMap)) {
-            this.loadDynamicPermissionDataSource();
+    @Override
+    @CachePut(key = KeyConstants.RESOURCE_MAP)
+    public Map<RequestMatcher, Collection<ConfigAttribute>> loadRequestMap() {
+        if (CollectionUtils.isEmpty(this.requestMap)) {
+            this.reloadDataSource();
         }
-        return this.resourceMethodMap;
+        return this.requestMap;
     }
 
     /**
-     * redis 反序化回来变成set
+     * 加载放行请求
      *
-     * @return getAllowUri
+     * @return {@link Collection<RequestMatcher>}
      */
+    @Override
     @CachePut(key = KeyConstants.RESOURCE_ALLOW)
-    public List<String> loadAllowResource() {
-        if (CollectionUtils.isEmpty(this.allowUriSet)) {
-            this.loadDynamicPermissionDataSource();
+    public Collection<RequestMatcher> loadAllowRequest() {
+        if (CollectionUtils.isEmpty(this.allowRequest)) {
+            this.reloadDataSource();
         }
-        CollectionUtils.mergeArrayIntoCollection(securityProperties.getIgnoreUri(), this.allowUriSet);
-        return Lists.newArrayList(this.allowUriSet);
+        return this.allowRequest;
+    }
+
+    /**
+     * 加载黑名单请求
+     *
+     * @return {@link Collection<RequestMatcher>}
+     * @date 2021-05-05 19:53:43
+     */
+    @CachePut(key = KeyConstants.RESOURCE_BLACK_LIST)
+    @Override
+    public Collection<RequestMatcher> loadBlackListRequest() {
+        if (CollectionUtils.isEmpty(this.blackListRequest)) {
+            this.reloadDataSource();
+        }
+        return this.blackListRequest;
     }
 
     @Override
     @PostConstruct
     public void initialize() {
-        this.loadDynamicPermissionDataSource();
-        this.loadAllowResource();
+        this.reloadDataSource();
+        this.loadAllowRequest();
     }
 
     @CacheEvict
@@ -328,7 +349,6 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
     public Void updateEnabledById(Long id, Boolean enabled) {
         Assert.notNull(id, "id cannot been null");
         Assert.notNull(enabled, "enabled cannot been null");
-
         return null;
     }
 

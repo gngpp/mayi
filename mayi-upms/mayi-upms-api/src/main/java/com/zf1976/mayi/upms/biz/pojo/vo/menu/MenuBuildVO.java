@@ -25,13 +25,16 @@ package com.zf1976.mayi.upms.biz.pojo.vo.menu;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author mac
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class MenuBuildVO {
+public class MenuBuildVO implements Serializable {
+
+    private static final long serialVersionUID = 4181404719866254732L;
 
     public MenuBuildVO() {
     }

@@ -23,13 +23,16 @@
 
 package com.zf1976.mayi.upms.biz.pojo;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author mac
  * @date 2021/5/6
  */
-public class ResourceLinkBinding {
+public class ResourceLinkBinding implements Serializable {
+
+    private static final long serialVersionUID = -7875344596277114868L;
 
     private Long id;
     /**

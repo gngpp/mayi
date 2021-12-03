@@ -37,6 +37,8 @@ import java.util.Date;
 @TableName("sys_position")
 public class SysPosition extends Model<SysPosition> {
 
+    private static final long serialVersionUID = 9148946287559924386L;
+
     @TableId(type = IdType.AUTO)
     private Long id;
 

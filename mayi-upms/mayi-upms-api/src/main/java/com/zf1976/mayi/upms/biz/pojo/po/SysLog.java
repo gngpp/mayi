@@ -38,6 +38,8 @@ import java.util.Date;
 @TableName("sys_log")
 public class SysLog extends Model<SysLog> {
 
+    private static final long serialVersionUID = 130582863579307604L;
+
     @TableId(type = IdType.AUTO)
     private Long id;
 

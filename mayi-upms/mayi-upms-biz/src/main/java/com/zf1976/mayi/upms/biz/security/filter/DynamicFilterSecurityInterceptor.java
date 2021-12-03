@@ -23,13 +23,10 @@
 
 package com.zf1976.mayi.upms.biz.security.filter;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.zf1976.mayi.common.security.property.SecurityProperties;
+import com.zf1976.mayi.common.security.matcher.RequestMatcher;
+import com.zf1976.mayi.common.security.matcher.load.LoadDataSource;
 import com.zf1976.mayi.upms.biz.security.filter.datasource.DynamicFilterInvocationSecurityMetadataSource;
 import com.zf1976.mayi.upms.biz.security.filter.manager.DynamicAccessDecisionManager;
-import com.zf1976.mayi.upms.biz.security.service.DynamicDataSourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -37,14 +34,12 @@ import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
 import org.springframework.security.access.intercept.InterceptorStatusToken;
 import org.springframework.security.web.FilterInvocation;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * 动态权限安全过滤
@@ -55,21 +50,17 @@ import java.util.Set;
 public class DynamicFilterSecurityInterceptor extends AbstractSecurityInterceptor implements Filter {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final SecurityProperties properties;
-    private final DynamicDataSourceService dynamicDataSourceService;
+    private final LoadDataSource dynamicDataSourceService;
     private final DynamicFilterInvocationSecurityMetadataSource dynamicSecurityMetadataSource;
-    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
-    public DynamicFilterSecurityInterceptor(SecurityProperties properties, DynamicDataSourceService dynamicDataSourceService) {
-        this.properties = properties;
-        this.dynamicDataSourceService = dynamicDataSourceService;
-        this.dynamicSecurityMetadataSource = new DynamicFilterInvocationSecurityMetadataSource(dynamicDataSourceService);
-        super.setAccessDecisionManager(new DynamicAccessDecisionManager(dynamicDataSourceService));
+    public DynamicFilterSecurityInterceptor(LoadDataSource loadDataSource) {
+        this.dynamicDataSourceService = loadDataSource;
+        this.dynamicSecurityMetadataSource = new DynamicFilterInvocationSecurityMetadataSource(loadDataSource);
+        super.setAccessDecisionManager(new DynamicAccessDecisionManager(loadDataSource));
         this.checkState();
     }
 
     public void checkState() {
-        Assert.notNull(this.properties, "security config cannot been null");
         Assert.notNull(this.dynamicDataSourceService, "dynamicDataSourceService cannot been null");
         Assert.notNull(this.dynamicSecurityMetadataSource, "dynamicSecurityMetadataSource cannot been null");
     }
@@ -85,13 +76,14 @@ public class DynamicFilterSecurityInterceptor extends AbstractSecurityIntercepto
             return;
         }
         //白名单请求直接放行
-        for (String uri : this.loadAllowUrl()) {
-            if (this.antPathMatcher.match(uri, request.getRequestURI())) {
+        for (RequestMatcher matcher : this.loadAllowRequest()) {
+            if (matcher.matches(request)) {
                 filterInvocation.getChain()
                                 .doFilter(filterInvocation.getRequest(), filterInvocation.getResponse());
                 return;
             }
         }
+
         //调用AccessDecisionManager中的decide方法进行鉴权操作
         InterceptorStatusToken token = super.beforeInvocation(filterInvocation);
         try {
@@ -103,10 +95,8 @@ public class DynamicFilterSecurityInterceptor extends AbstractSecurityIntercepto
         }
     }
 
-    private Collection<String> loadAllowUrl() {
-        // 配置文件白名单
-        Set<String> defaultAllow = Sets.newHashSet(this.properties.getIgnoreUri());
-        return Lists.newArrayList(Iterables.concat(this.dynamicDataSourceService.loadAllowResource(), defaultAllow));
+    private Collection<RequestMatcher> loadAllowRequest() {
+        return this.dynamicDataSourceService.loadAllowRequest();
     }
 
     @Override

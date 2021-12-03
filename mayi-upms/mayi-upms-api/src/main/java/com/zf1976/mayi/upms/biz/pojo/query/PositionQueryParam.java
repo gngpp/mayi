@@ -35,6 +35,8 @@ import java.util.List;
  */
 public class PositionQueryParam extends AbstractQueryParam {
 
+    private static final long serialVersionUID = 5373327350088419647L;
+
     /**
      * like
      */

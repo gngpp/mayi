@@ -23,11 +23,15 @@
 
 package com.zf1976.mayi.upms.biz.pojo;
 
+import java.io.Serializable;
+
 /**
  * @author mac
  * @date 2021/5/27
  */
-public class Permission {
+public class Permission implements Serializable {
+
+    private static final long serialVersionUID = -3035980151780779570L;
 
     /**
      * 权限id

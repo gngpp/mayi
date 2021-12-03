@@ -34,6 +34,8 @@ import java.util.List;
  */
 public class MenuQueryParam extends AbstractQueryParam {
 
+    private static final long serialVersionUID = -3675781949252329804L;
+
     @Param(type = Type.LIKE, fields = {"title", "componentName"})
     private String blurry;
 

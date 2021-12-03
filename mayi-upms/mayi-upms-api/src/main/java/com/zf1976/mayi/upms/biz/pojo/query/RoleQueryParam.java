@@ -35,6 +35,8 @@ import java.util.List;
  **/
 public class RoleQueryParam extends AbstractQueryParam {
 
+    private static final long serialVersionUID = 5215454821228654415L;
+
     @Param(type = Type.LIKE, fields = {"name", "description"})
     private String blurry;
 

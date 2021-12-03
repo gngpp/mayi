@@ -24,13 +24,16 @@
 package com.zf1976.mayi.upms.biz.pojo.vo.dict;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author mac
  * @date 2020/10/24 10:01 下午
  */
-public class DictDownloadVO {
+public class DictDownloadVO implements Serializable {
+
+    private static final long serialVersionUID = -4912853637274484402L;
 
     /**
      * 字典名称

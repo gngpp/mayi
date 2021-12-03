@@ -30,6 +30,8 @@ package com.zf1976.mayi.upms.biz.pojo.query;
  **/
 public class SessionQueryParam extends AbstractQueryParam {
 
+    private static final long serialVersionUID = 6157886948017943464L;
+
     private String filter;
 
     public String getFilter() {

@@ -38,6 +38,9 @@ import java.util.List;
 @TableName("sys_menu")
 public class SysMenu extends Model<SysMenu> {
 
+
+    private static final long serialVersionUID = 2137470795296922514L;
+
     @TableId(type = IdType.AUTO)
     private Long id;
 

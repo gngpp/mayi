@@ -24,11 +24,15 @@
 package com.zf1976.mayi.upms.biz.pojo.vo.dict;
 
 
+import java.io.Serializable;
+
 /**
  * @author ant
  * Create by Ant on 2020/10/24 4:25 下午
  */
-public class DictDetailVO {
+public class DictDetailVO implements Serializable {
+
+    private static final long serialVersionUID = -6669179361868444973L;
 
     /**
      * id

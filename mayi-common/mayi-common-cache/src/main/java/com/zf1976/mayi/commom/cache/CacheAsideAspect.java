@@ -66,9 +66,9 @@ public class CacheAsideAspect extends AbstractCacheAsideLock {
     private final SpringElExpressionHandler handler = new SpringElExpressionHandler();
     private Map<CacheImplement, ICache<Object, Object>> cacheProviderMap;
 
-    public CacheAsideAspect(RedisTemplate<Object, Object> jdkRedisTemplate, CacheProperties guavaCacheProperties) {
+    public CacheAsideAspect(RedisTemplate<Object, Object> kryoRedisTemplate, CacheProperties guavaCacheProperties) {
         this.addProvider(CacheImplement.CAFFEINE, new GuavaCacheProvider<>(guavaCacheProperties));
-        this.addProvider(CacheImplement.REDIS, new RedisCacheProvider<>(guavaCacheProperties, jdkRedisTemplate));
+        this.addProvider(CacheImplement.REDIS, new RedisCacheProvider<>(guavaCacheProperties, kryoRedisTemplate));
         this.checkStatus();
     }
 

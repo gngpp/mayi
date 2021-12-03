@@ -24,6 +24,7 @@
 package com.zf1976.mayi.upms.biz.pojo.vo.menu;
 
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +32,9 @@ import java.util.List;
  * @author mac
  * @date 2020/11/12
  **/
-public class MenuVO {
+public class MenuVO implements Serializable {
+
+    private static final long serialVersionUID = 3832534476704575642L;
 
     /**
      * id

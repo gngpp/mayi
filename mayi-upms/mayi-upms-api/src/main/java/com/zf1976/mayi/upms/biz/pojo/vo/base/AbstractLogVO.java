@@ -23,9 +23,11 @@
 
 package com.zf1976.mayi.upms.biz.pojo.vo.base;
 
+import java.io.Serializable;
+
 /**
  * @author mac
  * @date 2021/1/26
  **/
-public abstract class AbstractLogVO {
+public abstract class AbstractLogVO implements Serializable {
 }

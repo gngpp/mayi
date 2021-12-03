@@ -32,6 +32,7 @@ import com.zf1976.mayi.upms.biz.pojo.query.enmus.Type;
  */
 public class DictQueryParam extends AbstractQueryParam {
 
+    private static final long serialVersionUID = 6368179562367151394L;
     /**
      * like
      */

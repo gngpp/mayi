@@ -37,6 +37,8 @@ import java.util.List;
 @TableName("sys_resource")
 public class SysResource extends Model<SysResource> {
 
+    private static final long serialVersionUID = 1752128833172626809L;
+
     @TableId(type = IdType.AUTO)
     private Long id;
 

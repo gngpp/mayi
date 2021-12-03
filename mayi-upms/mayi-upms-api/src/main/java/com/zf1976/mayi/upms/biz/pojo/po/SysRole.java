@@ -39,6 +39,8 @@ import java.util.Set;
 @TableName("sys_role")
 public class SysRole extends Model<SysRole> {
 
+    private static final long serialVersionUID = -8561602082063711918L;
+
     @TableId(type = IdType.AUTO)
     private Long id;
 

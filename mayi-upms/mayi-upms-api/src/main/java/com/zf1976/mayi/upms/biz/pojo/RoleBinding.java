@@ -23,13 +23,16 @@
 
 package com.zf1976.mayi.upms.biz.pojo;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author mac
  * @date 2021/5/29
  */
-public class RoleBinding {
+public class RoleBinding implements Serializable {
+
+    private static final long serialVersionUID = 1484169433398768663L;
 
     /**
      * id

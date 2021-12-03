@@ -88,7 +88,7 @@ public class ResourceServerConfiguration extends WebSecurityConfigurerAdapter {
             .cors();
 
         // dynamic permission filtering
-        http.addFilterAt(new DynamicFilterSecurityInterceptor(this.securityProperties, this.dynamicDataSourceService), FilterSecurityInterceptor.class);
+        http.addFilterAt(new DynamicFilterSecurityInterceptor(this.dynamicDataSourceService), FilterSecurityInterceptor.class);
     }
 
 

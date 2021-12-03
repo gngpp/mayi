@@ -25,14 +25,16 @@ package com.zf1976.mayi.upms.biz.pojo.vo.user;
 
 
 import com.zf1976.mayi.upms.biz.pojo.enums.GenderEnum;
-import com.zf1976.mayi.upms.biz.pojo.vo.dept.DepartmentVO;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author Windows
  */
-public class UserVO {
+public class UserVO implements Serializable {
+
+    private static final long serialVersionUID = -2970256833757271415L;
 
     /**
      * id

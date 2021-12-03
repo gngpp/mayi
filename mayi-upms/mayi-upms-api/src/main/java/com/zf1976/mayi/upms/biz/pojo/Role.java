@@ -33,6 +33,7 @@ import java.io.Serializable;
  */
 public class Role implements Serializable {
 
+    private static final long serialVersionUID = 4704446806397632861L;
     /**
      * 角色id
      */

@@ -30,6 +30,7 @@ package com.zf1976.mayi.upms.biz.pojo.query;
  */
 public class DictDetailQueryParam extends AbstractQueryParam {
 
+    private static final long serialVersionUID = -4168655746439964210L;
     /**
      * like
      */

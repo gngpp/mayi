@@ -61,9 +61,9 @@ public class ResourceServerSecurityConfigurer {
     private final RedisTemplate<Object, Map<Object, Object>> redisTemplate;
 
     public ResourceServerSecurityConfigurer(ResourceProperties properties,
-                                            RedisTemplate<Object, Map<Object, Object>> mapRedisTemplate) {
+                                            RedisTemplate<Object, Map<Object, Object>> kryoRedisMapTemplate) {
         this.properties = properties;
-        this.redisTemplate = mapRedisTemplate;
+        this.redisTemplate = kryoRedisMapTemplate;
     }
 
     @Bean

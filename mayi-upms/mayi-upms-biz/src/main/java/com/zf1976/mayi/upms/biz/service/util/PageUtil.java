@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 public class PageUtil {
 
     @Autowired
-    private RedisTemplate<Object, Object> template;
+    private RedisTemplate<Object, Object> kryoRedisTemplate;
     /**
      * 存放单个hash缓存
      * @param key 键
@@ -48,7 +48,7 @@ public class PageUtil {
      */
     public boolean hPut(String key, String hKey, Object value) {
         try {
-            template.opsForHash().put(key, hKey, value);
+            kryoRedisTemplate.opsForHash().put(key, hKey, value);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,12 +67,12 @@ public class PageUtil {
     public Boolean setPage(String key, String hKey, double score, String value){
         Boolean result = false;
         try {
-            result = template.opsForZSet().add(key + ":page", hKey, score);
+            result = kryoRedisTemplate.opsForZSet().add(key + ":page", hKey, score);
         } catch (Exception e) {
             e.printStackTrace();
         }
         //设置辅助分页的过期时间
-        template.expire(key+":page",1800000 , TimeUnit.MILLISECONDS);
+        kryoRedisTemplate.expire(key+":page",1800000 , TimeUnit.MILLISECONDS);
         return result;
     }
 
@@ -87,7 +87,7 @@ public class PageUtil {
     public Set<Object> getPage(String key, int offset, int count){
         Set<Object> result = null;
         try {
-            result = template.opsForZSet().rangeByScore(key+":page", 1, 100000, (long) (offset - 1) *count, count);
+            result = kryoRedisTemplate.opsForZSet().rangeByScore(key+":page", 1, 100000, (long) (offset - 1) *count, count);
             //1 100000代表score的排序氛围值，即从1-100000的范围
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,7 +104,7 @@ public class PageUtil {
     public Integer getSize(String key){
         Integer num = 0;
         try {
-            Long size = template.opsForZSet().zCard(key+":page");
+            Long size = kryoRedisTemplate.opsForZSet().zCard(key+":page");
             assert size != null;
             return size.intValue();
         } catch (Exception e) {

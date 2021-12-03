@@ -230,8 +230,8 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
         final List<MenuVO> target = vertex.parallelStream()
                                            .filter(menuVO -> ObjectUtils.isEmpty(menuVO.getPid()))
                                            .sorted(Comparator.comparingInt(MenuVO::getMenuSort))
-                                           .collect(Collectors.toList());
-        return targetPage.setRecords(Collections.unmodifiableList(target));
+                                           .collect(Collectors.toUnmodifiableList());
+        return targetPage.setRecords(target);
     }
 
     /**

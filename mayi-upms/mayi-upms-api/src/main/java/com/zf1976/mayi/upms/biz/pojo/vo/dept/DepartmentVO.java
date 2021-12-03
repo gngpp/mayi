@@ -24,6 +24,7 @@
 package com.zf1976.mayi.upms.biz.pojo.vo.dept;
 
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
@@ -31,7 +32,9 @@ import java.util.Date;
  * @author mac
  * @date 2020/10/26 6:13 下午
  */
-public class DepartmentVO {
+public class DepartmentVO implements Serializable {
+
+    private static final long serialVersionUID = 8211014429166019382L;
 
     /**
      * id

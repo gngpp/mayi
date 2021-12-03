@@ -2,12 +2,12 @@ package com.zf1976.mayi.common.security.matcher;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 
@@ -15,25 +15,31 @@ import java.util.Map;
  * @author mac
  * 2021/12/1 星期三 8:12 PM
  */
-public class CustomizeRequestMatcher implements ExchangeRequestMatcher {
+public class DynamicRequestMatcher implements RequestMatcher, Serializable {
+
+    private static final long serialVersionUID = -2769405499781830937L;
 
     private static final String MATCH_ALL = "/**";
 
-    private final CustomizeRequestMatcher.Matcher matcher;
+    private  DynamicRequestMatcher.Matcher matcher;
 
-    private final String pattern;
+    private  String pattern;
 
-    private final HttpMethod httpMethod;
+    private  HttpMethod httpMethod;
 
-    private final boolean caseSensitive;
+    private Boolean enabled = Boolean.TRUE;
 
+    private boolean caseSensitive = true;
+
+    public DynamicRequestMatcher() {
+    }
 
     /**
      * Creates a matcher with the specific pattern which will match all HTTP methods in a
      * case sensitive manner.
      * @param pattern the ant pattern to use for matching
      */
-    public CustomizeRequestMatcher(String pattern) {
+    public DynamicRequestMatcher(String pattern) {
         this(pattern, null);
     }
 
@@ -44,9 +50,15 @@ public class CustomizeRequestMatcher implements ExchangeRequestMatcher {
      * @param httpMethod the HTTP method. The {@code matches} method will return false if
      * the incoming request doesn't have the same method.
      */
-    public CustomizeRequestMatcher(String pattern, String httpMethod) {
-        this(pattern, httpMethod, true);
+    public DynamicRequestMatcher(String pattern, String httpMethod) {
+        this(pattern, httpMethod, true, true);
     }
+
+
+    public DynamicRequestMatcher(String pattern, String httpMethod, Boolean enabled) {
+        this(pattern, httpMethod, enabled, true);
+    }
+
 
     /**
      * Creates a matcher with the supplied pattern which will match the specified Http
@@ -55,10 +67,12 @@ public class CustomizeRequestMatcher implements ExchangeRequestMatcher {
      * @param httpMethod the HTTP method. The {@code matches} method will return false if
      * the incoming request doesn't doesn't have the same method.
      * @param caseSensitive true if the matcher should consider case, else false
+     * @param enabled true if the matcher should allow request
      */
-    public CustomizeRequestMatcher(String pattern, String httpMethod, boolean caseSensitive) {
+    public DynamicRequestMatcher(String pattern, String httpMethod, boolean enabled, boolean caseSensitive) {
         Assert.hasText(pattern, "Pattern cannot be null or empty");
         this.caseSensitive = caseSensitive;
+        this.enabled = enabled;
         if (pattern.equals(MATCH_ALL) || pattern.equals("**")) {
             pattern = MATCH_ALL;
             this.matcher = null;
@@ -69,10 +83,10 @@ public class CustomizeRequestMatcher implements ExchangeRequestMatcher {
             if (pattern.endsWith(MATCH_ALL)
                     && (pattern.indexOf('?') == -1 && pattern.indexOf('{') == -1 && pattern.indexOf('}') == -1)
                     && pattern.indexOf("*") == pattern.length() - 2) {
-                this.matcher = new CustomizeRequestMatcher.SubpathMatcher(pattern.substring(0, pattern.length() - 3), caseSensitive);
+                this.matcher = new DynamicRequestMatcher.SubpathMatcher(pattern.substring(0, pattern.length() - 3), caseSensitive);
             }
             else {
-                this.matcher = new CustomizeRequestMatcher.SpringAntMatcher(pattern, caseSensitive);
+                this.matcher = new DynamicRequestMatcher.SpringAntMatcher(pattern, caseSensitive);
             }
         }
         this.pattern = pattern;
@@ -86,10 +100,10 @@ public class CustomizeRequestMatcher implements ExchangeRequestMatcher {
             return false;
         }
         if (this.pattern.equals(MATCH_ALL)) {
-            return true;
+            return true && this.enabled;
         }
         String url = getRequestPath(request);
-        return this.matcher.matches(url);
+        return this.matcher.matches(url) && this.enabled;
     }
 
     @Override
@@ -106,6 +120,9 @@ public class CustomizeRequestMatcher implements ExchangeRequestMatcher {
 
     @Override
     public boolean matches(ServerHttpRequest request) {
+        if (!this.enabled) {
+            return false;
+        }
         if (this.httpMethod != null && StringUtils.hasText(request.getMethod().name())
                 && this.httpMethod != HttpMethod.resolve(request.getMethod().name())) {
             return false;
@@ -149,7 +166,7 @@ public class CustomizeRequestMatcher implements ExchangeRequestMatcher {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof CustomizeRequestMatcher other)) {
+        if (!(obj instanceof DynamicRequestMatcher other)) {
             return false;
         }
         return this.pattern.equals(other.pattern) && this.httpMethod == other.httpMethod
@@ -175,25 +192,35 @@ public class CustomizeRequestMatcher implements ExchangeRequestMatcher {
         return sb.toString();
     }
 
-    private static final class SpringAntMatcher implements CustomizeRequestMatcher.Matcher {
+     public static final class SpringAntMatcher implements DynamicRequestMatcher.Matcher {
 
-        private final AntPathMatcher antMatcher;
+        private transient AntPathMatcher antMatcher;
 
-        private final String pattern;
+        private String pattern;
+
+        private boolean caseSensitive = false;
+
+        public SpringAntMatcher() {
+
+        }
 
         private SpringAntMatcher(String pattern, boolean caseSensitive) {
             this.pattern = pattern;
+            this.caseSensitive = caseSensitive;
             this.antMatcher = createMatcher(caseSensitive);
         }
 
         @Override
         public boolean matches(String path) {
+            if (this.antMatcher == null) {
+                this.antMatcher = createMatcher(this.caseSensitive);
+            }
             return this.antMatcher.match(this.pattern, path);
         }
 
         @Override
         public Map<String, String> extractUriTemplateVariables(String path) {
-            return this.antMatcher.extractUriTemplateVariables(this.pattern, path);
+                return this.antMatcher.extractUriTemplateVariables(this.pattern, path);
         }
 
         private static AntPathMatcher createMatcher(boolean caseSensitive) {
@@ -205,7 +232,7 @@ public class CustomizeRequestMatcher implements ExchangeRequestMatcher {
 
     }
 
-    private interface Matcher {
+    private interface Matcher extends Serializable {
 
         boolean matches(String path);
 
@@ -217,13 +244,16 @@ public class CustomizeRequestMatcher implements ExchangeRequestMatcher {
      * Optimized matcher for trailing wildcards
      */
     @SuppressWarnings("SpellCheckingInspection")
-    private static final class SubpathMatcher implements CustomizeRequestMatcher.Matcher {
+    public static final class SubpathMatcher implements DynamicRequestMatcher.Matcher {
 
-        private final String subpath;
+        private String subpath;
 
-        private final int length;
+        private int length;
 
-        private final boolean caseSensitive;
+        private boolean caseSensitive;
+
+        public SubpathMatcher() {
+        }
 
         private SubpathMatcher(String subpath, boolean caseSensitive) {
             Assert.isTrue(!subpath.contains("*"), "subpath cannot contain \"*\"");

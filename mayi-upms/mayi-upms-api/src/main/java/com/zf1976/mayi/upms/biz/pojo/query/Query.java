@@ -41,6 +41,7 @@ import java.util.Optional;
  */
 public class Query<T extends AbstractQueryParam> implements Serializable {
 
+    private static final long serialVersionUID = -8899444130507801280L;
     /**
      * 每页最大数
      */

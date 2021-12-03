@@ -24,13 +24,16 @@
 package com.zf1976.mayi.upms.biz.pojo.vo.job;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author mac
  * @date 2020/10/26 5:12 下午
  */
-public class PositionExcelVO {
+public class PositionExcelVO implements Serializable {
+
+    private static final long serialVersionUID = -7605824221658620578L;
 
     /**
      * 岗位名称

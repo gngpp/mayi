@@ -34,6 +34,8 @@ import java.util.List;
  */
 public class ResourceNode implements Serializable {
 
+    private static final long serialVersionUID = 5183125845705437100L;
+
     private Long id;
     /**
      * pid resource

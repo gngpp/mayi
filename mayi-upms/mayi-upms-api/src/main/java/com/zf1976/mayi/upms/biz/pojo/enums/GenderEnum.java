@@ -27,11 +27,13 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.baomidou.mybatisplus.core.enums.IEnum;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.io.Serializable;
+
 /**
  * @author mac
  * @date 2021/1/1
  **/
-public enum GenderEnum implements IEnum<Integer> {
+public enum GenderEnum implements IEnum<Integer>, Serializable {
 
     /**
      * 男性枚举

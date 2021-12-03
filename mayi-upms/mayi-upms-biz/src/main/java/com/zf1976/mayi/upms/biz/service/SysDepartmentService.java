@@ -167,8 +167,8 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
         @SuppressWarnings("SimplifyStreamApiCallChains")
         final List<DepartmentVO> target = list.stream().filter(departmentVO -> departmentVO.getPid() == null)
                                               .sorted(Comparator.comparingInt(DepartmentVO::getDeptSort))
-                                              .collect(Collectors.toList());
-        return targetPage.setRecords(Collections.unmodifiableList(target));
+                                              .collect(Collectors.toUnmodifiableList());
+        return targetPage.setRecords(target);
     }
 
     /**

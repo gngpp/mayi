@@ -34,6 +34,8 @@ import java.util.Date;
  **/
 public class LogVO extends AbstractLogVO {
 
+    private static final long serialVersionUID = -783906615075832734L;
+
     private Long id;
 
     /**

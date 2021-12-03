@@ -34,6 +34,7 @@ import java.util.List;
  **/
 public class LogQueryParam extends AbstractQueryParam {
 
+    private static final long serialVersionUID = -4162068888407744721L;
     /**
      * 模糊搜索
      */

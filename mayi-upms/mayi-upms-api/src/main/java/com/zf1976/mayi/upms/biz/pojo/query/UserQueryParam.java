@@ -34,6 +34,8 @@ import java.util.List;
  */
 public class UserQueryParam extends AbstractQueryParam {
 
+    private static final long serialVersionUID = -3091660139491018578L;
+
     @Param(type = Type.LIKE, fields = {"username", "nickName", "gender"})
     private String blurry;
 

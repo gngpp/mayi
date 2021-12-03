@@ -37,6 +37,8 @@ import java.util.Date;
 @TableName("sys_dict_detail")
 public class SysDictDetail extends Model<SysDictDetail> {
 
+    private static final long serialVersionUID = 5117687159726389320L;
+
     @TableId(type = IdType.AUTO)
     private Long id;
 

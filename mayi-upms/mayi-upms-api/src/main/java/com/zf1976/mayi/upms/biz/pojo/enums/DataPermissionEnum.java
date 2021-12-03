@@ -26,12 +26,14 @@ package com.zf1976.mayi.upms.biz.pojo.enums;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.baomidou.mybatisplus.core.enums.IEnum;
 
+import java.io.Serializable;
+
 
 /**
  * @author ant
  * Create by Ant on 2020/9/15 8:29 下午
  */
-public enum DataPermissionEnum implements IEnum<Integer> {
+public enum DataPermissionEnum implements IEnum<Integer> , Serializable {
 
     /**
      * 用户部门权限

@@ -36,6 +36,7 @@ import java.util.Set;
  */
 public class User implements Serializable {
 
+    private static final long serialVersionUID = 3758272054415097227L;
     /**
      * 用户id
      */

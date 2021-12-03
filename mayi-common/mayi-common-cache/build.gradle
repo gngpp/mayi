@@ -1,8 +1,8 @@
 
 dependencies {
+    implementation("com.esotericsoftware:kryo:$KryoVersion")
     implementation("org.springframework.boot:spring-boot-starter-json:${SpringbootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-data-redis:${SpringbootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-aop:${SpringbootVersion}")
     implementation project(':mayi-common:mayi-common-core')
 }
-

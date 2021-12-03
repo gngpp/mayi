@@ -24,13 +24,16 @@
 package com.zf1976.mayi.upms.biz.pojo.vo.job;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author mac
  * @date 2020/10/25 5:08 下午
  */
-public class PositionVO {
+public class PositionVO implements Serializable {
+
+    private static final long serialVersionUID = -5293616838219307346L;
 
     /**
      * id

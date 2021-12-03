@@ -39,6 +39,8 @@ import java.util.List;
 @TableName(value = "sys_user")
 public class SysUser extends Model<SysUser> {
 
+    private static final long serialVersionUID = -2675995468601350488L;
+
     @TableId(type = IdType.AUTO)
     private Long id;
 

@@ -35,6 +35,7 @@ import java.util.List;
  */
 public class DeptQueryParam extends AbstractQueryParam {
 
+    private static final long serialVersionUID = 3099542464166938789L;
     /**
      * 部门名 模糊查询
      */
