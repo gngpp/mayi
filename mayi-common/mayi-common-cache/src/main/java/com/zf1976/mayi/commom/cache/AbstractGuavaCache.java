@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractGuavaCache<K, V> implements ICache<K, V> {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(AbstractGuavaCache.class);
+    protected static final Logger LOG = LoggerFactory.getLogger("[AbstractGuavaCache]");
     protected static final byte MAP_INITIAL_CAPACITY = 16;
     protected Map<String, Cache<K, V>> cacheSpace;
     protected volatile Cache<K, V> kvCache;
@@ -75,7 +75,7 @@ public abstract class AbstractGuavaCache<K, V> implements ICache<K, V> {
                            .maximumSize(cacheProperties.getMaximumSize())
                            .expireAfterWrite(expired, TimeUnit.SECONDS)
                            .removalListener(removalNotification -> {
-                               LOG.info(removalNotification.getKey() + " " + removalNotification.getValue() + " is remove!");
+                               LOG.debug(removalNotification.getKey() + " " + removalNotification.getValue() + " is remove!");
                            })
                            .build();
     }

@@ -112,11 +112,13 @@ public class RedisCacheProvider<K, V> implements ICache<K, V> {
 
     @Override
     public void invalidate(String namespace) {
+        log.debug("the cache namespace:" + namespace + " has been destroyed");
         this.redisTemplate.delete(this.formatNamespace(namespace));
     }
 
     @Override
     public void invalidate(String namespace, K key) {
+        log.debug("the key：{} of the cached namespace：{} has been destroyed", namespace, key);
         this.redisTemplate.opsForHash().delete(namespace, key);
     }
 
@@ -126,11 +128,6 @@ public class RedisCacheProvider<K, V> implements ICache<K, V> {
         if (!CollectionUtils.isEmpty(keys)) {
             this.redisTemplate.delete(keys);
         }
-    }
-
-    @Override
-    public void recordNamespace(String namespace) {
-        throw new UnsupportedOperationException("unsupported this record method");
     }
 
     @Override

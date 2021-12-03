@@ -31,9 +31,7 @@ public interface KeyConstants {
 
     String RESOURCE_ALLOW = "resource_allow";
 
-    String RESOURCE_LIST = "resource_list";
-
     String RESOURCE_BLACK_LIST = "resource_black_list";
 
-    String RESOURCE_METHOD = "resource_method";
+    String RESOURCE_MAP = "resource_map";
 }

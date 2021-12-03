@@ -69,9 +69,7 @@ public class GuavaCacheProvider<K, V> extends AbstractGuavaCache<K, V> {
                                                         .initialCapacity(cacheProperties.getInitialCapacity())
                                                         .maximumSize(cacheProperties.getMaximumSize())
                                                         .removalListener(removalNotification -> {
-                                                            if (LOG.isInfoEnabled()) {
-                                                                LOG.info("key：{} \n value：{} is remove", removalNotification.getKey(), removalNotification.getValue());
-                                                            }
+                                                            LOG.debug("key：{} \n value：{} is remove", removalNotification.getKey(), removalNotification.getValue());
                                                         });
 
         if (expired == null || expired <= 0) {
@@ -155,19 +153,12 @@ public class GuavaCacheProvider<K, V> extends AbstractGuavaCache<K, V> {
         }
     }
 
-    @Override
-    public void recordNamespace(String namespace) {
-
-    }
-
     private Cache<K, V> getCache(String namespace) {
         return super.cacheSpace.get(this.formatNamespace(namespace));
     }
 
     private void putNamespace(String namespace, Cache<K, V> kvCache) {
         final String formatNamespace = this.formatNamespace(namespace);
-        // 记录命名空间
-        this.recordNamespace(formatNamespace);
         super.cacheSpace.put(formatNamespace, kvCache);
     }
 
@@ -193,15 +184,11 @@ public class GuavaCacheProvider<K, V> extends AbstractGuavaCache<K, V> {
     }
 
     private void removeNamespaceLog(String namespace) {
-        if (LOG.isInfoEnabled()) {
-            LOG.info("the cache namespace:" + namespace + " has been destroyed");
-        }
+        LOG.debug("the cache namespace:" + namespace + " has been destroyed");
     }
 
     private void removeNamespaceKeyLog(String namespace, K key) {
-        if (LOG.isInfoEnabled()) {
-            LOG.info("the key：{} of the cached namespace：{} has been destroyed", namespace, key);
-        }
+        LOG.debug("the key：{} of the cached namespace：{} has been destroyed", namespace, key);
     }
 
 }

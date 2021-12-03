@@ -39,6 +39,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.Map;
@@ -52,34 +53,61 @@ import java.util.Map;
 @EnableCaching
 @ConditionalOnClass(RedisOperations.class)
 @EnableConfigurationProperties(RedisProperties.class)
-@SuppressWarnings("rawtypes, unchecked")
+@SuppressWarnings({"rawtypes, unchecked", "DuplicatedCode"})
 public class RedisConfiguration extends CachingConfigurerSupport {
 
-    @Bean(name = "template")
-    public RedisTemplate<Object, Object> template(RedisConnectionFactory factory) {
+    @Bean(name = "jdkRedisTemplate")
+    public RedisTemplate<Object, Object> jdkRedisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<Object, Object> template = new RedisTemplate<>();
-        final Jackson2JsonRedisSerializer<Object> objectJackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        return this.setRedisSerializer(template, factory, objectJackson2JsonRedisSerializer);
+        return this.setJDKSerializer(template, factory);
     }
 
-    @Bean(name = "mapRedisTemplate")
-    public RedisTemplate<Object, Map<Object, Object>> mapRedisTemplate(RedisConnectionFactory factory) {
+    @Bean(name = "jdkRedisMapTemplate")
+    public RedisTemplate<Object, Map<Object, Object>> jdkRedisMapTemplate(RedisConnectionFactory factory) {
+        RedisTemplate<Object, Map<Object, Object>> template = new RedisTemplate<>();
+        return this.setJDKSerializer(template, factory);
+    }
+
+
+    @Bean(name = "jacksonRedisTemplate")
+    public RedisTemplate<Object, Object> jacksonRedisTemplate(RedisConnectionFactory factory) {
+        RedisTemplate<Object, Object> template = new RedisTemplate<>();
+        Jackson2JsonRedisSerializer mapJackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+        return this.setJacksonSerializer(template, factory, mapJackson2JsonRedisSerializer);
+    }
+
+
+    @Bean(name = "jacksonRedisMapTemplate")
+    public RedisTemplate<Object, Map<Object, Object>> jacksonRedisMapTemplate(RedisConnectionFactory factory) {
         RedisTemplate<Object, Map<Object, Object>> template = new RedisTemplate<>();
         Jackson2JsonRedisSerializer mapJackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Map.class);
-        return this.setRedisSerializer(template, factory, mapJackson2JsonRedisSerializer);
+        return this.setJacksonSerializer(template, factory, mapJackson2JsonRedisSerializer);
     }
 
-    private RedisTemplate setRedisSerializer(RedisTemplate<?,?> template, RedisConnectionFactory factory, Jackson2JsonRedisSerializer jackson2JsonRedisSerializer) {
+
+    private RedisTemplate setJDKSerializer(RedisTemplate<?,?> template, RedisConnectionFactory factory) {
+        final var jdkSerializationRedisSerializer = new JdkSerializationRedisSerializer();
+        final var stringRedisSerializer = new StringRedisSerializer();
+        template.setConnectionFactory(factory);
+        template.setKeySerializer(stringRedisSerializer);
+        template.setValueSerializer(jdkSerializationRedisSerializer);
+        template.setHashKeySerializer(stringRedisSerializer);
+        template.setHashValueSerializer(jdkSerializationRedisSerializer);
+        template.afterPropertiesSet();
+        return template;
+    }
+
+    private RedisTemplate setJacksonSerializer(RedisTemplate<?,?> template, RedisConnectionFactory factory, Jackson2JsonRedisSerializer jackson2JsonRedisSerializer) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.activateDefaultTyping(new LaissezFaireSubTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL);
         jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
-        StringRedisSerializer stringSerial = new StringRedisSerializer();
+        final var stringRedisSerializer = new StringRedisSerializer();
         template.setConnectionFactory(factory);
-        template.setKeySerializer(stringSerial);
+        template.setKeySerializer(stringRedisSerializer);
         template.setValueSerializer(jackson2JsonRedisSerializer);
-        template.setHashKeySerializer(stringSerial);
+        template.setHashKeySerializer(stringRedisSerializer);
         template.setHashValueSerializer(jackson2JsonRedisSerializer);
         template.afterPropertiesSet();
         return template;

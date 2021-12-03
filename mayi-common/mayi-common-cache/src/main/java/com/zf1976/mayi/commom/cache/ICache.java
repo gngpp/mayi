@@ -106,13 +106,6 @@ public interface ICache<K, V> {
     void invalidateAll();
 
     /**
-     * 命名空间记录
-     *
-     * @param namespace 命名空间
-     */
-    void recordNamespace(String namespace);
-
-    /**
      * 强制格式化命名空间
      *
      * @param namespace 命名空间
