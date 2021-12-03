@@ -1,6 +1,7 @@
 package com.zf1976.mayi.common.security.matcher;
 
 import org.springframework.http.HttpMethod;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
@@ -14,7 +15,7 @@ import java.util.Map;
  * @author mac
  * 2021/12/1 星期三 8:12 PM
  */
-public class CustomizeRequestMatcher implements RequestMatcher {
+public class CustomizeRequestMatcher implements ExchangeRequestMatcher {
 
     private static final String MATCH_ALL = "/**";
 
@@ -103,9 +104,43 @@ public class CustomizeRequestMatcher implements RequestMatcher {
         return MatchResult.match(this.matcher.extractUriTemplateVariables(url));
     }
 
+    @Override
+    public boolean matches(ServerHttpRequest request) {
+        if (this.httpMethod != null && StringUtils.hasText(request.getMethod().name())
+                && this.httpMethod != HttpMethod.resolve(request.getMethod().name())) {
+            return false;
+        }
+        if (this.pattern.equals(MATCH_ALL)) {
+            return true;
+        }
+        String url = getRequestPath(request);
+        return this.matcher.matches(url);
+    }
+
+    @Override
+    public MatchResult matcher(ServerHttpRequest request) {
+        if (!matches(request)) {
+            return MatchResult.notMatch();
+        }
+        if (this.matcher == null) {
+            return MatchResult.match();
+        }
+        String url = getRequestPath(request);
+        return MatchResult.match(this.matcher.extractUriTemplateVariables(url));
+    }
+
     private String getRequestPath(HttpServletRequest request) {
         String url = request.getServletPath();
         String pathInfo = request.getPathInfo();
+        if (pathInfo != null) {
+            url = StringUtils.hasLength(url) ? url + pathInfo : pathInfo;
+        }
+        return url;
+    }
+
+    private String getRequestPath(ServerHttpRequest request) {
+        String url = request.getPath().value();
+        String pathInfo = request.getPath().value();
         if (pathInfo != null) {
             url = StringUtils.hasLength(url) ? url + pathInfo : pathInfo;
         }
