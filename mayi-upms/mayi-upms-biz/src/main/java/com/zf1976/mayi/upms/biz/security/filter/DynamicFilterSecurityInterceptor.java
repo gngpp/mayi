@@ -1,23 +1,25 @@
 /*
- * Copyright (c) 2021 zf1976
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ *  * Copyright (c) 2021 zf1976
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the "Software"), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in all
+ *  * copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  * SOFTWARE.
+ *  *
  *
  */
 
@@ -69,13 +71,13 @@ public class DynamicFilterSecurityInterceptor extends AbstractSecurityIntercepto
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         FilterInvocation filterInvocation = new FilterInvocation(servletRequest, servletResponse, filterChain);
-        //OPTIONS请求直接放行
+        // options request direct release
         if (request.getMethod().equals(HttpMethod.OPTIONS.toString())) {
             filterInvocation.getChain()
                             .doFilter(filterInvocation.getRequest(), filterInvocation.getResponse());
             return;
         }
-        //白名单请求直接放行
+        // whitelist request for direct release
         for (RequestMatcher matcher : this.loadAllowRequest()) {
             if (matcher.matches(request)) {
                 filterInvocation.getChain()
@@ -84,7 +86,7 @@ public class DynamicFilterSecurityInterceptor extends AbstractSecurityIntercepto
             }
         }
 
-        //调用AccessDecisionManager中的decide方法进行鉴权操作
+        // Call the decide method in Access Decision Manager for authentication operation
         InterceptorStatusToken token = super.beforeInvocation(filterInvocation);
         try {
             filterInvocation.getChain()

@@ -1,23 +1,25 @@
 /*
- * Copyright (c) 2021 zf1976
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ *  * Copyright (c) 2021 zf1976
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the "Software"), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in all
+ *  * copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  * SOFTWARE.
+ *  *
  *
  */
 
@@ -265,11 +267,6 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
         final List<ResourceNode> resourceNodeTree = this.generatorResourceTree(resourceList);
         // 绑定权限的资源链接列表
         final List<ResourceLinkBinding> resourceLinkBindingList = this.generatorResourceLinkBindingList(resourceNodeTree);
-        // 配置文件白名单
-        Set<String> defaultAllow = Sets.newHashSet(this.securityProperties.getIgnoreUri());
-        for (String pattern : defaultAllow) {
-            this.allowRequest.add(new DynamicRequestMatcher(pattern));
-        }
         resourceLinkBindingList.forEach(resourceLinkBinding -> {
             final Collection<ConfigAttribute> permission = resourceLinkBinding.getBindingPermissions()
                                                                               .stream()
@@ -318,6 +315,11 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
     public Collection<RequestMatcher> loadAllowRequest() {
         if (CollectionUtils.isEmpty(this.allowRequest)) {
             this.reloadDataSource();
+        }
+        // 配置文件白名单
+        Set<String> defaultAllow = Sets.newHashSet(this.securityProperties.getIgnoreUri());
+        for (String pattern : defaultAllow) {
+            this.allowRequest.add(new DynamicRequestMatcher(pattern));
         }
         return this.allowRequest;
     }
