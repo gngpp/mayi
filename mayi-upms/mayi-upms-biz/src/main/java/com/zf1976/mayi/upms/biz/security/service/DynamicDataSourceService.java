@@ -48,6 +48,7 @@ import com.zf1976.mayi.upms.biz.pojo.ResourceLinkBinding;
 import com.zf1976.mayi.upms.biz.pojo.ResourceNode;
 import com.zf1976.mayi.upms.biz.pojo.po.SysResource;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
+import com.zf1976.mayi.upms.biz.security.exception.ResourceException;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
@@ -351,6 +353,28 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
     public Void updateEnabledById(Long id, Boolean enabled) {
         Assert.notNull(id, "id cannot been null");
         Assert.notNull(enabled, "enabled cannot been null");
+        SysResource sysResource = super.lambdaQuery()
+                                       .select(SysResource::getId,
+                                               SysResource::getPid,
+                                               SysResource::getEnabled)
+                                       .eq(SysResource::getId, id)
+                                       .oneOpt()
+                                       .orElseThrow(() -> new ResourceException("Interface resource does not exist"));
+        sysResource.setEnabled(enabled);
+        // if disable
+        if (!enabled) {
+            List<SysResource> childResourceList = super.lambdaQuery()
+                                                       .select(SysResource::getId, SysResource::getEnabled)
+                                                       .eq(SysResource::getPid, id)
+                                                       .list();
+            if (!CollectionUtils.isEmpty(childResourceList)) {
+                for (SysResource childResource : childResourceList) {
+                    childResource.setEnabled(false);
+                }
+            }
+            super.updateBatchById(childResourceList);
+        }
+        super.updateById(sysResource);
         return null;
     }
 
@@ -359,6 +383,28 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
     public Void updateAllowById(Long id, Boolean allow) {
         Assert.notNull(id, "id cannot been null");
         Assert.notNull(allow, "allow cannot been null");
+        SysResource sysResource = super.lambdaQuery()
+                                       .select(SysResource::getId,
+                                               SysResource::getPid,
+                                               SysResource::getAllow)
+                                       .eq(SysResource::getId, id)
+                                       .oneOpt()
+                                       .orElseThrow(() -> new ResourceException("Interface resource does not exist"));
+        sysResource.setAllow(allow);
+        // if disable
+        if (!allow) {
+            List<SysResource> childResourceList = super.lambdaQuery()
+                                                       .select(SysResource::getId, SysResource::getAllow)
+                                                       .eq(SysResource::getPid, id)
+                                                       .list();
+            if (!CollectionUtils.isEmpty(childResourceList)) {
+                for (SysResource childResource : childResourceList) {
+                    childResource.setAllow(false);
+                }
+            }
+            super.updateBatchById(childResourceList);
+        }
+        super.updateById(sysResource);
         return null;
     }
 }
