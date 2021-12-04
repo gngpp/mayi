@@ -32,6 +32,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
@@ -42,6 +43,7 @@ import java.util.Map;
  */
 public class DynamicRequestMatcher implements RequestMatcher, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -2769405499781830937L;
 
     private static final String MATCH_ALL = "/**";
@@ -51,8 +53,6 @@ public class DynamicRequestMatcher implements RequestMatcher, Serializable {
     private  String pattern;
 
     private  HttpMethod httpMethod;
-
-    private Boolean enabled = Boolean.TRUE;
 
     private boolean caseSensitive = true;
 
@@ -97,7 +97,6 @@ public class DynamicRequestMatcher implements RequestMatcher, Serializable {
     public DynamicRequestMatcher(String pattern, String httpMethod, boolean enabled, boolean caseSensitive) {
         Assert.hasText(pattern, "Pattern cannot be null or empty");
         this.caseSensitive = caseSensitive;
-        this.enabled = enabled;
         if (pattern.equals(MATCH_ALL) || pattern.equals("**")) {
             pattern = MATCH_ALL;
             this.matcher = null;
@@ -125,10 +124,10 @@ public class DynamicRequestMatcher implements RequestMatcher, Serializable {
             return false;
         }
         if (this.pattern.equals(MATCH_ALL)) {
-            return true && this.enabled;
+            return true;
         }
         String url = getRequestPath(request);
-        return this.matcher.matches(url) && this.enabled;
+        return this.matcher.matches(url);
     }
 
     @Override
@@ -145,9 +144,6 @@ public class DynamicRequestMatcher implements RequestMatcher, Serializable {
 
     @Override
     public boolean matches(ServerHttpRequest request) {
-        if (!this.enabled) {
-            return false;
-        }
         if (this.httpMethod != null && StringUtils.hasText(request.getMethod().name())
                 && this.httpMethod != HttpMethod.resolve(request.getMethod().name())) {
             return false;

@@ -57,7 +57,7 @@ public class ResourceController {
         return DataResult.success(this.dynamicDataSourceService.findByQuery(query));
     }
 
-    @PatchMapping("/update/status/{id}")
+    @PatchMapping("/update/enabled/{id}")
     @PreAuthorize("hasRole('root')")
     public DataResult<IPage<ResourceNode>> updateEnabledById(@PathVariable @NotNull Long id, @RequestParam @NotNull Boolean enabled) {
         return DataResult.success(this.dynamicDataSourceService.updateEnabledById(id, enabled));

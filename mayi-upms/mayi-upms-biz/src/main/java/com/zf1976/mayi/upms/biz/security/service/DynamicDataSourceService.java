@@ -59,7 +59,6 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
@@ -248,9 +247,8 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
 
 
     /**
-     * 加载动态数据源资源 （URI--Permissions）
+     * 加载动态数据源资源
      *
-     * @return {@link Map}
      * @date 2021-05-05 19:53:43
      */
     @CacheEvict
@@ -345,7 +343,6 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
     @PostConstruct
     public void initialize() {
         this.reloadDataSource();
-        this.loadAllowRequest();
     }
 
     @CacheEvict
@@ -353,29 +350,53 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
     public Void updateEnabledById(Long id, Boolean enabled) {
         Assert.notNull(id, "id cannot been null");
         Assert.notNull(enabled, "enabled cannot been null");
-        SysResource sysResource = super.lambdaQuery()
-                                       .select(SysResource::getId,
-                                               SysResource::getPid,
-                                               SysResource::getEnabled)
+        SysResource resource = super.lambdaQuery()
                                        .eq(SysResource::getId, id)
                                        .oneOpt()
                                        .orElseThrow(() -> new ResourceException("Interface resource does not exist"));
-        sysResource.setEnabled(enabled);
-        // if disable
+        // enabled
+        final var pid = resource.getPid();
+        if (pid != null && enabled) {
+            final var parentResourceOptional = super.lambdaQuery()
+                                         .select(SysResource::getId, SysResource::getEnabled)
+                                         .eq(SysResource::getId, pid)
+                                         .oneOpt();
+            parentResourceOptional.ifPresent(v -> {
+                if (!v.getEnabled()) {
+                    throw new ResourceException("Please enabled the parent node resource");
+                }
+            });
+        }
+        // disable
         if (!enabled) {
             List<SysResource> childResourceList = super.lambdaQuery()
-                                                       .select(SysResource::getId, SysResource::getEnabled)
                                                        .eq(SysResource::getPid, id)
                                                        .list();
-            if (!CollectionUtils.isEmpty(childResourceList)) {
-                for (SysResource childResource : childResourceList) {
-                    childResource.setEnabled(false);
-                }
-            }
-            super.updateBatchById(childResourceList);
+            this.setChildResourceEnabledStatus(childResourceList, false);
         }
-        super.updateById(sysResource);
+        resource.setEnabled(enabled);
+        try {
+            super.updateById(resource);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
+    }
+
+    private void setChildResourceEnabledStatus(List<SysResource> resourceList, boolean enabled) {
+        if (!CollectionUtils.isEmpty(resourceList)) {
+            for (SysResource sysResource : resourceList) {
+                sysResource.setEnabled(enabled);
+            }
+            super.updateBatchById(resourceList);
+            final var ids = resourceList.stream()
+                                        .map(SysResource::getId)
+                                        .toList();
+            final var childResourceList = super.lambdaQuery()
+                                               .in(SysResource::getPid, ids)
+                                               .list();
+            this.setChildResourceEnabledStatus(childResourceList, enabled);
+        }
     }
 
     @CacheEvict
@@ -383,18 +404,14 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
     public Void updateAllowById(Long id, Boolean allow) {
         Assert.notNull(id, "id cannot been null");
         Assert.notNull(allow, "allow cannot been null");
-        SysResource sysResource = super.lambdaQuery()
-                                       .select(SysResource::getId,
-                                               SysResource::getPid,
-                                               SysResource::getAllow)
+        SysResource resource = super.lambdaQuery()
                                        .eq(SysResource::getId, id)
                                        .oneOpt()
                                        .orElseThrow(() -> new ResourceException("Interface resource does not exist"));
-        sysResource.setAllow(allow);
+        // enabled
         // if disable
         if (!allow) {
             List<SysResource> childResourceList = super.lambdaQuery()
-                                                       .select(SysResource::getId, SysResource::getAllow)
                                                        .eq(SysResource::getPid, id)
                                                        .list();
             if (!CollectionUtils.isEmpty(childResourceList)) {
@@ -404,7 +421,8 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
             }
             super.updateBatchById(childResourceList);
         }
-        super.updateById(sysResource);
+        resource.setAllow(allow);
+        super.updateById(resource);
         return null;
     }
 }

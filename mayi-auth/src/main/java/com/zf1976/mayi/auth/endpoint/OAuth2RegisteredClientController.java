@@ -40,7 +40,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/oauth2/security/client")
+@RequestMapping("/oauth2/security/clients")
 public class OAuth2RegisteredClientController {
 
     private final OAuth2RegisteredClientService oAuth2RegisteredClientService;

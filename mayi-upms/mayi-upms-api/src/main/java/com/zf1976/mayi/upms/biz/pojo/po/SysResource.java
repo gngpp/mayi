@@ -29,6 +29,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.zf1976.mayi.upms.biz.pojo.Permission;
 
+import java.io.Serial;
 import java.util.Date;
 import java.util.List;
 
@@ -39,6 +40,7 @@ import java.util.List;
 @TableName("sys_resource")
 public class SysResource extends Model<SysResource> {
 
+    @Serial
     private static final long serialVersionUID = 1752128833172626809L;
 
     @TableId(type = IdType.AUTO)
