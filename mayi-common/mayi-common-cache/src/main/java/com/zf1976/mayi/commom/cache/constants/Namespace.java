@@ -52,4 +52,6 @@ public interface Namespace {
     String DYNAMIC = "dynamic_namespace";
 
     String AUTH_SERVICE = "oauth2_service_namespace";
+
+    String LOG = "log_namespace";
 }

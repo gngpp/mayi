@@ -74,38 +74,6 @@ public class CacheAsideAspect extends AbstractCacheAsideLock {
         this.checkStatus();
     }
 
-    public static <T> T[] clone(T[] array) {
-        return array == null ? null : array.clone();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T[] addAll(T[] array1, T... array2) {
-        if (array1 == null) {
-            return clone(array2);
-        } else if (array2 == null) {
-            return clone(array1);
-        } else {
-            Class<?> type1 = array1.getClass()
-                                   .getComponentType();
-            T[] joinedArray = (T[]) Array.newInstance(type1, array1.length + array2.length);
-            System.arraycopy(array1, 0, joinedArray, 0, array1.length);
-
-            try {
-                System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
-                return joinedArray;
-            } catch (ArrayStoreException var6) {
-                log.error(var6.getMessage(), var6);
-                Class<?> type2 = array2.getClass()
-                                       .getComponentType();
-                if (!type1.isAssignableFrom(type2)) {
-                    throw new IllegalArgumentException("Cannot store " + type2.getName() + " in an array of " + type1.getName(), var6);
-                } else {
-                    throw var6;
-                }
-            }
-        }
-    }
-
     /**
      * 更新调用
      *
@@ -219,6 +187,38 @@ public class CacheAsideAspect extends AbstractCacheAsideLock {
             } else {
                 cacheKey = this.extractCacheKey(method, joinPoint.getArgs(), cacheKey);
                 cacheProvider.invalidate(namespace, cacheKey);
+            }
+        }
+    }
+
+    public static <T> T[] clone(T[] array) {
+        return array == null ? null : array.clone();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T[] addAll(T[] array1, T... array2) {
+        if (array1 == null) {
+            return clone(array2);
+        } else if (array2 == null) {
+            return clone(array1);
+        } else {
+            Class<?> type1 = array1.getClass()
+                                   .getComponentType();
+            T[] joinedArray = (T[]) Array.newInstance(type1, array1.length + array2.length);
+            System.arraycopy(array1, 0, joinedArray, 0, array1.length);
+
+            try {
+                System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
+                return joinedArray;
+            } catch (ArrayStoreException var6) {
+                log.error(var6.getMessage(), var6);
+                Class<?> type2 = array2.getClass()
+                                       .getComponentType();
+                if (!type1.isAssignableFrom(type2)) {
+                    throw new IllegalArgumentException("Cannot store " + type2.getName() + " in an array of " + type1.getName(), var6);
+                } else {
+                    throw var6;
+                }
             }
         }
     }

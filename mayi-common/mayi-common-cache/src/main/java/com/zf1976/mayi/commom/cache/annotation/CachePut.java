@@ -55,7 +55,7 @@ public @interface CachePut {
     /**
      * 动态命名空间缓存
      *
-     * @return /
+     * @return {@link String}
      */
     String dynamicsKey() default "";
 

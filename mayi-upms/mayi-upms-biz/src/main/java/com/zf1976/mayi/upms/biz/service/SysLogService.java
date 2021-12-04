@@ -30,7 +30,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zf1976.mayi.commom.cache.annotation.CachePut;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessException;
 import com.zf1976.mayi.common.core.foundation.exception.BusinessMsgState;
 import com.zf1976.mayi.upms.biz.convert.LogConvert;
@@ -76,7 +75,6 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
         return this.mapPage(sourcePage,convert::toUserLogVo);
     }
 
-    @CachePut(key = "#query")
     public IPage<AbstractLogVO> findByQuery(Query<LogQueryParam> query) {
         LogQueryParam param = query.getQuery();
         Assert.notNull(param, BusinessMsgState.PARAM_ILLEGAL::getReasonPhrase);
