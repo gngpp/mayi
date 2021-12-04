@@ -61,14 +61,8 @@ public record RequestMappingAccessDecisionVoter(
         if (request.getMethod().equals(HttpMethod.OPTIONS.toString())) {
             return ACCESS_GRANTED;
         }
-        // whitelist request for direct release
-        for (RequestMatcher matcher : this.loadDataSource().loadAllowRequest()) {
-            if (matcher.matches(request)) {
-                return ACCESS_GRANTED;
-            }
-        }
         // blacklist request
-        final var loadBlackListRequest = this.loadDataSource.loadBlackListRequest();
+        final var loadBlackListRequest = this.loadDataSource().loadBlackListRequest();
         if (CollectionUtils.isEmpty(loadBlackListRequest)) {
             return ACCESS_ABSTAIN;
         }
@@ -78,7 +72,16 @@ public record RequestMappingAccessDecisionVoter(
                 return ACCESS_DENIED;
             }
         }
-
+        final var loadAllowRequest = this.loadDataSource().loadAllowRequest();
+        if (CollectionUtils.isEmpty(loadAllowRequest)) {
+            return ACCESS_ABSTAIN;
+        }
+        // whitelist request for direct release
+        for (RequestMatcher matcher : loadAllowRequest) {
+            if (matcher.matches(request)) {
+                return ACCESS_GRANTED;
+            }
+        }
         return ACCESS_ABSTAIN;
     }
 

@@ -51,20 +51,18 @@ import java.io.IOException;
 public class DynamicFilterSecurityInterceptor extends AbstractSecurityInterceptor implements Filter {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final LoadDataSource dynamicDataSourceService;
     private final DynamicFilterInvocationSecurityMetadataSource dynamicSecurityMetadataSource;
     private final Authentication anonymous = new AnonymousAuthenticationToken("key", "anonymous",
             AuthorityUtils.createAuthorityList("authenticated"));
 
     public DynamicFilterSecurityInterceptor(LoadDataSource loadDataSource) {
-        this.dynamicDataSourceService = loadDataSource;
+        Assert.notNull(loadDataSource, "loadDataSource cannot been null.");
         this.dynamicSecurityMetadataSource = new DynamicFilterInvocationSecurityMetadataSource(loadDataSource);
         super.setAccessDecisionManager(new DynamicAccessDecisionManager(loadDataSource));
         this.checkState();
     }
 
     public void checkState() {
-        Assert.notNull(this.dynamicDataSourceService, "dynamicDataSourceService cannot been null");
         Assert.notNull(this.dynamicSecurityMetadataSource, "dynamicSecurityMetadataSource cannot been null");
     }
 
