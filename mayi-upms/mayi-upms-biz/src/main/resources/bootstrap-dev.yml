@@ -8,13 +8,13 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource            #alibaba连接池
     druid:
-      initial-size: 10                                      #初始化建立10条链接
-      max-active: 30                                        #最多二十条
+      initial-size: 5                                      #初始化建立5条链接
+      max-active: 20                                        #最多二十条
       min-idle: 5                                           #最小连接数量
-      max-wait: 60000                                       #获取连接时最大等待时间
-      time-between-eviction-runs-millis: 60000              #连接有效性检测时间
-      min-evictable-idle-time-millis: 300000                #连接在池中最小生存的时间
-      max-evictable-idle-time-millis: 900000                #连接在池中最大生存的时间
+      max-wait: 10000                                       #获取连接时最大等待时间
+      time-between-eviction-runs-millis: 15000              #连接有效性检测时间
+      min-evictable-idle-time-millis: 30000                #连接在池中最小生存的时间
+      max-evictable-idle-time-millis: 60000                #连接在池中最大生存的时间
       test-while-idle: true
       test-on-borrow: false
       test-on-return: false

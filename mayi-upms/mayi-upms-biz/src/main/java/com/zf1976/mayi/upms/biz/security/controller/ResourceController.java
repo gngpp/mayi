@@ -41,7 +41,7 @@ import javax.validation.constraints.NotNull;
  */
 @RestController
 @RequestMapping(value =
-        "/api/security/resource"
+        "/api/security/resources"
 )
 public class ResourceController {
 

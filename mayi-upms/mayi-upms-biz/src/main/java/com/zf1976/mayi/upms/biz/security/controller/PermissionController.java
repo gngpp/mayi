@@ -46,7 +46,7 @@ import java.util.Set;
  */
 @RestController
 @RequestMapping(
-        value = "/api/security/permission"
+        value = "/api/security/permissions"
 )
 public class PermissionController {
 

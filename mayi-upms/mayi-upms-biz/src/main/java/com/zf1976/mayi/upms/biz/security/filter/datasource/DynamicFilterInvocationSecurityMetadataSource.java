@@ -79,9 +79,8 @@ public record DynamicFilterInvocationSecurityMetadataSource(
     @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
         return this.loadDynamicPermissionDataSource()
-                   .entrySet()
+                   .values()
                    .stream()
-                   .map(Map.Entry::getValue)
                    .flatMap(Collection::stream)
                    .collect(Collectors.toCollection(LinkedList::new));
     }

@@ -76,14 +76,8 @@ public class DynamicRequestMatcher implements RequestMatcher, Serializable {
      * the incoming request doesn't have the same method.
      */
     public DynamicRequestMatcher(String pattern, String httpMethod) {
-        this(pattern, httpMethod, true, true);
+        this(pattern, httpMethod, true);
     }
-
-
-    public DynamicRequestMatcher(String pattern, String httpMethod, Boolean enabled) {
-        this(pattern, httpMethod, enabled, true);
-    }
-
 
     /**
      * Creates a matcher with the supplied pattern which will match the specified Http
@@ -92,9 +86,8 @@ public class DynamicRequestMatcher implements RequestMatcher, Serializable {
      * @param httpMethod the HTTP method. The {@code matches} method will return false if
      * the incoming request doesn't doesn't have the same method.
      * @param caseSensitive true if the matcher should consider case, else false
-     * @param enabled true if the matcher should allow request
      */
-    public DynamicRequestMatcher(String pattern, String httpMethod, boolean enabled, boolean caseSensitive) {
+    public DynamicRequestMatcher(String pattern, String httpMethod, boolean caseSensitive) {
         Assert.hasText(pattern, "Pattern cannot be null or empty");
         this.caseSensitive = caseSensitive;
         if (pattern.equals(MATCH_ALL) || pattern.equals("**")) {

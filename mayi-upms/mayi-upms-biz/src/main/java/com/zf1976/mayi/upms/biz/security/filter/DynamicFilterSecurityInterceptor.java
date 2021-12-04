@@ -25,23 +25,22 @@
 
 package com.zf1976.mayi.upms.biz.security.filter;
 
-import com.zf1976.mayi.common.security.matcher.RequestMatcher;
 import com.zf1976.mayi.common.security.matcher.load.LoadDataSource;
 import com.zf1976.mayi.upms.biz.security.filter.datasource.DynamicFilterInvocationSecurityMetadataSource;
 import com.zf1976.mayi.upms.biz.security.filter.manager.DynamicAccessDecisionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
 import org.springframework.security.access.intercept.InterceptorStatusToken;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.util.Assert;
 
 import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Collection;
 
 /**
  * 动态权限安全过滤
@@ -54,6 +53,8 @@ public class DynamicFilterSecurityInterceptor extends AbstractSecurityIntercepto
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final LoadDataSource dynamicDataSourceService;
     private final DynamicFilterInvocationSecurityMetadataSource dynamicSecurityMetadataSource;
+    private final Authentication anonymous = new AnonymousAuthenticationToken("key", "anonymous",
+            AuthorityUtils.createAuthorityList("authenticated"));
 
     public DynamicFilterSecurityInterceptor(LoadDataSource loadDataSource) {
         this.dynamicDataSourceService = loadDataSource;
@@ -69,36 +70,16 @@ public class DynamicFilterSecurityInterceptor extends AbstractSecurityIntercepto
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
         FilterInvocation filterInvocation = new FilterInvocation(servletRequest, servletResponse, filterChain);
-        // options request direct release
-        if (request.getMethod().equals(HttpMethod.OPTIONS.toString())) {
-            filterInvocation.getChain()
-                            .doFilter(filterInvocation.getRequest(), filterInvocation.getResponse());
-            return;
-        }
-        // whitelist request for direct release
-        for (RequestMatcher matcher : this.loadAllowRequest()) {
-            if (matcher.matches(request)) {
-                filterInvocation.getChain()
-                                .doFilter(filterInvocation.getRequest(), filterInvocation.getResponse());
-                return;
-            }
-        }
-
         // Call the decide method in Access Decision Manager for authentication operation
         InterceptorStatusToken token = super.beforeInvocation(filterInvocation);
         try {
-            filterInvocation.getChain()
-                            .doFilter(filterInvocation.getRequest(), filterInvocation.getResponse());
+            filterInvocation.getChain().doFilter(filterInvocation.getRequest(), filterInvocation.getResponse());
         } finally {
-            // 直接到控制器-servlet底层上来
-            super.afterInvocation(token, null);
+            super.finallyInvocation(token);
         }
-    }
-
-    private Collection<RequestMatcher> loadAllowRequest() {
-        return this.dynamicDataSourceService.loadAllowRequest();
+        // Go directly to the bottom of the controller-servlet
+        super.afterInvocation(token, null);
     }
 
     @Override

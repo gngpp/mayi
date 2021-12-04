@@ -27,6 +27,7 @@ package com.zf1976.mayi.upms.biz.security.filter.vote;
 
 import com.zf1976.mayi.common.security.matcher.RequestMatcher;
 import com.zf1976.mayi.common.security.matcher.load.LoadDataSource;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
@@ -55,14 +56,22 @@ public record RequestMappingAccessDecisionVoter(
 
     @Override
     public int vote(Authentication authentication, Object object, Collection<ConfigAttribute> attributes) {
+        HttpServletRequest request = ((FilterInvocation) object).getRequest();
+        // options request direct release
+        if (request.getMethod().equals(HttpMethod.OPTIONS.toString())) {
+            return ACCESS_GRANTED;
+        }
+        // whitelist request for direct release
+        for (RequestMatcher matcher : this.loadDataSource().loadAllowRequest()) {
+            if (matcher.matches(request)) {
+                return ACCESS_GRANTED;
+            }
+        }
         // blacklist request
         final var loadBlackListRequest = this.loadDataSource.loadBlackListRequest();
         if (CollectionUtils.isEmpty(loadBlackListRequest)) {
             return ACCESS_ABSTAIN;
         }
-
-        FilterInvocation filterInvocation = (FilterInvocation) object;
-        HttpServletRequest request = filterInvocation.getRequest();
         // matching blocklist request
         for (RequestMatcher requestMatcher : loadBlackListRequest) {
             if (requestMatcher.matches(request)) {
@@ -72,6 +81,5 @@ public record RequestMappingAccessDecisionVoter(
 
         return ACCESS_ABSTAIN;
     }
-
 
 }
