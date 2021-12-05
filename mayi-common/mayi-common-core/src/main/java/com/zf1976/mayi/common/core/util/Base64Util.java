@@ -25,14 +25,14 @@
 
 package com.zf1976.mayi.common.core.util;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 /**
  * @author ant
  * Create by Ant on 2021/7/31 2:59 PM
  */
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 public class Base64Util {
     public Base64Util() {
     }
@@ -43,19 +43,11 @@ public class Base64Util {
     }
 
     public static byte[] decryptBASE64(String encryptedData) {
-        try {
-            return decryptBASE64(encryptedData.getBytes("utf-8"));
-        } catch (UnsupportedEncodingException var2) {
-            throw new RuntimeException("不支持的编码方式：" + var2);
-        }
+        return decryptBASE64(encryptedData.getBytes(StandardCharsets.UTF_8));
     }
 
     public static String decryptToString(String encryptedData) {
-        try {
-            return decryptToString(encryptedData.getBytes("utf-8"));
-        } catch (UnsupportedEncodingException var2) {
-            throw new RuntimeException("不支持的编码方式：" + var2);
-        }
+        return decryptToString(encryptedData.getBytes(StandardCharsets.UTF_8));
     }
 
     public static String decryptToString(byte[] encryptedData) {
@@ -68,19 +60,11 @@ public class Base64Util {
     }
 
     public static byte[] encryptBASE64(String plaintext) {
-        try {
-            return encryptBASE64(plaintext.getBytes("utf-8"));
-        } catch (UnsupportedEncodingException var2) {
-            throw new RuntimeException("不支持的编码方式：" + var2);
-        }
+        return encryptBASE64(plaintext.getBytes(StandardCharsets.UTF_8));
     }
 
     public static String encryptToString(String plaintext) {
-        try {
-            return encryptToString(plaintext.getBytes("utf-8"));
-        } catch (UnsupportedEncodingException var2) {
-            throw new RuntimeException("不支持的编码方式：" + var2);
-        }
+        return encryptToString(plaintext.getBytes(StandardCharsets.UTF_8));
     }
 
     public static String encryptToString(byte[] plainByteArr) {

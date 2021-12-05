@@ -34,6 +34,7 @@ import com.zf1976.mayi.commom.cache.handler.SpringElExpressionHandler;
 import com.zf1976.mayi.commom.cache.impl.GuavaCacheProvider;
 import com.zf1976.mayi.commom.cache.impl.RedisCacheProvider;
 import com.zf1976.mayi.commom.cache.property.CacheProperties;
+import com.zf1976.mayi.common.core.util.Base64Util;
 import com.zf1976.mayi.common.core.util.StringUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -225,7 +226,7 @@ public class CacheAsideAspect extends AbstractCacheAsideLock {
 
     private String extractCacheKey(Method method, Object[] arguments, String springEl) {
         String parse = this.handler.parse(method, arguments, springEl, String.class, springEl);
-        return DigestUtils.md5DigestAsHex(parse.getBytes(StandardCharsets.UTF_8));
+        return Base64Util.encryptToString(parse);
     }
 
     private void checkStatus() {
