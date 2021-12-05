@@ -46,16 +46,22 @@ WORKDIR /mayi
 MAINTAINER zf1976 <verticle@foxmail.com>
 LABEL name=mayi-auth
 LABEL url=https://github.com/zf1976/mayi
+
+RUN apk add curl
 # env
 ENV LANG C.UTF-8
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH "${JAVA_HOME}/bin:${PATH}"
 ENV JAR_FILE=/mayi/target.jar
 ENV CONFIG=./bootstrap.yml
+ENV RUN_SCRIPT=./run
+# copy
 COPY --from=jre-build /javaruntime $JAVA_HOME
 COPY --from=jre-build $JAR_FILE ./target.jar
 COPY $CONFIG ./bootstrap.yml
-
+COPY $RUN_SCRIPT ./run
+# deploy
 ENV JVM_OPTS="-Xms128m -Xmx256m" \
     TZ=Asia/Shanghai
-CMD exec java $JVM_OPTS -Djava.security.egd=file:/dev/./urandom -jar /mayi/target.jar --spring.config.additional-location=/mayi/bootstrap.yml
+RUN chmod +x ./run
+CMD ["sh","./run"]

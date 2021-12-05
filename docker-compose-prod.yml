@@ -13,6 +13,8 @@ services:
       context: ./
       dockerfile: docker/prod/system/Dockerfile
     image: mayi-upms-biz
+    environment:
+      NACOS_BASE_URL: mayi.nacos:8848
     depends_on:
       - mayi-nacos
       - mayi-mysql
@@ -32,6 +34,8 @@ services:
       context: ./
       dockerfile: docker/prod/auth/Dockerfile
     image: mayi-auth
+    environment:
+      NACOS_BASE_URL: mayi.nacos:8848
     depends_on:
       - mayi-nacos
       - mayi-redis
@@ -49,6 +53,8 @@ services:
       context: ./
       dockerfile: docker/prod/gateway/Dockerfile
     image: mayi-gateway
+    environment:
+      NACOS_BASE_URL: mayi.nacos:8848
     depends_on:
       - mayi-nacos
       - mayi-redis
@@ -108,7 +114,7 @@ services:
       MODE: standalone
       SPRING_DATASOURCE_PLATFORM: mysql
       MYSQL_DATABASE_NUM: 1
-      MYSQL_SERVICE_HOST: ${MYSQL_HOST:-mayi.mysql}
+      MYSQL_SERVICE_HOST: mayi.mysql
       MYSQL_SERVICE_PORT: ${MYSQL_PORT:-3306}
       MYSQL_SERVICE_USER: ${MYSQL_USER:-nacos}
       MYSQL_SERVICE_PASSWORD: ${MYSQL_PASSWORD:-nacos}

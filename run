@@ -1,0 +1,44 @@
+#!/bin/sh
+
+#
+# /*
+#  * Copyright (c) 2021 zf1976
+#  *
+#  * Permission is hereby granted, free of charge, to any person obtaining a copy
+#  * of this software and associated documentation files (the "Software"), to deal
+#  * in the Software without restriction, including without limitation the rights
+#  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  * copies of the Software, and to permit persons to whom the Software is
+#  * furnished to do so, subject to the following conditions:
+#  *
+#  * The above copyright notice and this permission notice shall be included in all
+#  * copies or substantial portions of the Software.
+#  *
+#  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING COMMUNICATION_AUTHORIZATION,
+#  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#  * SOFTWARE.
+#  *
+#  */
+#
+while :
+    do
+        # shellcheck disable=SC2006
+        CODE=`curl -I -m 10 -o /dev/null -s -w %{http_code}  http://"$NACOS_BASE_URL"/nacos/#/login`
+        # judging that the status code is 200
+        # shellcheck disable=SC2039
+        if [[ $CODE -eq 200 ]]; then
+            # output green text and jump out of the loop
+            echo -e "nacos is running..."
+            break
+        else
+            echo -e "nacos has not been started"
+            # pause for 1 second
+            sleep 1
+        fi
+    done
+
+java $JVM_OPTS -Ddruid.mysql.usePingMethod=false -Djava.security.egd=file:/dev/./urandom -jar /mayi/target.jar --spring.config.additional-location=/mayi/bootstrap.yml
