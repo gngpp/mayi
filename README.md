@@ -3,7 +3,7 @@
 		<img src="https://img.shields.io/badge/license-MIT-blue.svg" ></img>
 	</a>
 	<a target="_blank" href="https://github.com/1976/mayi">
-		<img src="https://img.shields.io/badge/version-2.5.3-brightgreen.svg" ></img>
+		<img src="https://img.shields.io/badge/version-2.5.6-brightgreen.svg" ></img>
 	</a>
 	<a target="_blank" href="https://www.oracle.com/technetwork/java/javase/downloads/index.html">
 		<img src="https://img.shields.io/badge/JDK-17+-green.svg" ></img>
@@ -15,7 +15,7 @@
 > 基于**RBAC模型**的系统核心设计，**OAuth2**认证的基础上拓展打造企业级微服务开发解决方案，实现主要功能：RBAC权限管理、**OAuth2**认证管理、安全管理、服务监控等。
 
 ### 主要技术栈
-- 开发框架：Spring Boot 2.5.3
+- 开发框架：Spring Boot 2.5.6
 - 微服务框架：Spring Cloud 2020.0.4
 - 认证服务器：Authorization Server 0.2.0
 - 安全框架：Spring Security 5.5.0
