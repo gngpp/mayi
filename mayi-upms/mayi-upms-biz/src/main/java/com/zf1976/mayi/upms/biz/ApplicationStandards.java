@@ -31,7 +31,7 @@ import java.nio.file.Paths;
  * @author ant
  * Create by Ant on 2021/7/31 2:00 PM
  */
-public interface MayiStandards {
+public interface ApplicationStandards {
 
     /**
      * Home

@@ -27,7 +27,7 @@ package com.zf1976.mayi.upms.biz.security.backup;
 
 import com.zf1976.mayi.common.core.compressors.gzip.GzipCompressorOutputStream;
 import com.zf1976.mayi.common.core.util.IOUtil;
-import com.zf1976.mayi.upms.biz.MayiStandards;
+import com.zf1976.mayi.upms.biz.ApplicationStandards;
 import com.zf1976.mayi.upms.biz.security.backup.exception.SQLBackupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,7 @@ public class MySQLBackupStrategy implements SQLBackupStrategy {
         this.mysqlRecover = "mysql --defaults-extra-file=/etc/my.cnf " + this.getDatabase() + " < ";
         this.mysqlDump = "mysqldump --defaults-extra-file=/etc/my.cnf " + this.getDatabase();
         try {
-            this.tempDir = Files.createDirectories(Paths.get(MayiStandards.TEMP_PATH))
+            this.tempDir = Files.createDirectories(Paths.get(ApplicationStandards.TEMP_PATH))
                                 .toFile();
             if (!this.tempDir.exists() || !this.tempDir.isDirectory()) {
                 throw new RuntimeException("Failed to create temporary directory file");

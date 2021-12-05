@@ -27,7 +27,7 @@ package com.zf1976.mayi.upms.biz.config;
 
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.zf1976.mayi.common.core.config.ThreadPoolProperties;
-import com.zf1976.mayi.upms.biz.MayiStandards;
+import com.zf1976.mayi.upms.biz.ApplicationStandards;
 import com.zf1976.mayi.upms.biz.handle.MetaDataHandler;
 import com.zf1976.mayi.upms.biz.property.FileProperties;
 import org.springframework.beans.factory.InitializingBean;
@@ -134,7 +134,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer, InitializingBean {
      * @return /
      */
     private String resolveSystemPath(String childPath) {
-        final File file = new File(MayiStandards.HOME_PATH + this.fileProperties.getWorkFilePath(), childPath);
+        final File file = new File(ApplicationStandards.HOME_PATH + this.fileProperties.getWorkFilePath(), childPath);
         try {
             Files.createDirectories(file.toPath());
         } catch (IOException e) {
@@ -145,7 +145,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer, InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        final String homePath = MayiStandards.HOME_PATH;
+        final String homePath = ApplicationStandards.HOME_PATH;
         final FileProperties.Real real = this.fileProperties.getReal();
         FileProperties.setAvatarRealPath(homePath + this.fileProperties.getWorkFilePath() + real.getAvatarPath());
         FileProperties.setFileRealPath(homePath + this.fileProperties.getWorkFilePath() + real.getFilePath());

@@ -27,7 +27,6 @@ package com.zf1976.mayi.upms.biz.security.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.FluentIterable;
@@ -37,6 +36,7 @@ import com.zf1976.mayi.commom.cache.annotation.CacheEvict;
 import com.zf1976.mayi.commom.cache.annotation.CachePut;
 import com.zf1976.mayi.commom.cache.constants.KeyConstants;
 import com.zf1976.mayi.commom.cache.constants.Namespace;
+import com.zf1976.mayi.common.core.util.BooleanUtil;
 import com.zf1976.mayi.common.security.access.PermissionAttribute;
 import com.zf1976.mayi.common.security.matcher.DynamicRequestMatcher;
 import com.zf1976.mayi.common.security.matcher.RequestMatcher;
@@ -50,7 +50,6 @@ import com.zf1976.mayi.upms.biz.pojo.ResourceNode;
 import com.zf1976.mayi.upms.biz.pojo.po.SysResource;
 import com.zf1976.mayi.upms.biz.pojo.query.Query;
 import com.zf1976.mayi.upms.biz.security.exception.ResourceException;
-import com.zf1976.mayi.upms.biz.service.util.LambdaMethodUtils;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.stereotype.Service;
@@ -279,17 +278,23 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
             final var method = resourceLinkBinding.getMethod();
             final var enabled = resourceLinkBinding.getEnabled();
             final var allow = resourceLinkBinding.getAllow();
-            // allow resource
-            if (allow) {
-                this.allowRequest.add(new DynamicRequestMatcher(pattern, method));
+
+            /*
+             * allow使接口无需权限访问，但仍然需要通过系统认证
+             * 1. 如果接口属于关闭状态，不允许allow
+             * 2. 如果接口属于开启状态，允许allow
+             */
+            // enabled
+            if (enabled) {
+                if (allow) {
+                    this.allowRequest.add(new DynamicRequestMatcher(pattern, method));
+                } else {
+                    this.requestMap.put(new DynamicRequestMatcher(pattern, method), permission);
+                }
             } else {
-                this.requestMap.put(new DynamicRequestMatcher(pattern, method), permission);
-            }
-            // blacklist
-            if (!enabled) {
+                // blacklist
                 this.blackListRequest.add(new DynamicRequestMatcher(pattern, method));
             }
-
         });
     }
 
@@ -376,11 +381,30 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
                                                        .select(SysResource::getId, SysResource::getEnabled)
                                                        .eq(SysResource::getPid, id)
                                                        .list();
-            this.setChildResourceStatus(childResourceList, false, SysResource::getEnabled);
+            this.setChildDisableResourceStatus(childResourceList);
+            resource.setAllow(false);
         }
         resource.setEnabled(enabled);
         super.updateById(resource);
         return null;
+    }
+
+    private void setChildDisableResourceStatus(List<SysResource> resourceList) {
+        if (!CollectionUtils.isEmpty(resourceList)) {
+            for (SysResource resource : resourceList) {
+                resource.setEnabled(false);
+                resource.setAllow(false);
+            }
+            super.updateBatchById(resourceList);
+            final var ids = resourceList.stream()
+                                        .map(SysResource::getId)
+                                        .toList();
+            final var childResourceList = super.lambdaQuery()
+                                               .select(SysResource::getId, SysResource::getEnabled, SysResource::getAllow)
+                                               .in(SysResource::getPid, ids)
+                                               .list();
+            this.setChildDisableResourceStatus(childResourceList);
+        }
     }
 
     @CacheEvict
@@ -389,54 +413,55 @@ public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysRes
         Assert.notNull(id, "id cannot been null");
         Assert.notNull(allow, "allow cannot been null");
         SysResource resource = super.lambdaQuery()
-                                    .select(SysResource::getId, SysResource::getPid, SysResource::getAllow)
+                                    .select(SysResource::getId, SysResource::getPid,SysResource::getEnabled, SysResource::getAllow)
                                     .eq(SysResource::getId, id)
                                     .oneOpt()
                                     .orElseThrow(() -> new ResourceException("Interface resource does not exist"));
         // enabled
-        final var pid = resource.getPid();
-        if (pid != null && allow) {
-            final var parentResourceOptional = super.lambdaQuery()
-                                         .select(SysResource::getAllow)
-                                         .eq(SysResource::getId, pid)
-                                         .oneOpt();
-            parentResourceOptional.ifPresent(v -> {
-                if (!v.getAllow()) {
-                    throw new ResourceException("Please allow the parent node resource.");
+        if (BooleanUtil.isTrue(resource.getEnabled())) {
+            final var pid = resource.getPid();
+            if (pid != null) {
+                final var parentResourceOptional = super.lambdaQuery()
+                                                        .select(SysResource::getAllow, SysResource::getEnabled)
+                                                        .eq(SysResource::getId, pid)
+                                                        .oneOpt();
+                parentResourceOptional.ifPresent(v -> {
+                    if (!v.getAllow() || !v.getEnabled()) {
+                        throw new ResourceException("Please enabled and allow the parent node resource.");
+                    }
+                });
+
+            } else {
+                if (!allow) {
+                    List<SysResource> childResourceList = super.lambdaQuery()
+                                                               .select(SysResource::getId, SysResource::getAllow)
+                                                               .eq(SysResource::getPid, id)
+                                                               .list();
+                    this.setChildDisabledAllowResourceStatus(childResourceList);
                 }
-            });
-        }
-        // disable
-        if (!allow) {
-            List<SysResource> childResourceList = super.lambdaQuery()
-                                                       .select(SysResource::getId, SysResource::getAllow)
-                                                       .eq(SysResource::getPid, id)
-                                                       .list();
-            this.setChildResourceStatus(childResourceList, false, SysResource::getAllow);
+            }
+        } else {
+            throw new ResourceException("Please enabled the node resource.");
         }
         resource.setAllow(allow);
         super.updateById(resource);
         return null;
     }
 
-    private void setChildResourceStatus(List<SysResource> resourceList, boolean status, SFunction<SysResource, ?> columns) {
-        Assert.notNull(columns, "columns cannot benn null.");
+    private void setChildDisabledAllowResourceStatus(List<SysResource> resourceList) {
         if (!CollectionUtils.isEmpty(resourceList)) {
-            for (SysResource sysResource : resourceList) {
-                if (LambdaMethodUtils.columnsToString(columns).equals("allow")) {
-                    sysResource.setAllow(status);
-                } else if (LambdaMethodUtils.columnsToString(columns).equals("enabled")) {
-                    sysResource.setEnabled(status);
-                }
+            for (SysResource resource : resourceList) {
+                resource.setAllow(false);
             }
             super.updateBatchById(resourceList);
             final var ids = resourceList.stream()
                                         .map(SysResource::getId)
                                         .toList();
             final var childResourceList = super.lambdaQuery()
+                                               .select(SysResource::getId, SysResource::getAllow)
                                                .in(SysResource::getPid, ids)
                                                .list();
-            this.setChildResourceStatus(childResourceList, status, columns);
+            this.setChildDisabledAllowResourceStatus(childResourceList);
         }
     }
 
