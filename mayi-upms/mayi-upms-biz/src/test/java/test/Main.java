@@ -25,18 +25,29 @@
 
 package test;
 
+import com.zf1976.mayi.common.core.util.Base64Util;
+import com.zf1976.mayi.common.core.util.HexUtil;
+import com.zf1976.mayi.common.core.util.UUIDUtil;
+import org.springframework.util.Base64Utils;
+
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Base64;
+import java.util.UUID;
 
 /**
  * @author ant
  * Create by Ant on 2021/7/31 2:19 PM
  */
 public class Main {
-    public static void main(String[] args) throws IOException {
-        final var filePath = Files.createFile(Paths.get("/users/ant/zip.txt"));
-        final var file = filePath.toFile();
-        System.out.println(file.exists());
+    public static void main(String[] args) {
+       String str = "Query{page=1, size=5, sort=null, orders=null, query=null}";
+       String str2 = "demp";
+        System.out.println(Base64Util.encryptToString(str2));
+        System.out.println(Base64Util.encryptToString(str));
+        System.out.println(HexUtil.byteArr2HexStr(str.getBytes(StandardCharsets.UTF_8)));
+        System.out.println(HexUtil.byteArr2HexStr(str2.getBytes(StandardCharsets.UTF_8)));
     }
 }

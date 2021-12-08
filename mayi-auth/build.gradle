@@ -78,7 +78,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:$SpringCloudVersion"
-        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$AlibabaVersion"
+        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$SpringCloudAlibabaVersion"
     }
 }
 

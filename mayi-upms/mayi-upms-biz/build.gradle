@@ -61,7 +61,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-configuration-processor"
 
     // Resource server
-    implementation 'com.nimbusds:oauth2-oidc-sdk'
+    implementation 'com.nimbusds:oauth2-oidc-sdk:9.20'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
     // SpringCloud
@@ -75,7 +75,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:$SpringCloudVersion"
-        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$AlibabaVersion"
+        mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:$SpringCloudAlibabaVersion"
     }
 }
 

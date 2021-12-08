@@ -88,6 +88,7 @@ public class CacheAsideAspect extends AbstractCacheAsideLock {
         Class<?> targetClass = this.extractTargetClass(joinPoint.getThis());
         // Cache configuration
         CacheConfig cacheConfig = targetClass.getAnnotation(CacheConfig.class);
+        @SuppressWarnings("SimplifyStreamApiCallChains")
         List<String> methodList = Arrays.stream(addAll(annotation.postInvoke(), cacheConfig != null ? cacheConfig.postInvoke() : new String[0]))
                                         .distinct()
                                         .collect(Collectors.toUnmodifiableList());
