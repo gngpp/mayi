@@ -60,6 +60,8 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 
@@ -79,9 +81,9 @@ import java.util.stream.Collectors;
 public class DynamicDataSourceService extends ServiceImpl<SysResourceDao, SysResource> implements InitPermission, LoadDataSource {
 
     private final static byte DEFAULT_CAP = 16;
-    private final Map<RequestMatcher, Collection<ConfigAttribute>> requestMap = new LinkedHashMap<>(DEFAULT_CAP);
-    private final Collection<RequestMatcher> allowRequest = new LinkedList<>();
-    private final Collection<RequestMatcher> blackListRequest = new LinkedList<>();
+    private final Map<RequestMatcher, Collection<ConfigAttribute>> requestMap = new ConcurrentHashMap<>(DEFAULT_CAP);
+    private final Collection<RequestMatcher> allowRequest = new CopyOnWriteArrayList<>();
+    private final Collection<RequestMatcher> blackListRequest = new CopyOnWriteArrayList<>();
     private final SysPermissionDao permissionDao;
     private final SecurityProperties securityProperties;
 

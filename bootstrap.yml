@@ -1,7 +1,7 @@
 # The following profiles are active: xxx
 spring:
   profiles:
-    active: prod
+    active: dev
 
 logging:
   level:
