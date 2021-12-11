@@ -71,6 +71,7 @@ public abstract class AbstractService<D extends BaseMapper<E>, E> extends Servic
     protected final Logger log = LoggerFactory.getLogger(AbstractService.class);
     protected final ThreadLocal<QueryChainWrapper<E>> wrapperThreadLocal = new ThreadLocal<>();
     protected final ThreadLocal<Query<? extends AbstractQueryParam>> queryThreadLocal = new ThreadLocal<>();
+    protected static final int MAX_PAGE_DEPARTMENT = 9999;
 
     public AbstractService() {
         this.removeThreadLocalVariable();

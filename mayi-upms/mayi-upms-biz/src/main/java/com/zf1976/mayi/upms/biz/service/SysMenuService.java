@@ -258,7 +258,7 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
              .eq(SysMenu::getId, id)
              .oneOpt().orElseThrow(() -> new MenuException(MenuState.MENU_NOT_FOUND));
         final IPage<SysMenu> sourcePage = super.queryWrapper()
-                                               .chainQuery(new Query<>())
+                                               .chainQuery(new Query<>(1, MAX_PAGE_DEPARTMENT))
                                                .selectPage();
         // 收集本级菜单下所有子菜单id集合
         final Set<Long> nextMenuLowIds = this.collectCurrentChildrenMenuIds(id, new HashSet<>());

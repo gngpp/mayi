@@ -68,7 +68,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true, rollbackFor = Throwable.class)
 public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysDepartment> {
 
-    private static final int MAX_PAGE_DEPARTMENT = 9999;
     private final Logger log = LoggerFactory.getLogger("[SysDepartmentService]");
     private final DepartmentConvert convert = DepartmentConvert.INSTANCE;
 
