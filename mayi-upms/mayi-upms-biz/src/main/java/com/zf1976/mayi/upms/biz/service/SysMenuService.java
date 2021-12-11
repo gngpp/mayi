@@ -390,7 +390,7 @@ public class SysMenuService extends AbstractService<SysMenuDao, SysMenu> {
      * 删除菜单包括所有子菜单
      *
      * @param ids id collection
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional

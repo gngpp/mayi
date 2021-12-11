@@ -360,7 +360,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          *
          * @param id      id
          * @param enabled enabled
-         * @return /
+         * @return {@link Void}
          */
         @CacheEvict
         @Transactional
@@ -394,7 +394,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * 修改头像
          *
          * @param multipartFile 上传头像
-         * @return /
+         * @return {@link Void}
          */
         @CacheEvict
         @Transactional
@@ -535,7 +535,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * personal center information modification
          *
          * @param dto dto
-         * @return /
+         * @return {@link Void}
          */
         @CacheEvict
         @Transactional
@@ -561,7 +561,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * new users
          *
          * @param dto dto
-         * @return /
+         * @return {@link Void}
          */
         @CacheEvict
         @Transactional
@@ -603,7 +603,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * update user
          *
          * @param dto dto
-         * @return /
+         * @return {@link Void}
          */
         @CacheEvict
         @Transactional
@@ -708,7 +708,7 @@ public class SysUserService extends AbstractService<SysUserDao, SysUser> {
          * delete users
          *
          * @param ids ids
-         * @return /
+         * @return {@link Void}
          */
         @CacheEvict
         @Transactional

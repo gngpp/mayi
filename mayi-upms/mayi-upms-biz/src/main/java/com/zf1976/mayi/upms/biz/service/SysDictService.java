@@ -91,7 +91,7 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      * 新增字典
      *
      * @param dto dto
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -112,7 +112,7 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      * 更新字典
      *
      * @param dto dto
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -143,7 +143,7 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      * 删除字典
      *
      * @param ids id collection
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -156,7 +156,7 @@ public class SysDictService extends AbstractService<SysDictDao, SysDict> {
      * 下载dict excel文件
      * @param query query param
      * @param response response
-     * @return /
+     * @return {@link Void}
      */
     public Void downloadExcel(Query<DictQueryParam> query, HttpServletResponse response) {
         List<SysDict> records = super.queryWrapper()

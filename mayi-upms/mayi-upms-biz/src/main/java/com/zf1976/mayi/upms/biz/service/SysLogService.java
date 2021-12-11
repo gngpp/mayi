@@ -158,44 +158,44 @@ public class SysLogService extends ServiceImpl<SysLogDao, SysLog> {
      * 删除日志
      *
      * @param ids ids
-     * @return /
+     * @return {@link Void}
      */
     @Transactional
-    public Optional<Void> deleteByIds(Set<Long> ids) {
+    public Void deleteByIds(Set<Long> ids) {
         if (!super.removeByIds(ids)) {
             throw new BusinessException(BusinessMsgState.OPT_ERROR);
         }
-        return Optional.empty();
+        return null;
     }
 
     /**
      * 删除所有错误日志
      *
-     * @return /
+     * @return {@link Void}
      */
     @Transactional
-    public Optional<Void> deleteError() {
+    public Void deleteError() {
         LambdaQueryWrapper<SysLog> wrapper = new LambdaQueryWrapper<SysLog>()
                 .eq(SysLog::getLogType, LogType.ERROR);
         if (!super.remove(wrapper)) {
             throw new BusinessException(BusinessMsgState.OPT_ERROR);
         }
-        return Optional.empty();
+        return null;
     }
 
     /**
      * 删除所有常规日志
      *
-     * @return /
+     * @return {@link Void}
      */
     @Transactional
-    public Optional<Void> deleteInfo() {
+    public Void deleteInfo() {
         LambdaQueryWrapper<SysLog> wrapper = new LambdaQueryWrapper<SysLog>()
                 .ne(SysLog::getLogType, LogType.ERROR);
         if (!super.remove(wrapper)) {
             throw new BusinessException(BusinessMsgState.OPT_ERROR);
         }
-        return Optional.empty();
+        return null;
     }
 
 }

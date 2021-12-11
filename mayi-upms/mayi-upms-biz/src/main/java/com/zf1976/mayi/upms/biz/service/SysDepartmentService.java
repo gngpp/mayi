@@ -119,7 +119,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      *
      * @param sysDepartment 部门
      * @param deptList      部门列表
-     * @return /
+     * @return {@link List<SysDepartment>}
      */
     private List<SysDepartment> collectDepartmentVertex(SysDepartment sysDepartment, List<SysDepartment> deptList) {
         if (ObjectUtils.isEmpty(sysDepartment) || ObjectUtils.isEmpty(sysDepartment.getPid())) {
@@ -187,7 +187,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      * 新增部门
      *
      * @param dto dto
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -208,7 +208,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      * 更新部门
      *
      * @param dto dto
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -274,7 +274,7 @@ public class SysDepartmentService extends AbstractService<SysDepartmentDao, SysD
      * 删除 部门包含所有子部门
      *
      * @param ids ids
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional

@@ -83,7 +83,7 @@ public class SysPositionService extends AbstractService<SysPositionDao, SysPosit
      * 新增岗位
      *
      * @param dto dto
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -104,7 +104,7 @@ public class SysPositionService extends AbstractService<SysPositionDao, SysPosit
      * 更新岗位
      *
      * @param dto dto
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -134,7 +134,7 @@ public class SysPositionService extends AbstractService<SysPositionDao, SysPosit
      * 删除岗位
      *
      * @param ids id collection
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -149,7 +149,7 @@ public class SysPositionService extends AbstractService<SysPositionDao, SysPosit
      *
      * @param query request page
      * @param response response
-     * @return /
+     * @return {@link Void}
      */
     public Void downloadExcel(Query<PositionQueryParam> query, HttpServletResponse response) {
         List<SysPosition> records = super.queryWrapper()

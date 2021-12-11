@@ -100,7 +100,7 @@ public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysD
      * 新增字典详情
      *
      * @param dto dto
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -114,7 +114,7 @@ public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysD
      * 更新字典详情
      *
      * @param dto dto
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -136,7 +136,7 @@ public class SysDictDetailService extends AbstractService<SysDictDetailDao, SysD
      * 删除字典详情
      *
      * @param id id
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional

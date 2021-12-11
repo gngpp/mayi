@@ -148,7 +148,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      *
      * @param id 角色id
      * @param enabled 状态
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -210,7 +210,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * 新增角色
      *
      * @param dto role dto
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -243,7 +243,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * 更新角色
      *
      * @param dto dto
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional
@@ -269,18 +269,16 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
         }
 
         switch (permissionEnum) {
-            case ALL:
+            case ALL -> {
                 Set<Long> dataPermission = this.sysDepartmentDao.selectList(Wrappers.emptyWrapper())
-                        .stream()
-                        .map(SysDepartment::getId)
-                        .collect(Collectors.toSet());
+                                                                .stream()
+                                                                .map(SysDepartment::getId)
+                                                                .collect(Collectors.toSet());
                 dto.setDepartmentIds(dataPermission);
-                break;
-            case LEVEL:
-                dto.setDepartmentIds(Collections.emptySet());
-                break;
-            default:
-                break;
+            }
+            case LEVEL -> dto.setDepartmentIds(Collections.emptySet());
+            default -> {
+            }
         }
         this.convert.copyProperties(dto, sysRole);
         super.savaOrUpdate(sysRole);
@@ -319,7 +317,7 @@ public class SysRoleService extends AbstractService<SysRoleDao, SysRole> {
      * 删除角色
      *
      * @param ids id集合
-     * @return /
+     * @return {@link Void}
      */
     @CacheEvict
     @Transactional

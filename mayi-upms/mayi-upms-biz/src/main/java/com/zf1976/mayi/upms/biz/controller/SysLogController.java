@@ -62,17 +62,17 @@ public class SysLogController {
     }
 
     @DeleteMapping("/delete")
-    public DataResult<Optional<Void>> deleteByIds(@RequestBody @NotNull Set<Long> ids) {
+    public DataResult<Void> deleteByIds(@RequestBody @NotNull Set<Long> ids) {
         return DataResult.success(service.deleteByIds(ids));
     }
 
     @DeleteMapping("/delete/error")
-    public DataResult<Optional<Void>> deleteError() {
+    public DataResult<Void> deleteError() {
         return DataResult.success(service.deleteError());
     }
 
     @DeleteMapping("/delete/info")
-    public DataResult<Optional<Void>> deleteInfo() {
+    public DataResult<Void> deleteInfo() {
         return DataResult.success(service.deleteInfo());
     }
 }
