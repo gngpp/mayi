@@ -29,8 +29,6 @@
 
 ## 贡献
 
-目前只有`我`自己在维护这个项目。希望能有更多人加入 :)
-
 感谢[Jetbrains](https://www.jetbrains.com/?from=mayi)制作的IDE，以及免费的开源许可证。
 
 ![](https://raw.githubusercontent.com/wkgcass/vproxy/master/doc/jetbrains.png)
