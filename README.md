@@ -19,7 +19,7 @@
 - 微服务框架：Spring Cloud 2021.0.0
 - 认证服务器：Authorization Server 0.2.1
 - 安全框架：Spring Security 5.5.0
-- 持久层框架：MyBatis-Plus
+- 持久层框架：MyBatis-Plus 3.3.1
 - 数据库连接池：Druid、Hikari
 - 服务注册与发现: Nacos
 - 客户端负载均衡：Ribbon
