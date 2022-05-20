@@ -102,7 +102,7 @@ services:
 
   mayi-nacos:
     container_name: mayi-nacos
-    image: nacos/nacos-server
+    image: nacos/nacos-server:1.4.2
     restart: on-failure
     env_file:
       - ./env/.nacos_env
