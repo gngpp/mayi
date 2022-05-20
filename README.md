@@ -27,6 +27,8 @@
 - 网关组件：Spring Gateway
 - 运行容器：Undertow
 
+### 配套前端Nodejs服务
+![](https://github.com/gngpp/mayi-web/tree/dev)
 ## 贡献
 
 感谢[Jetbrains](https://www.jetbrains.com/?from=mayi)制作的IDE，以及免费的开源许可证。
