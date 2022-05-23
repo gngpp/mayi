@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
   ~ /*
-  ~  * Copyright (c) 2021 zf1976
+  ~  * Copyright (c) 2021 gngpp
   ~  *
   ~  * Permission is hereby granted, free of charge, to any person obtaining a copy
   ~  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zf1976.mayi.upms.biz.dao.SysRoleDao">
+<mapper namespace="com.gngpp.mayi.upms.biz.dao.SysRoleDao">
     <!-- 插入role-department 依赖关系-->
     <insert id="saveDepartmentRelationById">
         insert
@@ -90,7 +90,7 @@
     </delete>
 
     <!--根据用户id查询用户所有角色-->
-    <select id="selectListByUserId" resultType="com.zf1976.mayi.upms.biz.pojo.po.SysRole">
+    <select id="selectListByUserId" resultType="com.gngpp.mayi.upms.biz.pojo.po.SysRole">
         select id,
                name,
                level,
@@ -108,7 +108,7 @@
     </select>
 
     <!--根据用户名查询用户所有角色-->
-    <select id="selectListByUsername" resultType="com.zf1976.mayi.upms.biz.pojo.po.SysRole">
+    <select id="selectListByUsername" resultType="com.gngpp.mayi.upms.biz.pojo.po.SysRole">
         select sys_role.id,
                sys_role.name,
                sys_role.level,

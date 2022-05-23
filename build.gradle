@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 zf1976
+ * Copyright (c) 2021 gngpp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ allprojects {
     apply plugin: 'java'
     apply from: this.rootProject.file('gradle.properties')
 
-    group = 'com.zf1976'
+    group = 'com.gngpp'
     version = 'latest'
     // Specify compilation version
     sourceCompatibility = JavaVersion.VERSION_17

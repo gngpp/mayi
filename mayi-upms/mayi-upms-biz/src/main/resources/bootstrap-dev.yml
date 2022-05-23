@@ -36,7 +36,7 @@ spring:
         wall:
           config:
             multi-statement-allow: true
-      aop-patterns: com.zf1976.mayi.*.endpoint.*
+      aop-patterns: com.gngpp.mayi.*.endpoint.*
 
 #Redis
   redis:

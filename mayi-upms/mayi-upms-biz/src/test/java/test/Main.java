@@ -1,6 +1,6 @@
 /*
  *
- *  * Copyright (c) 2021 zf1976
+ *  * Copyright (c) 2021 gngpp
  *  *
  *  * Permission is hereby granted, free of charge, to any person obtaining a copy
  *  * of this software and associated documentation files (the "Software"), to deal
@@ -25,17 +25,10 @@
 
 package test;
 
-import com.zf1976.mayi.common.core.util.Base64Util;
-import com.zf1976.mayi.common.core.util.HexUtil;
-import com.zf1976.mayi.common.core.util.UUIDUtil;
-import org.springframework.util.Base64Utils;
+import com.gngpp.mayi.common.core.util.Base64Util;
+import com.gngpp.mayi.common.core.util.HexUtil;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.UUID;
 
 /**
  * @author ant

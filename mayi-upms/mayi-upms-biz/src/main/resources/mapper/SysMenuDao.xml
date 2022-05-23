@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ /*
-  ~  * Copyright (c) 2021 zf1976
+  ~  * Copyright (c) 2021 gngpp
   ~  *
   ~  * Permission is hereby granted, free of charge, to any person obtaining a copy
   ~  * of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,8 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zf1976.mayi.upms.biz.dao.SysMenuDao">
-    <resultMap type="com.zf1976.mayi.upms.biz.pojo.po.SysMenu" id="SysMenuMap">
+<mapper namespace="com.gngpp.mayi.upms.biz.dao.SysMenuDao">
+    <resultMap type="com.gngpp.mayi.upms.biz.pojo.po.SysMenu" id="SysMenuMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="pid" column="pid" jdbcType="INTEGER"/>
         <result property="type" column="type" jdbcType="INTEGER"/>
@@ -56,7 +56,7 @@
         </foreach>
     </delete>
     <!-- 查询角色关联菜单-->
-    <select id="selectListByRoleId" resultType="com.zf1976.mayi.upms.biz.pojo.po.SysMenu">
+    <select id="selectListByRoleId" resultType="com.gngpp.mayi.upms.biz.pojo.po.SysMenu">
         select id,
                pid,
                type,
@@ -80,7 +80,7 @@
     </select>
 
     <!-- 查询多个角色所关联菜单-->
-    <select id="selectListByRoleIds" resultType="com.zf1976.mayi.upms.biz.pojo.po.SysMenu">
+    <select id="selectListByRoleIds" resultType="com.gngpp.mayi.upms.biz.pojo.po.SysMenu">
         select distinct
         id,
         pid,

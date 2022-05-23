@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ /*
-  ~  * Copyright (c) 2021 zf1976
+  ~  * Copyright (c) 2021 gngpp
   ~  *
   ~  * Permission is hereby granted, free of charge, to any person obtaining a copy
   ~  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,6 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zf1976.mayi.upms.biz.dao.SysResourceDao">
+<mapper namespace="com.gngpp.mayi.upms.biz.dao.SysResourceDao">
 
 </mapper>

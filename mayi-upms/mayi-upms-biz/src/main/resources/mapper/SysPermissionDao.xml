@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ /*
-  ~  * Copyright (c) 2021 zf1976
+  ~  * Copyright (c) 2021 gngpp
   ~  *
   ~  * Permission is hereby granted, free of charge, to any person obtaining a copy
   ~  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,10 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zf1976.mayi.upms.biz.dao.SysPermissionDao">
+<mapper namespace="com.gngpp.mayi.upms.biz.dao.SysPermissionDao">
 
 <!--    角色绑定权限映射-->
-    <resultMap id="roleBindingMap" type="com.zf1976.mayi.upms.biz.pojo.RoleBinding">
+    <resultMap id="roleBindingMap" type="com.gngpp.mayi.upms.biz.pojo.RoleBinding">
         <result property="id" column="id" jdbcType="BIGINT"/>
         <result property="name" column="name" jdbcType="VARCHAR"/>
         <result property="enabled" column="enabled" jdbcType="BIT"/>
@@ -39,7 +39,7 @@
     </resultMap>
 
 <!--    资源绑定权限映射-->
-    <resultMap id="resourceBindingMap" type="com.zf1976.mayi.upms.biz.pojo.po.SysResource">
+    <resultMap id="resourceBindingMap" type="com.gngpp.mayi.upms.biz.pojo.po.SysResource">
         <id property="id" column="id" jdbcType="INTEGER"/>
         <result property="pid" column="pid" jdbcType="BIGINT"/>
         <result property="name" column="name" jdbcType="VARCHAR"/>
@@ -93,14 +93,14 @@
     </delete>
 
     <!--  获取资源权限值-->
-    <select id="selectPermissionsByResourceId" resultType="com.zf1976.mayi.upms.biz.pojo.Permission">
+    <select id="selectPermissionsByResourceId" resultType="com.gngpp.mayi.upms.biz.pojo.Permission">
         select distinct permission_id as id, value
         from  sys_permission join sys_resource_permission_relation srpr on  sys_permission.id = srpr.permission_id
         where srpr.resource_id = #{resourceId}
     </select>
 
 <!--  获取角色权限值-->
-    <select id="selectPermissionsByRoleId" resultType="com.zf1976.mayi.upms.biz.pojo.Permission">
+    <select id="selectPermissionsByRoleId" resultType="com.gngpp.mayi.upms.biz.pojo.Permission">
         select distinct permission_id as id, value
         from sys_permission join sys_role_permission_relation srpr on sys_permission.id = srpr.permission_id
         where srpr.role_id = #{roleId}

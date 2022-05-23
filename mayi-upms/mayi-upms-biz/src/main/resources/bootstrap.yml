@@ -65,7 +65,7 @@ mybatis-plus: #mybatis-plus 配置
     #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath:/mapper/*Dao.xml
   check-config-location: true
-  type-enums-package: com.zf1976.mayi.upms.biz.pojo.enums
+  type-enums-package: com.gngpp.mayi.upms.biz.pojo.enums
 #文件路径配置
 file:
   config:

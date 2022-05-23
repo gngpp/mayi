@@ -43,9 +43,9 @@ RUN $JAVA_HOME/bin/jlink \
 FROM alpine
 USER root
 WORKDIR /mayi
-MAINTAINER zf1976 <verticle@foxmail.com>
+MAINTAINER gngpp <verticle@foxmail.com>
 LABEL name=mayi-auth
-LABEL url=https://github.com/zf1976/mayi
+LABEL url=https://github.com/gngpp/mayi
 
 RUN apk add curl
 # env

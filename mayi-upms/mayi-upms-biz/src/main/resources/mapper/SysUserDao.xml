@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
   ~ /*
-  ~  * Copyright (c) 2021 zf1976
+  ~  * Copyright (c) 2021 gngpp
   ~  *
   ~  * Permission is hereby granted, free of charge, to any person obtaining a copy
   ~  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zf1976.mayi.upms.biz.dao.SysUserDao">
+<mapper namespace="com.gngpp.mayi.upms.biz.dao.SysUserDao">
     <!--新增 user-job 依赖关系-->
     <insert id="savePositionRelationById">
         insert into sys_user_position_relation(user_id, position_id)
@@ -82,15 +82,15 @@
     </select>
 
     <!--    根据用户名查询用户，包括部门-->
-    <resultMap id="selectOneByUsernameMap" type="com.zf1976.mayi.upms.biz.pojo.po.SysUser">
+    <resultMap id="selectOneByUsernameMap" type="com.gngpp.mayi.upms.biz.pojo.po.SysUser">
         <id property="id" column="id"/>
         <result property="departmentId" column="department_id"/>
         <association property="department" column="department_id"
-                     select="com.zf1976.mayi.upms.biz.dao.SysDepartmentDao.selectById"/>
+                     select="com.gngpp.mayi.upms.biz.dao.SysDepartmentDao.selectById"/>
         <collection property="positionList" column="id"
-                    select="com.zf1976.mayi.upms.biz.dao.SysPositionDao.selectListByUserId"/>
+                    select="com.gngpp.mayi.upms.biz.dao.SysPositionDao.selectListByUserId"/>
         <collection property="roleList" column="id"
-                    select="com.zf1976.mayi.upms.biz.dao.SysRoleDao.selectListByUserId"/>
+                    select="com.gngpp.mayi.upms.biz.dao.SysRoleDao.selectListByUserId"/>
     </resultMap>
     <select id="selectOneByUsername" resultMap="selectOneByUsernameMap">
         select id,
