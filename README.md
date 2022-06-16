@@ -42,7 +42,7 @@ $ ./gradlew task mayi-visual:mayi-visual-admin:bootRun   --args="--spring.config
 ```
 
 - Docker运行
-> 本地环境测试，只运行`MySQL`、`Redis`、`Nacos`，根目录`bootstrap.yml`需要指定`dev`环境
+> 本地环境测试，只运行`MySQL`、`Redis`、`Nacos`，根目录`bootstrap.yml`需要指定`prod`环境
 ```shell
 $ docker-compose -f docker-compose-test.yml up -d
 $ ./gradlew task mayi-gateway:bootRun  --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"   
