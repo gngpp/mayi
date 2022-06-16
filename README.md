@@ -28,6 +28,8 @@
 - 运行容器：Undertow
 
 #### 运行/Run
+
+- 克隆项目
 ```shell
 $ git clone https://github.com/gngpp/mayi.git && cd mayi
 ```
@@ -35,20 +37,20 @@ $ git clone https://github.com/gngpp/mayi.git && cd mayi
 - 本地运行
 > Run前提需要安装中间件：`MySQL`、`Redis`、`Nacos`, 运行顺序 Redis\MySQL\Nacos。根目录`bootstrap.yml`需要指定`dev`环境，之后再启动系统每个服务。
 ```shell
-$ ./gradlew task mayi-gateway:bootRun  --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"   
-$ ./gradlew task mayi-auth:bootRun  --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"        
-$ ./gradlew task mayi-upms:mayi-upms-biz:bootRun  --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"       
-$ ./gradlew task mayi-visual:mayi-visual-admin:bootRun   --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"    
+$ ./gradlew task mayi-gateway:bootRun --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"   
+$ ./gradlew task mayi-auth:bootRun --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"        
+$ ./gradlew task mayi-upms:mayi-upms-biz:bootRun --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"       
+$ ./gradlew task mayi-visual:mayi-visual-admin:bootRun --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"    
 ```
 
 - Docker运行
 > 本地环境测试，只运行`MySQL`、`Redis`、`Nacos`，根目录`bootstrap.yml`需要指定`prod`环境
 ```shell
 $ docker-compose -f docker-compose-test.yml up -d
-$ ./gradlew task mayi-gateway:bootRun  --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"   
-$ ./gradlew task mayi-auth:bootRun  --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"        
-$ ./gradlew task mayi-upms:mayi-upms-biz:bootRun  --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"       
-$ ./gradlew task mayi-visual:mayi-visual-admin:bootRun   --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"    
+$ ./gradlew task mayi-gateway:bootRun --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"   
+$ ./gradlew task mayi-auth:bootRun --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"        
+$ ./gradlew task mayi-upms:mayi-upms-biz:bootRun --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"       
+$ ./gradlew task mayi-visual:mayi-visual-admin:bootRun --args="--spring.config.additional-location=$(pwd)/bootstrap.yml"    
 ```
 
 > 本地环境开发（包含所有服务），需要先本地构建项目所有服务jar包，根目录`bootstrap.yml`需要指定`prod`环境
